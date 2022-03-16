@@ -141,7 +141,8 @@ class Strategy(object):
                             self.run_strategyII(self.stock_ticker)
                             
                         if model == "Indicators":
-                            s1.ii().kingpin(self.stock_ticker)
+                            # s1.ii().kingpin(self.stock_ticker)
+                            pass
 
 
 
