@@ -99,6 +99,7 @@ parso==0.7.0
 # pathlib==1.0.1
 patsy==0.5.1
 pexpect==4.8.0
+pickle5==0.0.11
 pickleshare==0.7.5
 Pillow==8.3.2
 plotly==5.3.1
