@@ -96,7 +96,7 @@ pandas-datareader==0.10.0
 pandocfilters==1.4.3
 parse==1.19.0
 parso==0.7.0
-pathlib
+# pathlib==1.0.1
 patsy==0.5.1
 pexpect==4.8.0
 pickleshare==0.7.5
