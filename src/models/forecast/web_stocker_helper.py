@@ -7,11 +7,12 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import matplotlib
 import streamlit as st
-st.set_option('deprecation.showPyplotGlobalUse', False)
+
+st.set_option("deprecation.showPyplotGlobalUse", False)
 from datetime import datetime
 
-# from yahooquery import Ticker as yq_Ticker
-# from pytrends.request import TrendReq
+from yahooquery import Ticker as yq_Ticker
+from pytrends.request import TrendReq
 
 from src.tools import functions as f1
 
@@ -370,7 +371,7 @@ class Stocker(object):
         e_d = f1.time_fixer(end_date)
 
         st.write(
-            "**{}** [**{}**] - Total Buy & Hold Profit from {} to {} for **{}** shares = **${:.2f}**".format(
+            "{} [{}] - Total Buy & Hold Profit from {} to {} for {} shares = ${:.2f}".format(
                 company_long_name, self.symbol, s_d, e_d, nshares, total_hold_profit
             )
         )
@@ -497,9 +498,7 @@ class Stocker(object):
 
     # Basic prophet model for specified number of days
     def create_prophet_model(self, days=0, resample=False):
-
-        # self.reset_plot()
-
+        self.reset_plot()
         model = self.create_model()
 
         # Fit on the stock history for self.training_years number of years
@@ -605,7 +604,6 @@ class Stocker(object):
 
         # Merge predictions with the known values
         test = pd.merge(test, future, on="ds", how="inner")
-
         train = pd.merge(train, future, on="ds", how="inner")
 
         # Calculate the differences between consecutive measurements
@@ -639,120 +637,121 @@ class Stocker(object):
 
         in_range_accuracy = 100 * np.mean(test["in_range"])
 
-        if not nshares:
+        # if not nshares:
 
-            # Date range of predictions
-            print("\nPrediction Range: {} to {}.".format(start_date, end_date))
+        # Date range of predictions
+        st.markdown("\nPrediction Range: {} to {}.".format(start_date, end_date))
 
-            # Final prediction vs actual value
-            print(
-                "\nPredicted price on {} = ${:.2f}.".format(
-                    max(future["ds"]), future.loc[future.index[-1], "yhat"]
-                )
+        # Final prediction vs actual value
+        st.markdown(
+            "\nPredicted price on {} = ${:.2f}.".format(
+                max(future["ds"]), future.loc[future.index[-1], "yhat"]
             )
-            print(
-                "Actual price on    {} = ${:.2f}.\n".format(
-                    max(test["ds"]), test.loc[test.index[-1], "y"]
-                )
+        )
+        st.markdown(
+            "Actual price on    {} = ${:.2f}.\n".format(
+                max(test["ds"]), test.loc[test.index[-1], "y"]
             )
+        )
 
-            print(
-                "Average Absolute Error on Training Data = ${:.2f}.".format(
-                    train_mean_error
-                )
+        st.markdown(
+            "Average Absolute Error on Training Data = ${:.2f}.".format(
+                train_mean_error
             )
-            print(
-                "Average Absolute Error on Testing  Data = ${:.2f}.\n".format(
-                    test_mean_error
-                )
+        )
+        st.markdown(
+            "Average Absolute Error on Testing  Data = ${:.2f}.\n".format(
+                test_mean_error
             )
+        )
 
-            # Direction accuracy
-            print(
-                "When the model predicted an increase, the price increased {:.2f}% of the time.".format(
-                    increase_accuracy
-                )
+        # Direction accuracy
+        st.markdown(
+            "When the model predicted an increase, the price increased {:.2f}% of the time.".format(
+                increase_accuracy
             )
-            print(
-                "When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
-                    decrease_accuracy
-                )
+        )
+        st.markdown(
+            "When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
+                decrease_accuracy
             )
+        )
 
-            print(
-                "The actual value was within the {:d}% confidence interval {:.2f}% of the time.".format(
-                    int(100 * model.interval_width), in_range_accuracy
-                )
+        st.markdown(
+            "The actual value was within the {:d}% confidence interval {:.2f}% of the time.".format(
+                int(100 * model.interval_width), in_range_accuracy
             )
+        )
 
-            # Reset the plot
-            self.reset_plot()
+        # Reset the plot
+        self.reset_plot()
 
-            # Set up the plot
-            fig, ax = plt.subplots(1, 1)
+        # Set up the plot
+        fig, ax = plt.subplots(1, 1)
 
-            # Plot the actual values
-            ax.plot(
-                train["ds"],
-                train["y"],
-                "ko-",
-                linewidth=1.4,
-                alpha=0.8,
-                ms=1.8,
-                label="Observations",
+        # Plot the actual values
+        ax.plot(
+            train["ds"],
+            train["y"],
+            "ko-",
+            linewidth=1.4,
+            alpha=0.8,
+            ms=1.8,
+            label="Observations",
+        )
+        ax.plot(
+            test["ds"],
+            test["y"],
+            "ko-",
+            linewidth=1.4,
+            alpha=0.8,
+            ms=1.8,
+            label="Observations",
+        )
+
+        # Plot the predicted values
+        ax.plot(
+            future["ds"], future["yhat"], "navy", linewidth=2.4, label="Predicted"
+        )
+
+        # Plot the uncertainty interval as ribbon
+        ax.fill_between(
+            future["ds"].dt.to_pydatetime(),
+            future["yhat_upper"],
+            future["yhat_lower"],
+            alpha=0.6,
+            facecolor="gold",
+            edgecolor="k",
+            linewidth=1.4,
+            label="Confidence Interval",
+        )
+
+        # Put a vertical line at the start of predictions
+        plt.vlines(
+            x=min(test["ds"]),
+            ymin=min(future["yhat_lower"]),
+            ymax=max(future["yhat_upper"]),
+            colors="r",
+            linestyles="dashed",
+            label="Prediction Start",
+        )
+
+        # Plot formatting
+        plt.legend(loc=2, prop={"size": 8})
+        plt.xlabel("Date")
+        plt.ylabel("Price $")
+        plt.grid(linewidth=0.6, alpha=0.6)
+
+        plt.title(
+            "{} Model Evaluation from {} to {}.".format(
+                self.symbol, f1.time_fixer(start_date), f1.time_fixer(end_date)
             )
-            ax.plot(
-                test["ds"],
-                test["y"],
-                "ko-",
-                linewidth=1.4,
-                alpha=0.8,
-                ms=1.8,
-                label="Observations",
-            )
+        )
+        plt.show()
 
-            # Plot the predicted values
-            ax.plot(
-                future["ds"], future["yhat"], "navy", linewidth=2.4, label="Predicted"
-            )
-
-            # Plot the uncertainty interval as ribbon
-            ax.fill_between(
-                future["ds"].dt.to_pydatetime(),
-                future["yhat_upper"],
-                future["yhat_lower"],
-                alpha=0.6,
-                facecolor="gold",
-                edgecolor="k",
-                linewidth=1.4,
-                label="Confidence Interval",
-            )
-
-            # Put a vertical line at the start of predictions
-            plt.vlines(
-                x=min(test["ds"]),
-                ymin=min(future["yhat_lower"]),
-                ymax=max(future["yhat_upper"]),
-                colors="r",
-                linestyles="dashed",
-                label="Prediction Start",
-            )
-
-            # Plot formatting
-            plt.legend(loc=2, prop={"size": 8})
-            plt.xlabel("Date")
-            plt.ylabel("Price $")
-            plt.grid(linewidth=0.6, alpha=0.6)
-
-            plt.title(
-                "{} Model Evaluation from {} to {}.".format(
-                    self.symbol, f1.time_fixer(start_date), f1.time_fixer(end_date)
-                )
-            )
-            plt.show()
 
         # If a number of shares is specified, play the game
-        elif nshares:
+        if nshares:
 
             # Only playing the stocks when we predict the stock will increase
             test_pred_increase = test[test["pred_diff"] > 0]
@@ -787,35 +786,35 @@ class Stocker(object):
             test["hold_profit"] = nshares * (test["y"] - float(test.loc[0, "y"]))
 
             # Display information
-            print(
+            st.markdown(
                 "You played the stock market in {} from {} to {} with {} shares.\n".format(
                     self.symbol, start_date, end_date, nshares
                 )
             )
 
-            print(
+            st.markdown(
                 "When the model predicted an increase, the price increased {:.2f}% of the time.".format(
                     increase_accuracy
                 )
             )
-            print(
+            st.markdown(
                 "When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
                     decrease_accuracy
                 )
             )
 
             # Display some friendly information about the perils of playing the stock market
-            print(
+            st.markdown(
                 "The total profit using the Prophet model = ${:.2f}.".format(
                     np.sum(prediction_profit)
                 )
             )
-            print(
+            st.markdown(
                 "The Buy and Hold strategy profit =         ${:.2f}.".format(
                     float(test.loc[test.index[-1], "hold_profit"])
                 )
             )
-            print("\nThanks for playing the stock market!\n")
+            st.markdown("\nThanks for playing the stock market!\n")
 
             # Plot the predicted and actual profits over time
             self.reset_plot()
@@ -873,37 +872,36 @@ class Stocker(object):
             plt.grid(alpha=0.2)
             plt.show()
 
-    # def retrieve_google_trends(self, search, date_range):
+    def retrieve_google_trends(self, search, date_range):
+        # Set up the trend fetching object
+        pytrends = TrendReq(
+            hl="en-US",
+            tz=360,
+            geo="",
+            timeout=(2, 5),
+            proxies="",
+            retries=3,
+            backoff_factor=0,
+            requests_args=None,
+        )
+        kw_list = [search]
 
-    #     # Set up the trend fetching object
-    #     pytrends = TrendReq(
-    #         hl="en-US",
-    #         tz=360,
-    #         geo="",
-    #         timeout=(2, 5),
-    #         proxies="",
-    #         retries=3,
-    #         backoff_factor=0,
-    #         requests_args=None,
-    #     )
-    #     kw_list = [search]
+        try:
 
-    #     try:
+            # Create the search object
+            pytrends.build_payload(
+                kw_list, cat=0, timeframe=date_range[0], geo="", gprop="news"
+            )
 
-    #         # Create the search object
-    #         pytrends.build_payload(
-    #             kw_list, cat=0, timeframe=date_range[0], geo="", gprop="news"
-    #         )
+            # Retrieve the interest over time
+            trends = pytrends.interest_over_time()
 
-    #         # Retrieve the interest over time
-    #         trends = pytrends.interest_over_time()
+        except Exception as e:
+            print("\nGoogle Search Trend retrieval failed.")
+            print(e)
+            return
 
-    #     except Exception as e:
-    #         print("\nGoogle Search Trend retrieval failed.")
-    #         print(e)
-    #         return
-
-    #     return trends
+        return trends
 
     def changepoint_date_analysis(self, search=None):
         self.reset_plot()
@@ -1262,29 +1260,29 @@ class Stocker(object):
         print(results)
 
         # Plot of training and testing average errors
-        # self.reset_plot()
+        self.reset_plot()
 
-        # plt.plot(results["cps"], results["train_err"], "bo-", ms=8, label="Train Error")
-        # plt.plot(results["cps"], results["test_err"], "r*-", ms=8, label="Test Error")
-        # plt.xlabel("Changepoint Prior Scale")
-        # plt.ylabel("Avg. Absolute Error ($)")
-        # plt.title("Training and Testing Curves as Function of CPS")
-        # plt.grid(color="k", alpha=0.3)
-        # plt.xticks(results["cps"], results["cps"])
-        # plt.legend(prop={"size": 10})
-        # plt.show()
+        plt.plot(results["cps"], results["train_err"], "bo-", ms=8, label="Train Error")
+        plt.plot(results["cps"], results["test_err"], "r*-", ms=8, label="Test Error")
+        plt.xlabel("Changepoint Prior Scale")
+        plt.ylabel("Avg. Absolute Error ($)")
+        plt.title("Training and Testing Curves as Function of CPS")
+        plt.grid(color="k", alpha=0.3)
+        plt.xticks(results["cps"], results["cps"])
+        plt.legend(prop={"size": 10})
+        plt.show()
 
         # Plot of training and testing average uncertainty
-        # self.reset_plot()
+        self.reset_plot()
 
-        # plt.plot(
-        #     results["cps"], results["train_range"], "bo-", ms=8, label="Train Range"
-        # )
-        # plt.plot(results["cps"], results["test_range"], "r*-", ms=8, label="Test Range")
-        # plt.xlabel("Changepoint Prior Scale")
-        # plt.ylabel("Avg. Uncertainty ($)")
-        # plt.title("Uncertainty in Estimate as Function of CPS")
-        # plt.grid(color="k", alpha=0.3)
-        # plt.xticks(results["cps"], results["cps"])
-        # plt.legend(prop={"size": 10})
-        # plt.show()
+        plt.plot(
+            results["cps"], results["train_range"], "bo-", ms=8, label="Train Range"
+        )
+        plt.plot(results["cps"], results["test_range"], "r*-", ms=8, label="Test Range")
+        plt.xlabel("Changepoint Prior Scale")
+        plt.ylabel("Avg. Uncertainty ($)")
+        plt.title("Uncertainty in Estimate as Function of CPS")
+        plt.grid(color="k", alpha=0.3)
+        plt.xticks(results["cps"], results["cps"])
+        plt.legend(prop={"size": 10})
+        plt.show()

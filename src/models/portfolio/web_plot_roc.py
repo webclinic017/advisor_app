@@ -21,7 +21,7 @@ plt.rcParams["figure.dpi"] = 134
 import streamlit as st
 
 
-def plot_roc(file, X, y, clf_class, plot_name, **kwargs):
+def plot_roc(file, X, y, clf_class, plot_name, kwargs):
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
     n_splits = 5
@@ -33,7 +33,7 @@ def plot_roc(file, X, y, clf_class, plot_name, **kwargs):
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         X_train, X_test = X[train_index], X[test_index]
         y_train = y[train_index]
-        clf = clf_class(**kwargs)
+        clf = clf_class(kwargs)
         clf.fit(X_train, y_train)
         # Predict probabilities, not classes
         y_prob[test_index] = clf.predict_proba(X_test)
@@ -57,6 +57,6 @@ def plot_roc(file, X, y, clf_class, plot_name, **kwargs):
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.title(f"{plot_name} - Receiver operating characteristic")
-    plt.legend(loc="lower right")
+    plt.legend(loc="best")
     plt.tight_layout()
     st.pyplot(fig)

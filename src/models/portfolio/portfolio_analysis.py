@@ -17,9 +17,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 class Analize_Portfolio(object):
-    def __init__(self, stocks, nameSave):
+    def __init__(self, stocks):
         self.stocks = stocks
-        self.sName = nameSave
 
     def situation(self):
         num_portfolios = 1
@@ -55,7 +54,7 @@ class Analize_Portfolio(object):
                 drop=True
             )
 
-        simulate_returns(returns["return_" + self.stocks[0]], 1000)
+        simulate_returns(returns["return_" + self.stocks[0]], 2500)
 
         def simulate_portfolio(historical_returns, composition, forecast_days):
             result = 0

@@ -9,8 +9,8 @@ import streamlit as st
 
 from src.tools.functions import company_longName
 
-plt.style.use("ggplot")
-plt.rcParams["figure.figsize"] = [10, 7]
+plt.style.use("seaborn-poster")
+plt.rcParams["figure.figsize"] = [20, 10]
 plt.rc("font", size=14)
 np.random.seed(0)
 

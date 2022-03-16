@@ -191,7 +191,9 @@ def _raw_get_daily_info(site):
 
 
 def get_top_crypto():
-    """Gets the top 100 Cryptocurrencies by Market Cap"""
+    """
+    --->>> Gets the top 100 Cryptocurrencies by Market Cap
+    """
     session = HTMLSession()
     resp = session.get("https://finance.yahoo.com/cryptocurrencies?offset=0&count=100")
     tables = pd.read_html(resp.html.raw_html)
@@ -203,20 +205,19 @@ def get_top_crypto():
     )
     del screener_df["52 Week Range"]
     del screener_df["1 Day Chart"]
-    fields_to_change = [
-        x
-        for x in screener_df.columns.tolist()
-        if "Volume" in x or x == "Market Cap" or x == "Circulating Supply"
-    ]
-    for field in fields_to_change:
-        if type(screener_df[field][0]) == str:
-            screener_df[field] = screener_df[field].map(_convert_to_numeric)
+    del screener_df["Volume in Currency (Since 0:00 UTC)"]
+    del screener_df["Volume in Currency (24Hr)"]
     session.close()
-    rank = []
-    [rank.append(x) for x in range(1, len(screener_df) + 1)]
-    screener_df["ranking"] = rank
-    screener_df = screener_df.set_index("ranking")
-    return screener_df
+    screener_df = screener_df.set_index(["Name", "Symbol"])
+    screener_df.columns = [
+        "Price",
+        "Change_$",
+        "Change_%",
+        "Market_Cap",
+        "Total_24hr_Volume",
+        "Circulating_Supply",
+    ]
+    return screener_df.sort_values(by="Change_%", ascending=False)
 
 
 def get_day_gainers():
@@ -227,6 +228,7 @@ def get_day_gainers():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -238,6 +240,7 @@ def get_day_losers():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -249,6 +252,7 @@ def get_day_most_active():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -262,6 +266,7 @@ def get_trending_tickers():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = pd.DataFrame(screener_df).set_index("ranking")
+    screener_df = screener_df.drop(["Intraday High/Low", "Day Chart"], axis=1)
     return screener_df
 
 
@@ -275,11 +280,11 @@ def get_most_shorted_stocks():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
 def get_undervalued_large_caps():
-    # Returns the undervalued large caps table from Yahoo Finance
     screener_df = pd.DataFrame(
         _raw_get_daily_info(
             "https://finance.yahoo.com/screener/predefined/undervalued_large_caps?offset=0&count=100"
@@ -289,6 +294,7 @@ def get_undervalued_large_caps():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -302,6 +308,7 @@ def get_undervalued_growth_stocks():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -315,6 +322,7 @@ def get_growth_technology_stocks():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -328,6 +336,7 @@ def get_aggressive_small_caps():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -341,6 +350,7 @@ def get_small_cap_gainers():
     [rank.append(x) for x in range(1, len(screener_df) + 1)]
     screener_df["ranking"] = rank
     screener_df = screener_df.set_index("ranking")
+    screener_df = screener_df.drop("PE Ratio (TTM)", axis=1)
     return screener_df
 
 
@@ -472,6 +482,21 @@ def tickers_sp600(include_company_data=False):
     return tickers_lst  # , company_lst, table
 
 
+def tickers_russell3000():
+    russell3000 = ['FLWS', 'SRCE', 'FUBC', 'DDD', 'MMM', 'EGHT', 'AHC', 'AVHI', 'AAON', 'AIR', 'AAN', 'ABAX', 'ABT', 'ABBV', 'ANF', 'ABMD', 'ABM', 'AXAS', 'ACTG', 'ACHC', 'ACAD', 'AKR', 'AXDX', 'ACCL', 'ACN', 'ANCX', 'ACCO', 'AH', 'ARAY', 'ACW', 'ACE', 'ACRX', 'ACET', 'ACHN', 'ACIW', 'ACOR', 'ACFN', 'ACT', 'ACTV', 'ATVI', 'ATU', 'Ticker', 'BIRT', 'AYI', 'ACXM', 'ADES', 'AE', 'ADUS', 'ADBE', 'ADT', 'ADTN', 'AAP', 'AEIS', 'AMD', 'ADVS', 'ABCO', 'ACM', 'AEGR', 'AEGN', 'AEPI', 'ARX', 'ARO', 'AVAV', 'AES', 'AET', 'AFCE', 'AMG', 'AFFX', 'AFL', 'MITT', 'AGCO', 'A', 'AGYS', 'GAS', 'ADC', 'AL', 'AIRM', 'APD', 'ATSG', 'AYR', 'ARG', 'AKS', 'AKAM', 'Ticker', 'AKRX', 'ALG', 'ALK', 'AIN', 'AMRI', 'ALB', 'AA', 'ALR', 'ALEX', 'ALX', 'ARE', 'ALXN', 'ALCO', 'ALGN', 'ALIM', 'ALKS', 'Y', 'ATI', 'ALGT', 'AGN', 'ALE', 'ADS', 'AFOP', 'AIQ', 'AOI', 'LNT', 'ATK', 'ANV', 'AWH', 'ALSN', 'MDRX', 'ALL', 'AFAM', 'ALNY', 'ALJ', 'AOSL', 'ANR', 'ATEC', 'ALTR', 'RESI', 'AIMC', 'MO', 'AMAG', 'AMZN', 'AMBC', 'AMBA', 'AMCX', 'Ticker', 'ACO', 'DOX', 'AMED', 'APEI', 'UHAL', 'AEE', 'AMRC', 'APP', 'AAT', 'AXL', 'ACC', 'MTGE', 'AGNC', 'ACAS', 'AEO', 'AEP', 'AEL', 'AXP', 'AFG', 'AM', 'AIG', 'ANAT', 'AMNB', 'APFC', 'ARII', 'ARCP', 'ARPI', 'ASI', 'ASEI', 'AMSWA', 'AWR', 'AMSC', 'AMT', 'AVD', 'AMWD', 'AWK', 'CRMT', 'AMP', 'ABCB', 'AMSF', 'ABC', 'ASCA', 'ATLO', 'AME', 'AMGN', 'FOLD', 'AMKR', 'Ticker', 'AHS', 'AP', 'APH', 'AMPE', 'AMRE', 'AMSG', 'AFSI', 'AMRS', 'ANAC', 'APC', 'ANAD', 'ADI', 'ALOG', 'ANEN', 'ANDE', 'ANGI', 'ANGO', 'ANIK', 'AXE', 'ANN', 'NLY', 'BNNY', 'ANSS', 'ATRS', 'ANH', 'AOL', 'AON', 'APA', 'AIV', 'APAGF', 'ATNY', 'APOG', 'ARI', 'APOL', 'AINV', 'AMTG', 'AAPL', 'AIT', 'AMAT', 'AMCC', 'AREX', 'ATR', 'WTR', 'ARSD', 'ARB', 'ARC', 'ACGL', 'Ticker', 'ACI', 'ADM', 'ACAT', 'ARDNA', 'ARNA', 'ARCC', 'ACRE', 'AGX', 'AGII', 'ARIA', 'ABFS', 'AI', 'AHH', 'ARR', 'AWI', 'ARQL', 'ARRY', 'ARRS', 'ARW', 'AROW', 'ARTNA', 'ARTC', 'APAM', 'ARUN', 'ABG', 'ASNA', 'ASCMA', 'AHT', 'ASH', 'AHL', 'AZPN', 'ALC', 'ASBC', 'AEC', 'AIZ', 'AGO', 'ASTE', 'ASTX', 'AF', 'ATRO', 'T', 'ATHN', 'AT', 'ATNI', 'AAWW', 'ATML', 'ATMI', 'Ticker', 'ATO', 'ATRC', 'ATRI', 'ATW', 'ADNC', 'ADSK', 'ADP', 'AN', 'AZO', 'AUXL', 'AVGO', 'AVB', 'AVNR', 'AVEO', 'AVY', 'AVG', 'AVNW', 'AVID', 'CAR', 'AVA', 'AVIV', 'AVT', 'AVP', 'AVX', 'ACLS', 'AXLL', 'AXS', 'AZZ', 'BGS', 'BWC', 'BMI', 'BHI', 'BKR', 'BCPC', 'BWINB', 'BLL', 'BYI', 'BANF', 'BLX', 'TBBK', 'BXS', 'BKYF', 'BKMU', 'BAC', 'BOH', 'BMRC', 'BK', 'Ticker', 'OZRK', 'BFIN', 'RATE', 'BKU', 'BANR', 'BHB', 'BCR', 'BKS', 'B', 'BBSI', 'DFZ', 'BAS', 'BSET', 'BAX', 'BV', 'BBT', 'BBCN', 'BBX', 'BEAV', 'BECN', 'BEAM', 'BBGI', 'BZH', 'BEBE', 'BDX', 'BBBY', 'BELFB', 'BDC', 'BLC', 'BMS', 'BHE', 'BNCL', 'WRB', 'BRK.B', 'BHLB', 'BRY', 'BERY', 'BBY', 'BGCP', 'BGFV', 'BIG', 'BH', 'BBG', 'BDSI', 'BIIB', 'BIOL', 'BMRN', 'Ticker', 'BMR', 'BIO', 'BRLI', 'BIOS', 'BTX', 'BJRI', 'BBOX', 'BDE', 'BKH', 'BLKB', 'HAWK', 'BLK', 'BKCC', 'HRB', 'BLMN', 'BLT', 'BCOR', 'NILE', 'BXC', 'BTH', 'BMC', 'BNCN', 'BOBE', 'BODY', 'BA', 'BOFI', 'WIFI', 'BCC', 'BZ', 'BOKF', 'BOLT', 'BCEI', 'BONT', 'BAH', 'BWA', 'SAM', 'BPFH', 'BXP', 'BSX', 'EPAY', 'BDBD', 'BYD', 'BPZ', 'BRC', 'BDN', 'BBRG', 'BRE', 'Ticker', 'BDGE', 'BBNK', 'BPI', 'BGG', 'BFAM', 'BCOV', 'EAT', 'BCO', 'BMY', 'BRS', 'BRCM', 'BR', 'BSFT', 'BRCD', 'BKD', 'BRKL', 'BRKS', 'BRO', 'BF.B', 'BWS', 'BRKR', 'BC', 'BMTC', 'BKI', 'BKE', 'BWLD', 'BLDR', 'BG', 'BKW', 'CFFI', 'CHRW', 'CJES', 'CA', 'CAB', 'CVC', 'CBT', 'CCMP', 'COG', 'CACI', 'CDNS', 'CADX', 'CZR', 'CAP', 'DVR', 'CALM', 'CLMS', 'CAMP', 'Ticker', 'CVGW', 'CCC', 'CFNB', 'CWT', 'CALX', 'ELY', 'CALD', 'CPE', 'CPN', 'CBM', 'CAC', 'CPT', 'CAM', 'CPB', 'CCG', 'CMN', 'CPLA', 'CBF', 'CCBG', 'COF', 'CSU', 'CSWC', 'CSE', 'CFFN', 'LSE', 'CMO', 'CPST', 'CRR', 'CARB', 'CFNL', 'CAH', 'CSII', 'CATM', 'CECO', 'CFN', 'CSL', 'KMX', 'CKEC', 'CCL', 'CRS', 'CSV', 'CRZO', 'TAST', 'CRI', 'CACB', 'CWST', 'CASY', 'Ticker', 'CSH', 'CASS', 'CAS', 'CTRX', 'CAT', 'CATY', 'CATO', 'CVCO', 'CAVM', 'CBEY', 'CBZ', 'CBL', 'CBOE', 'CBG', 'CBS', 'CDI', 'CEC', 'CECE', 'CDR', 'CGI', 'CE', 'CELG', 'CTIC', 'CLDX', 'CEMP', 'CNC', 'CNBC', 'CNP', 'CSFL', 'CETV', 'CENTA', 'CPF', 'CENX', 'CNBKA', 'CTL', 'CVO', 'CPHD', 'CERN', 'CERS', 'CEVA', 'CF', 'CSG', 'ECOM', 'CRL', 'GTLS', 'CHTR', 'CHFN', 'Ticker', 'CCF', 'CLDT', 'CKP', 'CAKE', 'CHEF', 'CHTP', 'CHE', 'CHFC', 'CCXI', 'CHMT', 'CHMG', 'LNG', 'CHK', 'CHSP', 'CPK', 'CVX', 'CBI', 'CHS', 'PLCE', 'CIM', 'CMRX', 'CHDX', 'CMG', 'CQB', 'CHH', 'CBK', 'CB', 'CHD', 'CHDN', 'CHUY', 'CBR', 'CIEN', 'CIFC', 'CI', 'XEC', 'CBB', 'CINF', 'CNK', 'CTAS', 'CIR', 'CRUS', 'CSCO', 'CIT', 'CTRN', 'C', 'CZNC', 'CIA', 'Ticker', 'CTXS', 'CHCO', 'CYN', 'CLC', 'CLNE', 'CLH', 'CCO', 'CLW', 'CLWR', 'CNL', 'CLF', 'CSBK', 'CLX', 'CLD', 'CLVS', 'CME', 'CMS', 'CNA', 'CCNE', 'CNH', 'CNO', 'COH', 'CIE', 'COBZ', 'COKE', 'KO', 'CCE', 'CDE', 'CCOI', 'CGNX', 'CTSH', 'CNS', 'COHR', 'COHU', 'CSTR', 'CCIX', 'CFX', 'CL', 'CLP', 'CLNY', 'COLB', 'COLM', 'CMCO', 'CMCSA', 'CMA', 'FIX', 'CBSH', 'Ticker', 'CMC', 'CVGI', 'CWH', 'CBU', 'CYH', 'CTBI', 'CVLT', 'CMP', 'CPSI', 'CSC', 'CTGX', 'CPWR', 'CIX', 'SCOR', 'CRK', 'CMTL', 'CNSI', 'CAG', 'CXO', 'CNQR', 'CNMD', 'CTWS', 'CNOB', 'CONN', 'COP', 'CNX', 'CNSL', 'ED', 'CGX', 'CTO', 'CWCO', 'CTCT', 'STZ', 'CPSS', 'MCF', 'CLR', 'CVG', 'CNW', 'COO', 'CTB', 'CPA', 'CPRT', 'CORT', 'CORE', 'CLGX', 'COR', 'COCO', 'Ticker', 'CSOD', 'CRTX', 'GLW', 'CNDO', 'CEB', 'OFC', 'CXW', 'CRVL', 'CSGP', 'COST', 'CRRC', 'CUZ', 'CVD', 'CVA', 'COV', 'COWN', 'CRAI', 'CBRL', 'BREW', 'CR', 'CRD.B', 'CRAY', 'CACC', 'CREE', 'CRFN', 'CXPO', 'CROX', 'ATX', 'CCRN', 'XTXI', 'CCI', 'CCK', 'CRWN', 'CRY', 'CSGS', 'CSS', 'CST', 'CSX', 'CTS', 'CUNB', 'CUBE', 'CUB', 'CBST', 'CFR', 'CFI', 'CMI', 'CMLS', 'Ticker', 'CRIS', 'CW', 'CUBI', 'CUTR', 'CVBF', 'CVI', 'CVS', 'CYNI', 'CYBX', 'CYNO', 'CY', 'CONE', 'CYS', 'CYT', 'CYTK', 'CYTX', 'DHI', 'DJCO', 'DAKT', 'DAN', 'DHR', 'DRI', 'DAR', 'DTLK', 'DVA', 'DWSN', 'DCT', 'DDR', 'TRAK', 'DF', 'DECK', 'DE', 'DFRG', 'DK', 'DELL', 'DLPH', 'DAL', 'DGAS', 'DEL', 'DLX', 'DMD', 'DWRE', 'DNR', 'DNDN', 'DENN', 'XRAY', 'DEPO', 'Ticker', 'DSCI', 'DEST', 'DXLG', 'DVN', 'DV', 'DXM', 'DXCM', 'DLLR', 'DMND', 'DHIL', 'DO', 'FANG', 'DRH', 'DHX', 'DKS', 'DBD', 'DGII', 'DMRC', 'DGIT', 'DLR', 'DRIV', 'DGI', 'DDS', 'DCOM', 'DIN', 'DIOD', 'DTV', 'DFS', 'DISCA', 'DISH', 'DIS', 'BAGR', 'DLB', 'DOLE', 'DG', 'DLTR', 'D', 'DPZ', 'UFS', 'DCI', 'DGICA', 'RRD', 'DRL', 'DORM', 'PLOW', 'DEI', 'DOV', 'Ticker', 'DOW', 'DPS', 'DWA', 'DRC', 'DW', 'DRQ', 'DSPG', 'DST', 'DSW', 'DTE', 'DTSI', 'DD', 'DCO', 'DUK', 'DRE', 'DNB', 'DNKN', 'DFT', 'DRTX', 'DXPE', 'DYAX', 'DY', 'BOOM', 'DVAX', 'DYN', 'DX', 'EMC', 'ETFC', 'EOPN', 'EGBN', 'EXP', 'ELNK', 'EWBC', 'EIHI', 'EGP', 'EMN', 'ETN', 'EV', 'EBAY', 'EBIX', 'ECHO', 'SATS', 'ECL', 'EDG', 'EIX', 'EDMC', 'EDR', 'Ticker', 'EW', 'EGAN', 'EHTH', 'BAGL', 'EE', 'ELRC', 'ESIO', 'EA', 'EFII', 'RDEN', 'ELLI', 'EARN', 'PERY', 'EMCI', 'EME', 'EOX', 'EBS', 'ESC', 'EMR', 'EDE', 'EIG', 'ELX', 'ENTA', 'ECPG', 'WIRE', 'END', 'ENDP', 'ECYT', 'ELGX', 'ENH', 'EGN', 'ENR', 'ERII', 'EXXI', 'ENOC', 'ENS', 'EGL', 'EBF', 'ENPH', 'NPO', 'ENSG', 'ESGR', 'ENTG', 'ETM', 'ETR', 'EBTC', 'EFSC', 'Ticker', 'EVC', 'ENTR', 'ENV', 'ENZN', 'EOG', 'EPAM', 'EPIQ', 'EPZM', 'EPL', 'PLUS', 'EPR', 'EQT', 'EQU', 'EFX', 'EQIX', 'ELS', 'EQY', 'EQR', 'ERA', 'EAC', 'ERIE', 'ESBF', 'ESE', 'ESSA', 'ESS', 'EL', 'ESL', 'ETH', 'EEFT', 'EVER', 'EVR', 'RE', 'EVTC', 'EVRY', 'EPM', 'EXAS', 'EXAC', 'ET', 'EXAM', 'EXAR', 'EXL', 'XCO', 'XLS', 'EXEL', 'EXC', 'EXLS', 'XONE', 'Ticker', 'EXPE', 'EXPD', 'EXPO', 'EXPR', 'ESRX', 'EXH', 'EXR', 'EXTR', 'XOM', 'EZPW', 'FNBN', 'FFIV', 'FN', 'FB', 'FDS', 'FICO', 'FCS', 'FRP', 'FWM', 'FDO', 'FARM', 'FFKT', 'FARO', 'FAST', 'FFG', 'FBRC', 'AGM', 'FDML', 'FRT', 'FSS', 'FII', 'FDX', 'FEIC', 'FCH', 'FHCO', 'FOE', 'FCSC', 'FNF', 'FIS', 'LION', 'FDUS', 'FRGI', 'FNP', 'FSC', 'FITB', 'FNGN', 'FISI', 'Ticker', 'FNSR', 'FINL', 'FAF', 'FNLC', 'FBNC', 'FBP', 'BUSE', 'FCFS', 'FCNCA', 'FCBC', 'FCF', 'FBNK', 'FDEF', 'FFBH', 'FFBC', 'THFF', 'FFCH', 'FFIN', 'FFNW', 'FHN', 'FR', 'FIBK', 'FLIC', 'FMFC', 'FMD', 'FRME', 'FMBI', 'NBCB', 'FNFG', 'BANC', 'FPO', 'FRC', 'FSGI', 'FSLR', 'FE', 'SVVC', 'FMER', 'FISV', 'FSCI', 'FIVE', 'FVE', 'FBC', 'FLT', 'FLTX', 'FLXS', 'FLIR', 'FTK', 'Ticker', 'FLOW', 'FLO', 'FLS', 'FLDM', 'FLR', 'FFIC', 'FMC', 'FTI', 'FNB', 'FL', 'F', 'FCE.A', 'FRX', 'FST', 'FOR', 'FORM', 'FORR', 'FRF', 'FTNT', 'FBHS', 'FET', 'FWRD', 'FOSL', 'FSTR', 'FXCB', 'FRAN', 'FC', 'FELE', 'FRNK', 'BEN', 'FSP', 'FRED', 'FCX', 'FSL', 'RAIL', 'FDP', 'TFM', 'FTR', 'FRO', 'FCN', 'FSYS', 'FCEL', 'FUL', 'FULT', 'FURX', 'FRM', 'FIO', 'Ticker', 'FF', 'FXEN', 'FXCM', 'GK', 'GCAP', 'GALE', 'AJG', 'GBL', 'GME', 'GCI', 'GPS', 'GDI', 'GRMN', 'GARS', 'IT', 'GLOG', 'GST', 'GMT', 'GY', 'GNRC', 'BGC', 'GNCMA', 'GD', 'GE', 'GGP', 'GIS', 'GMO', 'GM', 'GCO', 'GWR', 'GNE', 'GNMK', 'GHDX', 'G', 'GNTX', 'THRM', 'GTIV', 'GPC', 'GNW', 'GEO', 'GEOS', 'GABC', 'GERN', 'GTY', 'GFIG', 'ROCK', 'GIII', 'Ticker', 'GILD', 'GBCI', 'GLAD', 'GOOD', 'GAIN', 'GLT', 'GRT', 'BRSS', 'GCA', 'ENT', 'GGS', 'GBLI', 'GPN', 'GLPW', 'GSOL', 'GSM', 'GCOM', 'GMED', 'GLUU', 'GNC', 'GLNG', 'GORO', 'GS', 'GBDC', 'GDP', 'GT', 'GOOG', 'GMAN', 'GRC', 'GOV', 'GPX', 'GRA', 'GGG', 'GTI', 'GHM', 'GWW', 'GPT', 'LOPE', 'GVA', 'GPK', 'GTN', 'GLDD', 'GXP', 'GSBC', 'GB', 'GDOT', 'GMCR', 'Ticker', 'GPRE', 'GBX', 'GHL', 'GLRE', 'GWAY', 'GEF', 'GRIF', 'GFF', 'GPI', 'GRPN', 'GSE', 'GSIG', 'GSIT', 'GSVC', 'GTAT', 'GTXI', 'GBNK', 'GES', 'GUID', 'GWRE', 'GIFI', 'GLF', 'GPOR', 'HEES', 'HCKT', 'HAE', 'HAIN', 'HK', 'HNRG', 'HAL', 'HALL', 'HALO', 'HMPR', 'HBHC', 'HNH', 'HBI', 'HGR', 'HAFC', 'HASI', 'THG', 'HRG', 'HDNG', 'HOG', 'HAR', 'HLIT', 'HRS', 'HTSI', 'Ticker', 'HSC', 'HHS', 'HIG', 'HBIO', 'HAS', 'HTS', 'HVT', 'HE', 'HA', 'HCOM', 'HWKN', 'HAYN', 'HCA', 'HCC', 'HCI', 'HCP', 'HW', 'HCN', 'HIIQ', 'HMA', 'HNT', 'HR', 'HCSG', 'HTA', 'HLS', 'HSTM', 'HWAY', 'HTLD', 'HTLF', 'HPY', 'HTWR', 'HL', 'HEI', 'HSII', 'HELE', 'HLX', 'HP', 'HMTV', 'JKHY', 'HLF', 'HERO', 'HTGC', 'HTBK', 'HCCI', 'HFWA', 'HEOP', 'MLHR', 'Ticker', 'HT', 'HSY', 'HTZ', 'HES', 'HPQ', 'HXL', 'HF', 'HGG', 'HIBB', 'HTCO', 'ONE', 'HIW', 'HI', 'HRC', 'HTH', 'HIFS', 'HITK', 'HITT', 'HMSY', 'HNI', 'HFC', 'HOLX', 'HBCP', 'HOMB', 'HD', 'HOME', 'HLSS', 'HME', 'AWAY', 'HMST', 'HTBI', 'HON', 'HOFT', 'HMN', 'HBNC', 'HZNP', 'HRZN', 'HRL', 'HOS', 'ZINC', 'HSP', 'HPT', 'HST', 'HWCC', 'HOV', 'HHC', 'HSNI', 'Ticker', 'HUBG', 'HUB.B', 'HCBK', 'HPP', 'HVB', 'HUM', 'JBHT', 'HBAN', 'HII', 'HUN', 'HURC', 'HURN', 'HTCH', 'H', 'HPTX', 'HY', 'IACI', 'IBKC', 'ICFI', 'ICGE', 'ICON', 'ICUI', 'IDA', 'IDIX', 'IEX', 'IDXX', 'IDT', 'IGTE', 'IRG', 'IHS', 'IIVI', 'ITW', 'ILMN', 'IMN', 'IMMR', 'IMGN', 'IMMU', 'IPXL', 'IFT', 'IMPV', 'SAAS', 'INCY', 'IHC', 'INDB', 'IBTX', 'INFN', 'INFI', 'Ticker', 'IPCC', 'BLOX', 'INFA', 'VOYA', 'IR', 'IMKTA', 'IM', 'INGR', 'IRC', 'INWK', 'IPHS', 'IOSP', 'ISSC', 'IPHI', 'NSIT', 'INSM', 'NSP', 'IIIN', 'PODD', 'INSY', 'IART', 'IDTI', 'ISSI', 'TEG', 'INTC', 'I', 'IPAR', 'IBKR', 'ININ', 'ICPT', 'ICE', 'IDCC', 'TILE', 'IN', 'IMI', 'ITMN', 'INAP', 'IBOC', 'IP', 'IRF', 'ISCA', 'IPG', 'INTX', 'ISIL', 'IILG', 'IBCA', 'IBM', 'Ticker', 'INTL', 'IFF', 'IGT', 'ISH', 'IL', 'IPI', 'INTU', 'ISRG', 'IVC', 'INVN', 'SNAK', 'IVZ', 'IVR', 'ITG', 'ISBC', 'IRET', 'ITIC', 'IO', 'IPCM', 'IPGP', 'IRDM', 'IRBT', 'IRM', 'IRWD', 'ISIS', 'ISLE', 'ISRL', 'SFI', 'ITC', 'ITRI', 'ITT', 'ESI', 'XXIA', 'IXYS', 'JJSF', 'JCOM', 'JBL', 'JACK', 'JEC', 'JAKK', 'JMBA', 'JNS', 'JAH', 'JMI', 'JAZZ', 'JDSU', 'JBLU', 'Ticker', 'JIVE', 'JMP', 'JBT', 'JNJ', 'JCI', 'JOUT', 'JLL', 'JOSB', 'JRN', 'JOY', 'JPM', 'TAX', 'JNPR', 'LRN', 'KAI', 'KALU', 'KBIO', 'KAMN', 'KCLI', 'KSU', 'KS', 'KAR', 'KDN', 'KBH', 'KBR', 'KCAP', 'KRNY', 'K', 'KELYA', 'KEM', 'KMPR', 'KMT', 'KW', 'KERX', 'KEG', 'KEY', 'KEYN', 'KEYW', 'KFRC', 'KRC', 'KBALB', 'KMB', 'KIM', 'KMI', 'KND', 'KIOR', 'KEX', 'Ticker', 'KIRK', 'KRG', 'KLAC', 'KMG', 'KCG', 'KNX', 'VLCCF', 'KNL', 'KOG', 'KSS', 'KOPN', 'KOP', 'KFY', 'KOS', 'KRFT', 'KRA', 'KTOS', 'KKD', 'KR', 'KRO', 'KVHI', 'KYTH', 'LLEN', 'LTD', 'LLL', 'LZB', 'LH', 'LG', 'LTS', 'LBAI', 'LKFN', 'LRCX', 'LAMR', 'LANC', 'LDR', 'LNDC', 'LSTR', 'LCI', 'LPI', 'LVS', 'LHO', 'LSCC', 'LAYN', 'LAZ', 'LCNB', 'LEAP', 'LF', 'Ticker', 'LEA', 'LM', 'LEG', 'LPS', 'LEN', 'LII', 'LUK', 'LVLT', 'LXRX', 'LXP', 'LXK', 'LHCG', 'LBY', 'LBTYA', 'LINTA', 'LMCA', 'LRY', 'LVNTA', 'LIFE', 'LTM', 'LOCK', 'LPNT', 'LCUT', 'LFVN', 'LWAY', 'LGND', 'LLY', 'LLNW', 'LMNR', 'TVL', 'LINC', 'LECO', 'LNC', 'LNN', 'LLTC', 'LNKD', 'LIOX', 'LGF', 'LQDT', 'LAD', 'LFUS', 'LYV', 'LPSN', 'LKQ', 'LMIA', 'LMT', 'L', 'Ticker', 'LOGM', 'LORL', 'LO', 'LPX', 'LOW', 'LPLA', 'LXU', 'LSI', 'LYTS', 'LTC', 'LTXC', 'LUB', 'LUFK', 'LL', 'LMNX', 'LMOS', 'LDL', 'LYB', 'MTB', 'MHO', 'MTSI', 'MCBC', 'MAC', 'TUC', 'CLI', 'M', 'SHOO', 'MSG', 'MGLN', 'CALL', 'MHR', 'MHLD', 'MFB', 'MAIN', 'MSFG', 'MAKO', 'MANH', 'MNTX', 'MTW', 'MN', 'MNKD', 'MAN', 'MANT', 'MRO', 'MPC', 'MCHX', 'MCS', 'Ticker', 'MRIN', 'MPX', 'HZO', 'MKL', 'LEDR', 'MKTX', 'MKTO', 'MRLN', 'MAR', 'VAC', 'MMC', 'MRTN', 'MSO', 'MLM', 'MRVL', 'MAS', 'MASI', 'MTZ', 'MA', 'MTDR', 'MTRN', 'MTRX', 'MATX', 'MAT', 'MATW', 'MFRM', 'MXIM', 'MMS', 'MXL', 'MXWL', 'MBFI', 'MBI', 'MNI', 'MKC', 'MDR', 'MCD', 'MCGC', 'MGRC', 'MHFI', 'MCK', 'MDCA', 'MDC', 'MDU', 'MJN', 'MIG', 'MWV', 'MEAS', 'Ticker', 'TAXI', 'MDAS', 'MEG', 'MDCI', 'MPW', 'MDCO', 'MDSO', 'MED', 'MDVN', 'MCC', 'MD', 'MDT', 'MEIP', 'MW', 'MENT', 'MBWM', 'MBVT', 'MRK', 'MCY', 'MRCY', 'MDP', 'MRGE', 'VIVO', 'EBSB', 'MMSI', 'MTH', 'MTOR', 'MACK', 'MLAB', 'CASH', 'MEI', 'MET', 'MPR', 'METR', 'MCBI', 'MTD', 'MFA', 'MGEE', 'MTG', 'MGM', 'KORS', 'MCRL', 'MCHP', 'MU', 'MCRS', 'MSCC', 'MSFT', 'Ticker', 'MSTR', 'MAA', 'MBRG', 'MIDD', 'MSEX', 'MSL', 'MPO', 'MDW', 'MOFG', 'MM', 'MILL', 'MLR', 'MDXG', 'MSPD', 'MSA', 'MTX', 'MG', 'MIND', 'MITK', 'MKSI', 'MINI', 'MODN', 'MOD', 'MLNK', 'MHK', 'MOLX', 'MOH', 'TAP', 'MCP', 'MNTA', 'MCRI', 'MDLZ', 'MGI', 'MNR', 'MPWR', 'TYPE', 'MNRO', 'MON', 'MNST', 'MWW', 'MRH', 'MCO', 'MOG.A', 'MS', 'MHGC', 'MORN', 'MOS', 'Ticker', 'MOSY', 'MSI', 'MOV', 'MOVE', 'MPG', 'MRC', 'MSM', 'MSCI', 'MTSC', 'MLI', 'MWA', 'LABL', 'MFLX', 'MGAM', 'MUR', 'MVC', 'MWIV', 'MYE', 'MYL', 'MYRG', 'MYGN', 'NBR', 'NC', 'NANO', 'NSPH', 'NASB', 'NDAQ', 'NAFC', 'NATH', 'NBHC', 'NKSH', 'FIZZ', 'NCMI', 'NFP', 'NFG', 'NHI', 'NHC', 'NATI', 'NATL', 'NOV', 'NPBC', 'NPK', 'NRCIA', 'NNN', 'NTSC', 'NWLI', 'NSM', 'Ticker', 'NGS', 'NGVC', 'NATR', 'BABY', 'NLS', 'NAVR', 'NAVB', 'NCI', 'NAVG', 'NAV', 'NBTB', 'NCS', 'NCR', 'NP', 'NKTR', 'NNI', 'NEOG', 'NEO', 'NEON', 'NPTN', 'NETE', 'NTAP', 'NFLX', 'NTGR', 'NTCT', 'NTSP', 'N', 'NBIX', 'NSR', 'IQNT', 'NJR', 'NMFC', 'NRZ', 'NWY', 'NYCB', 'NYMT', 'NYT', 'NBBC', 'NWL', 'NFX', 'NLNK', 'NEU', 'NEM', 'NR', 'NEWP', 'NWSA', 'NEWS', 'Ticker', 'NXST', 'NEE', 'NGPC', 'EGOV', 'NICK', 'NLSN', 'NIHD', 'NKE', 'NI', 'NL', 'NNBR', 'NBL', 'NOR', 'NAT', 'NDSN', 'JWN', 'NSC', 'NTK', 'NU', 'NOG', 'NTRS', 'NFBK', 'NRIM', 'NOC', 'NRF', 'NWBI', 'NWN', 'NWPX', 'NWE', 'NCLH', 'NVAX', 'NPSP', 'NRG', 'NTLS', 'NUS', 'NUAN', 'NUE', 'NMRX', 'NUTR', 'NTRI', 'NUVA', 'NES', 'NVE', 'NVEC', 'NVDA', 'NVR', 'NXTM', 'Ticker', 'NYX', 'ORLY', 'OAS', 'OXY', 'OII', 'OCFC', 'OCN', 'OMEX', 'ODP', 'OMX', 'OFG', 'OGE', 'ODC', 'OIS', 'ODFL', 'ONB', 'ORI', 'OLN', 'ZEUS', 'OMG', 'OFLX', 'OHI', 'OME', 'OMER', 'OABC', 'OCR', 'OMCL', 'OMC', 'OVTI', 'OMN', 'OMTH', 'ASGN', 'ONNN', 'OGXI', 'OLP', 'OB', 'OKE', 'ONXX', 'OPEN', 'OPK', 'OPLK', 'OPY', 'OPTR', 'ORCL', 'OSUR', 'ORBC', 'ORB', 'Ticker', 'OWW', 'TIS', 'OREX', 'OEH', 'ORN', 'ORIT', 'ORA', 'OFIX', 'OSK', 'OSIS', 'OSIR', 'OTTR', 'OVAS', 'OSTK', 'OMI', 'OC', 'OI', 'OXM', 'PCCC', 'PCAR', 'PACR', 'PACB', 'PCBK', 'PPBI', 'PSUN', 'PCRX', 'PKG', 'PACW', 'PLL', 'PLMT', 'PANW', 'P', 'PNRA', 'PHX', 'PTRY', 'PZZA', 'PZG', 'PRXL', 'PKE', 'PRK', 'PKOH', 'PSTB', 'PKD', 'PH', 'PRKR', 'PKY', 'PRE', 'Ticker', 'PATK', 'PATR', 'PDCO', 'PTEN', 'PAYX', 'PBF', 'PCTI', 'PDCE', 'PDFS', 'PDLI', 'BTU', 'PGC', 'PEB', 'PEGA', 'PCO', 'PENX', 'PENN', 'PVA', 'PFLT', 'PNNT', 'JCP', 'PWOD', 'PEI', 'PFSI', 'PMT', 'PAG', 'PNR', 'PEBO', 'PBCT', 'PBY', 'POM', 'PEP', 'PPHM', 'PSMI', 'PRFT', 'PFMT', 'PSEM', 'PKI', 'PTX', 'PRGO', 'PETS', 'PQ', 'PETM', 'PFE', 'PCG', 'PGTI', 'PCYC', 'Ticker', 'PMC', 'PHH', 'PHIIK', 'PM', 'PSX', 'PNX', 'PHMD', 'PLAB', 'PICO', 'PNY', 'PDM', 'PIR', 'PIKE', 'PPC', 'PNK', 'PNFP', 'PF', 'PNW', 'PES', 'PXD', 'PJC', 'PBI', 'PLPM', 'PLT', 'PTP', 'PLXS', 'PCL', 'PLXT', 'PGEM', 'PMCS', 'PMFG', 'PNC', 'PNM', 'PII', 'PLCM', 'POL', 'PPO', 'POOL', 'BPOP', 'PRAA', 'POR', 'PTLA', 'POST', 'PPS', 'PCH', 'POWL', 'POWI', 'Ticker', 'PSIX', 'PWER', 'POWR', 'POZN', 'PPG', 'PPL', 'PX', 'PCP', 'PFBC', 'PLPC', 'PGI', 'PBH', 'PRGX', 'TROW', 'PCLN', 'PSMT', 'PRI', 'PRIM', 'PTGI', 'PFG', 'PVTB', 'PRA', 'PKT', 'PG', 'PGNX', 'PRGS', 'PGR', 'PLD', 'PFPT', 'PRO', 'PSEC', 'PB', 'PL', 'PRTA', 'PRLB', 'PRSC', 'PFS', 'PROV', 'PBNY', 'PRU', 'PSB', 'PMTC', 'PSA', 'PEG', 'PHM', 'PBYI', 'PCYO', 'Ticker', 'PVH', 'PZN', 'QADA', 'QEP', 'QGEN', 'QLIK', 'QLGC', 'QUAD', 'KWR', 'QCOM', 'QLTY', 'QSII', 'QLYS', 'NX', 'PWR', 'QTM', 'DGX', 'STR', 'QCOR', 'KWK', 'QDEL', 'ZQK', 'QNST', 'Q', 'RAX', 'RDN', 'RSH', 'RSYS', 'RAS', 'RALY', 'RL', 'RMBS', 'RPT', 'RRC', 'RPTP', 'RAVN', 'RJF', 'RYN', 'RTN', 'ROLL', 'RLOC', 'RDI', 'RLD', 'RNWK', 'RLGY', 'RP', 'O', 'Ticker', 'RCPT', 'RHT', 'RRGB', 'RWT', 'RBC', 'RGC', 'REG', 'REGN', 'RM', 'RF', 'RGS', 'RGLS', 'RGA', 'REIS', 'RS', 'REMY', 'RNR', 'RNST', 'REGI', 'RCII', 'RTK', 'RENT', 'RGEN', 'RPRX', 'RJET', 'RBCAA', 'RSG', 'RMD', 'REN', 'RFP', 'REXI', 'RSO', 'RECN', 'MKTG', 'RH', 'ROIC', 'RPAI', 'REV', 'RVLT', 'REX', 'REXX', 'RXN', 'RAI', 'RFMD', 'RELL', 'RIGL', 'RNET', 'Ticker', 'RAD', 'RVBD', 'RLI', 'RLJ', 'RRTS', 'RHI', 'ROCM', 'RKT', 'RCKB', 'ROK', 'COL', 'RMTI', 'ROC', 'RSTI', 'ROG', 'ROL', 'ROMA', 'ROP', 'ROSE', 'RST', 'ROST', 'RNDY', 'RSE', 'ROVI', 'RDC', 'RCL', 'RGLD', 'RES', 'RPM', 'RPXC', 'RTIX', 'RTI', 'RBCN', 'RT', 'RKUS', 'RTEC', 'RUE', 'RUSHA', 'RUTH', 'R', 'RYL', 'RHP', 'STBA', 'SYBT', 'SBRA', 'SFE', 'SAFT', 'Ticker', 'SWY', 'SGA', 'SGNT', 'SAIA', 'SAI', 'SKS', 'SALM', 'CRM', 'SLXP', 'SBH', 'SN', 'SAFM', 'SNDK', 'SD', 'SASR', 'JBSS', 'SGMO', 'SANM', 'SNTS', 'SPNS', 'SAPE', 'SRPT', 'BFS', 'SBAC', 'SCG', 'SCSC', 'SCBT', 'SGK', 'HSIC', 'SLB', 'SCHN', 'SCHL', 'SHLM', 'SCHW', 'SWM', 'SCLN', 'SGMS', 'SQI', 'STNG', 'SMG', 'SSP', 'SNI', 'SEB', 'SEAC', 'SBCF', 'CKH', 'SDRL', 'Ticker', 'SEE', 'SHLD', 'SHOS', 'SGEN', 'SEAS', 'SEIC', 'SCSS', 'SIR', 'SEM', 'SIGI', 'SEMG', 'SRE', 'SMTC', 'SENEA', 'SNH', 'SXT', 'SQNM', 'SCI', 'NOW', 'SREV', 'SHEN', 'SHW', 'SHFL', 'SHLO', 'SFL', 'SCVL', 'SHOR', 'SFLY', 'SSTK', 'BSRR', 'SIGA', 'SIAL', 'SIGM', 'SBNY', 'SIG', 'SLGN', 'SGI', 'SIMG', 'SLAB', 'SBY', 'SSNI', 'SFNC', 'SPG', 'SSD', 'SBGI', 'SIRI', 'SIRO', 'Ticker', 'SIX', 'SJW', 'SKX', 'SKH', 'SKUL', 'SKYW', 'SWKS', 'SLG', 'SLM', 'SM', 'SWHC', 'AOS', 'SFD', 'SJM', 'SNA', 'LNCE', 'SLRC', 'SUNS', 'SCTY', 'SWI', 'SZYM', 'SLH', 'SLTM', 'SAH', 'SONC', 'SON', 'SONS', 'BID', 'FIRE', 'SJI', 'SO', 'SCCO', 'SBSI', 'LUV', 'OKSB', 'SWX', 'SWN', 'SSS', 'CODE', 'LOV', 'SPAR', 'SPTN', 'SPA', 'SE', 'SPNC', 'SPB', 'SPPI', 'Ticker', 'TRK', 'SPR', 'SAVE', 'SRC', 'SPLK', 'S', 'SPSC', 'SPW', 'SSNC', 'JOE', 'STJ', 'STAA', 'STAG', 'SSI', 'STMP', 'SFG', 'SMP', 'SPF', 'STAN', 'SXI', 'SWK', 'SPLS', 'STSI', 'SBUX', 'HOT', 'STWD', 'STRZA', 'STFC', 'STBZ', 'STT', 'STEC', 'STLD', 'SCS', 'SMRT', 'STNR', 'LVB', 'STEL', 'SCM', 'STML', 'SCL', 'SRCL', 'STE', 'STL', 'STRL', 'STSA', 'STEI', 'STC', 'Ticker', 'SF', 'SWC', 'SGY', 'SRI', 'SSYS', 'BEE', 'STRA', 'SYK', 'RGR', 'SCMP', 'SUBK', 'INN', 'SNBC', 'SUI', 'SNHY', 'SXC', 'SUNE', 'SNSS', 'SPWR', 'SHO', 'STI', 'SMCI', 'SPN', 'SUP', 'SUPN', 'SUPX', 'SVU', 'SPRT', 'SRDX', 'SUSQ', 'SUSS', 'SIVB', 'SFY', 'SWFT', 'SWSH', 'SWS', 'SYKE', 'SYMC', 'SYA', 'SYMM', 'SMA', 'GEVA', 'SYNA', 'SNCR', 'SGYP', 'SYRG', 'SNX', 'Ticker', 'SNPS', 'SNV', 'SNTA', 'SYNT', 'SYUT', 'SYY', 'SYX', 'DATA', 'TAHO', 'TTWO', 'TAL', 'TAM', 'SKT', 'TNGO', 'TRGP', 'TRGT', 'TGT', 'TASR', 'TCO', 'TAYC', 'TMHC', 'TCB', 'TCPC', 'AMTD', 'TMH', 'TISI', 'TEAR', 'TECD', 'TECH', 'TTGT', 'TE', 'TECUA', 'TK', 'TNK', 'TRC', 'TSYS', 'TDY', 'TFX', 'TNAV', 'TDS', 'TTEC', 'TLAB', 'TPX', 'THC', 'TNC', 'TEN', 'TDC', 'Ticker', 'TER', 'TEX', 'TRNO', 'TBNK', 'TSRO', 'TESO', 'TSLA', 'TSO', 'TESS', 'TSRA', 'TTEK', 'TTI', 'TTPH', 'TCBI', 'TXI', 'TXN', 'TXRH', 'TGH', 'TXT', 'TFSL', 'TGTX', 'TGE', 'HSH', 'JNY', 'WEN', 'TXMD', 'THRX', 'TMO', 'THR', 'TCRD', 'TPGI', 'TRI', 'THO', 'THOR', 'THLD', 'TIBX', 'TICC', 'TDW', 'TIF', 'TTS', 'TLYS', 'TWC', 'TWX', 'TKR', 'TWI', 'TITN', 'TIVO', 'Ticker', 'TJX', 'TMUS', 'TMS', 'TOL', 'TMP', 'TR', 'TMK', 'TRNX', 'TTC', 'TSS', 'TWGP', 'TOWR', 'TW', 'TWER', 'CLUB', 'TOWN', 'TSCO', 'TWMC', 'TDG', 'TRV', 'TZOO', 'TRR', 'TG', 'TREE', 'THS', 'TREX', 'TPH', 'TCAP', 'TPLM', 'TCBK', 'TRS', 'TRMB', 'TRN', 'TRIP', 'GTS', 'TQNT', 'TSC', 'TGI', 'TSRX', 'TRLG', 'TBI', 'TRLA', 'TRST', 'TRMK', 'TRW', 'TTMI', 'TUES', 'Ticker', 'TUMI', 'TUP', 'TPC', 'TWTC', 'TWIN', 'TWO', 'TYL', 'TSN', 'LCC', 'USCR', 'USG', 'USPH', 'SLCA', 'UBNT', 'UDR', 'UFPT', 'UGI', 'UIL', 'ULTA', 'ULTI', 'UCTT', 'UPL', 'ULTR', 'UTEK', 'UMBF', 'UMH', 'UMPQ', 'UA', 'UNXL', 'UFI', 'UNF', 'UNIS', 'UBSH', 'UNP', 'UIS', 'UNT', 'UBSI', 'UCFC', 'UCBI', 'UAL', 'UBNK', 'UFCS', 'UNFI', 'UNTD', 'UPS', 'URI', 'USM', 'Ticker', 'USLM', 'X', 'USTR', 'UTX', 'UTHR', 'UNH', 'UTL', 'UAM', 'UVV', 'OLED', 'UEIC', 'UFPI', 'UHT', 'UHS', 'UVE', 'USAP', 'UTI', 'UACL', 'UVSP', 'UNS', 'UNM', 'UPIP', 'URG', 'UEC', 'URBN', 'URS', 'UBA', 'USB', 'ECOL', 'USMO', 'USNA', 'USMD', 'UTMD', 'UTIW', 'VFC', 'EGY', 'MTN', 'VCI', 'VLO', 'VR', 'VLY', 'VMI', 'VAL', 'VCLK', 'VVTV', 'VNDA', 'VHS', 'Ticker', 'VTG', 'VNTV', 'VAR', 'VDSI', 'VASC', 'WOOF', 'VGR', 'VVC', 'VECO', 'VTR', 'VRA', 'VSTM', 'PAY', 'VRNT', 'VRSN', 'VRSK', 'VZ', 'VRTX', 'VIAB', 'VVI', 'VSAT', 'VIAS', 'VICL', 'VICR', 'VPFG', 'VLGEA', 'VCBI', 'VHC', 'VPHM', 'VRTS', 'VRTU', 'V', 'VSH', 'VPG', 'VPRT', 'VC', 'VITC', 'VSI', 'VVUS', 'VMW', 'VCRA', 'VOCS', 'VOLC', 'VLTR', 'VG', 'VNO', 'VOXX', 'Ticker', 'VRNG', 'VSEC', 'VMC', 'WPC', 'WTI', 'WNC', 'WBC', 'WAB', 'WDR', 'WAGE', 'WMT', 'WAG', 'WD', 'WLT', 'WAC', 'WCRX', 'WRES', 'WBCO', 'WAFD', 'WPO', 'WRE', 'WASH', 'WCN', 'WM', 'WAT', 'WSBF', 'WSO', 'WTS', 'WPP', 'WDFC', 'WWWW', 'WBMD', 'WBS', 'WTW', 'WRI', 'WMK', 'WCG', 'WLP', 'WFC', 'WERN', 'WSBC', 'WAIR', 'WCC', 'WTBA', 'WSTC', 'WMAR', 'WST', 'Ticker', 'WABC', 'WR', 'WSTL', 'WAL', 'WMC', 'WDC', 'WNR', 'WU', 'WFD', 'WLK', 'WLB', 'WHG', 'WTSL', 'WEX', 'WEYS', 'WY', 'WGL', 'WHR', 'WTM', 'WHF', 'WSR', 'WWAV', 'WLL', 'WFM', 'JW.A', 'WG', 'WLH', 'CWEI', 'WMB', 'WSM', 'WIBC', 'WIN', 'WINA', 'WGO', 'FUR', 'WTFC', 'WEC', 'WETF', 'WMS', 'WWW', 'WWD', 'WDAY', 'WRLD', 'Ticker', 'INT', 'WWE', 'WOR', 'WPX', 'WMGI', 'WSFS', 'WYN', 'WYNN', 'XEL', 'XNPT', 'XRM', 'XRX', 'XLNX', 'XL', 'XOXO', 'XOMA', 'XOOM', 'XPO', 'XYL', 'YDKN', 'YHOO', 'YELP', 'YORW', 'YRCW', 'YUM', 'ZAGG', 'ZFC', 'ZLC', 'ZAZA', 'ZBRA', 'ZLTQ', 'ZEP', 'Z', 'ZMH', 'ZION', 'ZIOP', 'ZIXI', 'ZTS', 'ZGNX', 'ZOLT', 'ZUMZ', 'ZIGO', 'ZNGA']
+    return russell3000
+
+
+def tickers_russell_1k():
+    russell1000 = pd.read_html("https://en.wikipedia.org/wiki/Russell_1000_Index")[2]
+    russell1000["Ticker"] = russell1000["Ticker"].str.replace(".", "-")
+    russell1000 = russell1000.rename(columns={'Ticker': 'ticker'})
+    russell1000 = russell1000.rename(columns={'Company': 'company'})
+    russell1000 = russell1000.ticker.tolist()
+    russell1000 = sorted(russell1000)
+    return russell1000    
+
+
 def clean(list):
     clean_lst = []
     for l in list:
@@ -481,7 +506,6 @@ def clean(list):
 
 
 def tickers_nasdaq(include_company_data=False):
-    """Downloads list of tickers currently listed in the NASDAQ"""
     ftp = ftplib.FTP("ftp.nasdaqtrader.com")
     ftp.login()
     ftp.cwd("SymbolDirectory")

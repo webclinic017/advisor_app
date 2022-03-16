@@ -1,5 +1,6 @@
 # - - - - - XXXXX PAGE - - - - -
 names_of_screeners = [
+    "-",
     "Day_Gainer_Stocks",
     "Day_Loser_Stocks",
     "Most_Active_Stocks",
@@ -21,14 +22,14 @@ names_of_screeners = [
 stock_name_list = [
     "DOW_Symbols",
     "S&P100_Symbols",
-    "S&P400_Symbols",
+    # "S&P400_Symbols",
     "S&P500_Symbols",
-    "S&P600_Symbols",
-    "NASDAQ_Symbols",
-    "Finviz_Symbols",
-    "Other_Symbols",
-    "Fool_Symbols",
-    "Oxford_Symbols",
+    # "S&P600_Symbols",
+    # "NASDAQ_Symbols",
+    # "Finviz_Symbols",
+    # "Other_Symbols",
+    # "Fool_Symbols",
+    # "Oxford_Symbols",
     "Day_Gainer_Symbols",
     "Day_Losers_Symbols",
     "Day_Most_Active_Symbols",
@@ -87,17 +88,15 @@ j_r = "AAPL AMD ARKK ARKW BE COF DIS ETCG MSFT NVDA QS RIOT TSLA WMT"
 
 general_pages = [
     "Home",
-    'Auto Advisor',
-    "Snapshot",
-    "Proof",
-    "Huddle-Up",
-    "Backtest",
+    # "Screener",
+    "Advisor",
     "Strategy",
-    "Forecast",
-    "Analysis",
-    "Recommender",
+    "Backtesting",
+    "Forecasting",
     "Portfolio",
-    # "test_env"
+    "Analysis",
+    # "Recommender",
+    # "Test_Env",
 ]
 
 # - - - - - XXXXX PAGE - - - - -
@@ -107,11 +106,13 @@ feature_recommender = [
     "Run Recommender On Ticker Lists",
 ]
 feature_recommender_ticker_lst = [
+    "Recommended Portfolio",
     "Personal Portfolio",
     "Ticker Lists",
 ]
 feature_analysis = [
     "Analysis Home Page",
+    "Individual Asset Analysis",
     "CAPM & CAGR",
     "Financial Signal Processing",
     "Fundamental Analysis",
@@ -120,11 +121,11 @@ feature_analysis = [
 feature_forecast = [
     "-Select-A-Model-",
     "Prophet Model",
-    "Monte Carlo Sim (only run on list of tickers)",
+    "Monte Carlo Sim-Cast",
     "Stocker Analysis",
     "Regression",
-    "A.R.I.M.A",
     "S.A.R.I.M.A",
+    "A.R.I.M.A",
     "Monte Carlo Simulation",
     "Univariate Analysis",
 ]
@@ -132,17 +133,18 @@ feature_portfolio = [
     "-Select-Model-",
     "Principal Component Analysis",
     "Random Forest",
-    # "Efficient Frontier",
+    "Efficient Frontier",
     "Monte Carlo Cholesky",
     "Portfolio Optimizer",
 ]
 feature_strategy = [
-    # "-Select-Model-",
+    "-Select-Model-",
     "Moving-Average - SMA & EMA",
     "Optimal SMA",
     "OverBought & OverSold",
     "Support & Resistance Lines",
     "Strategy II",
+    "Indicators",
 ]
 
 # - - - - - PORTFOLIO PAGE - - - - -

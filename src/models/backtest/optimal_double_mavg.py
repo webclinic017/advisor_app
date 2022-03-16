@@ -11,7 +11,7 @@ import os
 # from src.tools.functions import company_longName
 
 warnings.filterwarnings("ignore")
-plt.style.use("seaborn")
+plt.style.use("seaborn-poster")
 sm, med, lg = 10, 15, 25
 plt.rc("font", size=sm)  # controls default text sizes
 plt.rc("axes", labelsize=med)  # fontsize of the x & y labels
@@ -24,7 +24,7 @@ plt.rc("axes", linewidth=2)  # linewidth of plot lines
 plt.rcParams["legend.fontsize"] = "medium"
 legend_properties = {"weight": "bold"}
 plt.rcParams["figure.figsize"] = [13, 6.5]
-plt.rcParams["figure.dpi"] = 134
+plt.rcParams["figure.dpi"] = 100
 plt.rcParams["legend.shadow"] = True
 plt.rcParams["legend.borderpad"] = 0.9
 plt.rcParams["legend.framealpha"] = 0.1
@@ -100,13 +100,12 @@ class Optimal_Double_Mavg_Crossover(object):
         results = (
             results.sort_values("OUT", ascending=False).reset_index(drop=True).head(10)
         )
-        S, L, mkt, strat, out = (
-            results["SMA1"][0],
-            results["SMA2"][0],
-            results["MARKET(%)"][0],
-            results["STRATEGY(%)"][0],
-            results["OUT"][0],
-        )
+
+        S = results["SMA1"][0]
+        L = results["SMA2"][0]
+        # mkt = results["MARKET(%)"][0]
+        # strat = results["STRATEGY(%)"][0]
+        # out = results["OUT"][0]
 
         st.title("Double Moving Average Strategy")
         st.header(f"{self.sName} ({self.tic})")
@@ -114,7 +113,7 @@ class Optimal_Double_Mavg_Crossover(object):
             f"\n({self.tic}) {self.sName} - Best Short/Long Intervals = {S} & {L}\n"
         )
 
-        return S, L, mkt, strat, out
+        return results, S, L #, mkt, strat, out
 
 
 if __name__ == "__main__":

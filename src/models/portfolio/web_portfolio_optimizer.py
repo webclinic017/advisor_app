@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 from datetime import datetime
 import yfinance as yf
+from yahooquery import Ticker
 import scipy.optimize as sco
 from pandas.io.pickle import read_pickle
 import pickle
@@ -40,18 +41,6 @@ np.random.seed(777)
 
 today_date = str(datetime.now())[:10]
 
-gpu_devices = tf.config.experimental.list_physical_devices("GPU")
-if gpu_devices:
-    print("Using GPU")
-    tf.config.experimental.set_memory_growth(gpu_devices[0], True)
-    tf.config.experimental.set_synchronous_execution(enable=True)
-    tf.config.experimental.enable_mlir_bridge()
-    tf.config.experimental.enable_tensor_float_32_execution(enabled=True)
-    tf.config.threading.get_inter_op_parallelism_threads()
-    tf.config.threading.set_inter_op_parallelism_threads(0)
-else:
-    print("Using CPU")
-
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
@@ -62,7 +51,24 @@ class The_Portfolio_Optimizer(object):
         self.port_count = len(self.port_tics)
 
     def optimize(self):
-        Table = yf.download(self.port_tics, period="1y", parse_dates=True)["Adj Close"]
+        # saveName = str(f"{self.min_composite_score}_{self.min_RSI}_{self.min_Analyst_Recom}_{self.min_Sentiment}_{self.max_allocations}")
+        hammerTime = Ticker(
+            self.port_tics, 
+            # asynchronous=True, 
+            formatted=False, 
+            backoff_factor=0.34
+        )
+        hT = hammerTime.history(start="2021-01-04")
+        hT.head()
+
+        Table = pd.DataFrame()
+        for p in self.port_tics:
+            hist = hT.copy().T
+            hist = hist[p].T["adjclose"]
+            # hist.to_pickle(self.saveAdvisor / f"{saveName}.pkl")
+            Table[p] = hist.copy()
+
+        # Table = yf.download(self.port_tics, period="1y", parse_dates=True)["Adj Close"]
         PT = pd.DataFrame(Table.iloc[1:])
         tickers = list(PT.columns)
         returns = PT.pct_change()
@@ -150,7 +156,7 @@ class The_Portfolio_Optimizer(object):
             ]
 
             def storage_a():
-                st.subheader("** > Maximum Sharpe Ratio Portfolio Allocation**")
+                st.subheader(" > Maximum Sharpe Ratio Portfolio Allocation")
                 st.write(
                     f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]"
                 )
@@ -158,7 +164,7 @@ class The_Portfolio_Optimizer(object):
                 st.write(f" - Annualised Volatility: {round(sdp,2)}")
                 st.dataframe(max_sharpe_allocation_df)
 
-                st.subheader("** > Minimum Volatility Portfolio Allocation**")
+                st.subheader(" > Minimum Volatility Portfolio Allocation")
                 st.write(
                     f" - Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]"
                 )
@@ -357,7 +363,7 @@ class The_Portfolio_Optimizer(object):
             ]
 
             def storage_b():
-                st.subheader("** > Maximum Sharpe Ratio Portfolio Allocation**")
+                st.subheader(" > Maximum Sharpe Ratio Portfolio Allocation")
                 st.write(
                     f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]"
                 )
@@ -564,7 +570,7 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df,
             )
 
-        st.header("**[Method · 1]**")
+        st.header("[Method · 1]")
         st.write(f"- Total Stocks In Ticker List: {len(self.port_tics)}")
         st.write(
             " - Simulated Optimal Efficient Frontier Using A Random Number Of Portfolios & Random Position Weights"
@@ -580,7 +586,7 @@ class The_Portfolio_Optimizer(object):
             mean_returns, cov_matrix, num_portfolios, risk_free_rate
         )
 
-        st.header("**[Method · 2]**")
+        st.header("[Method · 2]")
         st.write(
             "Calculated Optimal Efficient Frontier A Random Number Of Portfolios & Position Weights"
         )
@@ -595,7 +601,7 @@ class The_Portfolio_Optimizer(object):
             mean_returns, cov_matrix, num_portfolios, risk_free_rate
         )
 
-        st.header("**[Method · 3]**")
+        st.header("[Method · 3]")
         st.write("Calculated Efficient Frontier With Selected Position Weights")
         (
             rp,
@@ -644,7 +650,8 @@ class The_Portfolio_Optimizer(object):
 
 
 if __name__ == "__main__":
-    my_positions = pd.read_pickle(
-        "/home/gordon/gdp/project_active/Forecasting_For_Friends/tickers/jayci_ticker_lst.pkl"
-    )
-    The_Portfolio_Optimizer(my_positions).optimize()
+    # my_positions = pd.read_pickle("/home/gordon/gdp/project_active/Forecasting_For_Friends/tickers/jayci_ticker_lst.pkl")
+
+    my_positions = "INSE OPCH GDEN HCCI DAR RWT TSQ LQDT AGO ONTO GLDD III WOW TGLS ORMP UTHR DAC EPRT EVC OLN ASIX AJX INMD SBLK IIPR PMBC RBNC SSTK CLH CROX MT AMRC STLD PACK ATLC CTO OMF ASX PXLW SI CUBI NET AMN CBNK BLFS SKY BW ALLY COF DECK STXB CSV AX SCU ALGN DVAX AXON TGH ELF GENI NVEE ZNTL SHYF GTYH ESEA TPX TX NSA CAMT AVNW JLL RCII EVR LPLA FUNC SNX KE HBIO AMSWA THC DKS ULTA AVNT HLIT UFPT ACLS OMCL DCOM CZWI MODV BOOT TRNS BYD MORF SONO CDXS TLYS JYNT SE NTLA ASML STAA RMNI WCC FCNCA FC MCB CRAI DOMO BEAM BNTX DFS CPRI EBSB ATKR CCS RH KSS CIGI CRL ABCB TRGP AFG SNAP CIDM VRTS TTEC KLIC STLA AMKR CBAN GPI CODI AMP CRNT CLF CSTM CNOB PNFP NAVI CNTY BLDR CBRE SYF ON AMG VRT TTGT MIDD GCO SNV PGC UHAL PACW GIL JCI VMI SEAS EPAM SRRA COOP FCCY JBL PPBI CMTL CNHI SCVL HWC FBIZ RJF ACM MXL FBNC ECC HTGC LPX BWFG LOB BRBR SCHW YETI BXC TECH QCRH CARR KKR EWBC FISI KEYS MHK NXST TEX CIVB AGCO FND ISBC HCA INTU CVCY FBMS PVBC MYFW RDN RPD MAT LKQ UAA MS PAG PW MAN ACHC SIMO BSIG RBB WSC EXP CDW ATEN SPG MITK ARES FFWM HBNC VCRA DIOD FFIC HCKT MSI FFNW TPB LSI JHX TRMB INBX WIRE LH DHR XPO OCSL ZBRA CSTR ZI MCHX SXI AMTB TXT LCUT VCTR FIVE CG GIC WNEB IQV KIM BWB DHX POWI BSY PIPR DGII BAM ATCO BCO MET GFED GMS HEES MTG ACRE HTBK NVDA AVY NDLS NVO DE ORI CSL HBMD R INOV AMX CR HWKN ALTR NVT UMPQ MRVL EXR MTSI GRBK UNTY FCBC BLK KRNY ETN CATC FMBH PFC RMBS EL BY HPE BFIN HBAN MOS GEF ORRF TCPC ARD BFST BANC LLY CC GRMN NFBK SRC SQ ISTR RBCAA NXPI BANR CUBE CHMG STRL TEL BFS USB SAFE LFUS OZK DOV MANH AYI FLOW AUB BRKL KLAC TTD BKU NKSH EVBN RMR GBX PBH IDXX BDC EFX FFIV"
+
+    The_Portfolio_Optimizer(my_positions.split()).optimize()

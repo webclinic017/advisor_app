@@ -21,6 +21,7 @@ from sklearn.tree import export_graphviz
 import streamlit as st
 from datetime import datetime
 
+
 pd.set_option("display.max_rows", 50)
 plt.style.use(["seaborn-darkgrid", "seaborn-poster"])
 plt.rcParams["figure.figsize"] = [13, 6.5]
@@ -40,40 +41,41 @@ plt.rcParams["figure.dpi"] = 134
 # from .web_plotRoc import plot_roc
 
 
+
 class The_Random_Forest(object):
-    def __init__(self, symbols, file):
-        self.file = file
+
+
+    def __init__(self, symbols):
         self.tickers = symbols
         self.mkt_index = "^GSPC"
 
+
     def collect_data(self):
-        self.component_hist = yf.download(self.tickers, period="1y")["Adj Close"]
+        self.component_hist = yf.download(self.tickers, period="1y")
         self.index_hist = yf.download(self.mkt_index, period="1y")["Adj Close"]
+
 
     def clean_data(self):
         self.collect_data()
-        self.component_df = pd.DataFrame(self.component_hist)
-        self.component_df[self.file + "_idx"] = self.index_hist
+        self.component_df = pd.DataFrame(self.component_hist["Adj Close"].copy())
+        self.component_df['SP500'] = self.index_hist
         weights = np.arange(1, 16)
         self.component_df["wma15"] = (
-            self.component_df[self.file + "_idx"]
+            self.component_df['SP500']
             .rolling(15)
             .apply(lambda prices: np.dot(prices, weights) / weights.sum(), raw=True)
         )
-        self.component_df["GL"] = (
-            self.component_df[self.file + "_idx"] >= self.component_df["wma15"]
-        )
-        self.component_df = self.component_df.drop((self.file + "_idx"), axis=1)
+        self.component_df["GL"] = (self.component_df['SP500'] >= self.component_df["wma15"])
+        self.component_df = self.component_df.drop(('SP500'), axis=1)
         self.component_df = self.component_df.drop(("wma15"), axis=1)
         self.component_df.fillna(0.0, inplace=True)
+
 
     def score(self):
         self.clean_data()
         self.y = self.component_df.pop("GL").values
         self.X = self.component_df.values
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            self.X, self.y
-        )
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y)
         self.rf = RandomForestClassifier()
         self.rf.fit(self.X_train, self.y_train)
 
@@ -87,6 +89,7 @@ class The_Random_Forest(object):
         st.write(" * out of bag score:", rf.oob_score_)
         return self.X, self.y, self.X_train, self.X_test, self.y_train, self.y_test
 
+
     def feature_importance(self):
         (
             self.X,
@@ -99,26 +102,21 @@ class The_Random_Forest(object):
         feature_importances = np.argsort(self.rf.feature_importances_)
 
         present = pd.DataFrame()
-        present["tickers"] = list(
-            self.component_df.columns[feature_importances[-1::-1]]
-        )
+        present["tickers"] = list(self.component_df.columns[feature_importances[-1::-1]])
         n = len(self.component_df.columns)
         # importances = forest_fit.feature_importances_[:n]
         importances = self.rf.feature_importances_[:n]
-        std = np.std(
-            [tree.feature_importances_ for tree in self.rf.estimators_], axis=0
-        )
+        std = np.std([tree.feature_importances_ for tree in self.rf.estimators_], axis=0)
         indices = np.argsort(importances)[::-1]
         features = list(self.component_df.columns[indices])
-        st.subheader("** Feature ranking:**")
+
+        st.subheader(" Feature ranking:")
         for f in range(n):
             st.write("%d. %s (%f)" % (f + 1, features[f], importances[indices[f]]))
 
         fig, ax = plt.subplots()
-        st.subheader("**Feature Importance Plot**")
-        ax.bar(
-            range(n), importances[indices], yerr=std[indices], color="r", align="center"
-        )
+        st.subheader("Feature Importance Plot")
+        ax.bar(range(n), importances[indices], yerr=std[indices], color="r", align="center")
         ax.set_xticks(range(n))
         ax.set_xticklabels(features, rotation=60)
         ax.set_xlim([-1, n])
@@ -128,6 +126,7 @@ class The_Random_Forest(object):
         plt.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
+
 
     def trees(self):
         self.feature_importance()
@@ -148,8 +147,8 @@ class The_Random_Forest(object):
         maxA = max(accuracies)
 
         fig, ax = plt.subplots()
-        st.subheader("**Number of Trees [Accuracy] Plot**")
-        st.write(f"** - Max Trees = {self.maxT}**")
+        st.subheader("Number of Trees [Accuracy] Plot")
+        st.write(f" - Max Trees = {self.maxT}")
         ax.plot(num_trees, accuracies)
         ax.plot(self.maxT, maxA, color="green", marker="X", ms=13)
         ax.set_xlabel("Number of Trees")
@@ -172,6 +171,7 @@ class The_Random_Forest(object):
     # Write graph to a png file
     # graph.write_png(savePlot / f"rf_tree.png")
 
+
     def features(self):
         self.trees()
         num_features = range(1, len(self.component_df.columns) + 1)
@@ -190,8 +190,8 @@ class The_Random_Forest(object):
         maxA2 = max(accuracies)
 
         fig, ax = plt.subplots()
-        st.subheader("**Number of Features [Accuracy] Plot**")
-        st.write(f"** - Max Features = {self.maxF}**")
+        st.subheader("Number of Features [Accuracy] Plot")
+        st.write(f" - Max Features = {self.maxF}")
         ax.plot(num_features, accuracies)
         ax.plot(self.maxF, maxA2, color="green", marker="X", ms=13)
         ax.set_xlabel("Number of Features")
@@ -203,8 +203,9 @@ class The_Random_Forest(object):
         plt.close(fig)
         return self.X, self.y
 
-    def get_scores(self, classifier, **kwargs):
-        model = classifier(**kwargs)
+
+    def get_scores(self, classifier, kwargs):
+        model = classifier(kwargs)
         model.fit(self.X_train, self.y_train)
         self.y_predict = model.predict(self.X_test)
         return (
@@ -212,6 +213,7 @@ class The_Random_Forest(object):
             precision_score(self.y_test, self.y_predict),
             recall_score(self.y_test, self.y_predict),
         )
+
 
     def report_scores(self):
         self.features()
@@ -236,12 +238,12 @@ class The_Random_Forest(object):
         df["recall"] = model_recall
         df["avg"] = (df["score"] + df["precision"] + df["recall"]) / 3
         df = df.sort_values("avg", ascending=False)
-        st.subheader("** Model, Accuracy, Precision, Recall **")
+        st.subheader(" Model, Accuracy, Precision, Recall ")
         st.table(df)
-        # st.write(df.index[0])
         return df.index[0]
 
-    def plot_roc(self, file, X, y, clf_class, plot_name, **kwargs):
+
+    def plot_roc(self, X, y, clf_class, plot_name, kwargs):
         scaler = StandardScaler()
         X = scaler.fit_transform(X)
         n_splits = 5
@@ -253,7 +255,7 @@ class The_Random_Forest(object):
         for i, (train_index, test_index) in enumerate(kf.split(X)):
             X_train, X_test = X[train_index], X[test_index]
             y_train = y[train_index]
-            clf = clf_class(**kwargs)
+            clf = clf_class(kwargs)
             clf.fit(X_train, y_train)
             # Predict probabilities, not classes
             y_prob[test_index] = clf.predict_proba(X_test)
@@ -267,9 +269,7 @@ class The_Random_Forest(object):
         mean_auc = auc(mean_fpr, mean_tpr)
 
         fig, ax = plt.subplots()
-        plt.plot(
-            mean_fpr, mean_tpr, "k--", label="Mean ROC (area = %0.2f)" % mean_auc, lw=2
-        )
+        plt.plot(mean_fpr, mean_tpr, "k--", label="Mean ROC (area = %0.2f)" % mean_auc, lw=2)
         plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Random", lw=1.5)
         plt.axvline(x=0.15, color="r", ls="--", lw=2)
         plt.xlim([-0.05, 1.05])
@@ -277,88 +277,29 @@ class The_Random_Forest(object):
         plt.xlabel("False Positive Rate")
         plt.ylabel("True Positive Rate")
         plt.title(f"{plot_name} - Receiver operating characteristic")
-        plt.legend(loc="lower right")
+        plt.legend(loc="best")
         plt.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.13)
         plt.tight_layout()
         st.pyplot(fig)
+
 
     def plot_plot_roc(self):
         mod_to_run = self.report_scores()
 
         if mod_to_run == "Random Forest":
-            st.subheader(f"** Visualize The ROC Curve [{mod_to_run}]**")
-            self.plot_roc(
-                self.file,
-                self.X,
-                self.y,
-                RandomForestClassifier,
-                "Random_Forest",
-                n_estimators=45,
-                max_features=5,
-            )
+            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            self.plot_roc(self.X, self.y, RandomForestClassifier, "Random_Forest", n_estimators=45, max_features=5)
 
         if mod_to_run == "Logistic Regression":
-            st.subheader(f"** Visualize The ROC Curve [{mod_to_run}]**")
-            self.plot_roc(
-                self.file, self.X, self.y, LogisticRegression, "Logistic_Regression"
-            )
+            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            self.plot_roc(self.X, self.y, LogisticRegression, "Logistic_Regression")
 
         if mod_to_run == "Decision Tree":
-            st.subheader(f"** Visualize The ROC Curve [{mod_to_run}]**")
-            self.plot_roc(
-                self.file, self.X, self.y, DecisionTreeClassifier, "Decision_Tree"
-            )
+            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            self.plot_roc(self.X, self.y, DecisionTreeClassifier, "Decision_Tree")
 
         if mod_to_run == "Naive Bayes":
-            self.plot_roc(
-                self.file,
-                self.X,
-                self.y,
-                RandomForestClassifier,
-                "Random_Forest",
-                n_estimators=45,
-                max_features=5,
-            )
-            self.plot_roc(
-                self.file, self.X, self.y, LogisticRegression, "Logistic_Regression"
-            )
-            self.plot_roc(
-                self.file, self.X, self.y, DecisionTreeClassifier, "Decision_Tree"
-            )
+            self.plot_roc(self.X, self.y, RandomForestClassifier, "Random_Forest", n_estimators=45, max_features=5)
 
-
-if __name__ == "__main__":
-    dow = [
-        "AAPL",
-        "AMGN",
-        "AXP",
-        "BA",
-        "CAT",
-        "CRM",
-        "CSCO",
-        "CVX",
-        "DIS",
-        "DOW",
-        "GS",
-        "HD",
-        "HON",
-        "IBM",
-        "INTC",
-        "JNJ",
-        "JPM",
-        "KO",
-        "MCD",
-        "MMM",
-        "MRK",
-        "MSFT",
-        "NKE",
-        "PG",
-        "TRV",
-        "UNH",
-        "V",
-        "VZ",
-        "WBA",
-        "WMT",
-    ]
-
-    The_Random_Forest(dow, "dow").plot_plot_roc()
+            self.plot_roc(self.X, self.y, LogisticRegression, "Logistic_Regression")
+            self.plot_roc(self.X, self.y, DecisionTreeClassifier, "Decision_Tree")

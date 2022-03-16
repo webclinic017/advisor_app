@@ -22,10 +22,10 @@ plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
 plt.rcParams["figure.figsize"] = [18, 10]
 plt.rcParams["figure.dpi"] = 150
-st.set_option('deprecation.showPyplotGlobalUse', False)
+st.set_option("deprecation.showPyplotGlobalUse", False)
 
 
-def web_stocker_run(stock_ticker, forcast_period):
+def web_stocker_run(stock_ticker, forcast_period, e_date):
 
     company_long_name = f1.company_longName(stock_ticker)
     microsoft = Stocker(stock_ticker)
@@ -35,10 +35,10 @@ def web_stocker_run(stock_ticker, forcast_period):
     starter = datetime.date(2021, 1, 5)
     starter_date = pd.Timestamp(starter)
     variable = float(df[df.index == starter_date].values)
-    nshares_0 = round(1000.00 / variable, 2)
+    nshares = round(2500.00 / variable, 2)
 
     f"""
-     * Lets assume we purchased shares of {company_long_name} at it's IPO for  $1,000 giving us {nshares_0} shares
+     * Lets assume we purchased shares of {company_long_name} at it's IPO for  $1,000 giving us {nshares} shares
     """
     st.write(
         f"- Lets assume we purchased shares of {company_long_name} at the beginning of this year (01/05/2021)"
@@ -46,11 +46,10 @@ def web_stocker_run(stock_ticker, forcast_period):
     st.write(
         f"\
         - Purchase Price Per Share: ${round(variable,2)} \n\
-        - Shares Purchased: {round(nshares_0,2)} \n\
+        - Shares Purchased: {round(nshares,2)} \n\
         - Total Cost: $1,000"
     )
-    st.pyplot(microsoft.buy_and_hold(start_date=starter, nshares=nshares_0))
-
+    st.pyplot(microsoft.buy_and_hold(start_date=starter, nshares=nshares))
 
     microsoft.weekly_seasonality = True
     model, model_data = microsoft.create_prophet_model(days=forcast_period)
@@ -79,7 +78,7 @@ def web_stocker_run(stock_ticker, forcast_period):
     plt.grid(True)
     st.pyplot(model.plot(model_data))
 
-    st.pyplot(microsoft.evaluate_prediction())
+    st.pyplot(microsoft.evaluate_prediction(nshares=10))
 
     microsoft.create_model()
     st.pyplot(microsoft.predict_future(days=forcast_period))

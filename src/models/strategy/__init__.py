@@ -1,6 +1,7 @@
 from .web_movingAverage_sma_ema import MovingAverageCrossStrategy as movAvg_sma_ema
-from .web_optimal_double_sma import The_Strategy_2 as optimal_2sma
+from .web_optimal_double_sma import Optimal_Double_SMA as optimal_2sma
 from .web_optimal_sma import Optimal_SMA as optimal_sma
 from .web_overBought_overSold import The_OverBought_OverSold as overBought_overSold
 from .web_support_resistance import The_Support_Resistance as support_resistance
-from .web_trading_technicals import trading_technicals
+from .web_trading_technicals import Trading_Technicals
+from .indicators import Indicator_Ike as ii

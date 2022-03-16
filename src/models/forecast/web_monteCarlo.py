@@ -37,14 +37,17 @@ class The_Monte_Carlo(object):
         if self.stock:
             stock_data = yf.Ticker(stock)
             df = stock_data.history(hist, auto_adjust=True)
+
             # - Calculate daily returns:
             adj_close = df["Close"]
             returns = adj_close.pct_change().dropna()
+            
             # - Split data into the training and test sets:
             train = returns[:"2021-01-01"]
             # a = '2020-01-01'
             # b = '2020-12-31'
             test = returns["2021-01-01":]
+
             # - Specify the parameters of the simulation:
             dt = 1
             T = 150

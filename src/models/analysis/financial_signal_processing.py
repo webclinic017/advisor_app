@@ -25,20 +25,6 @@ plt.rcParams["axes.grid"] = True
 os.environ["NUMEXPR_MAX_THREADS"] = "24"
 os.environ["NUMEXPR_NUM_THREADS"] = "12"
 
-# today = str(datetime.now())[:10]
-# savePlot = Path(f"data/plots/financial_signal/{today}/")
-# if not savePlot.exists():
-#     savePlot.mkdir(parents=True)
-
-# from scipy.stats import spearmanr
-# from sklearn.metrics import mean_squared_error
-# from sklearn.preprocessing import MinMaxScaler
-# import tensorflow as tf
-# from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense, LSTM
-# from tensorflow import keras
-
 
 class The_Financial_Signal_Processing(object):
     def __init__(self, ticker):
@@ -48,15 +34,16 @@ class The_Financial_Signal_Processing(object):
         def get_company_longName(symbol):
             d = Ticker(symbol).quote_type
             return list(d.values())[0]["longName"]
+
         company_longName = get_company_longName(self.ticker)
 
+        st.header(f" Financial Signaling: {company_longName} [{self.ticker}] ")
 
-        st.header(f"** Financial Signaling: {company_longName} [{self.ticker}] **")
         # 1 - STATIONARY:
         prices = yf_prices["Adj Close"]
         subplots_ratio = dict(width_ratios=[3, 2], height_ratios=[1])
 
-        fig, ax = plt.subplots(1, 2, gridspec_kw=subplots_ratio)
+        fig, ax = plt.subplots(1, 2, pec_kw=subplots_ratio)
         prices.plot(
             title=f"{str(self.ticker).upper()} Price", ax=ax[0], grid=True, linewidth=2
         )
@@ -67,11 +54,9 @@ class The_Financial_Signal_Processing(object):
             bins=30,
         )
         plt.tight_layout()
-        # plt.savefig(
-        #     savePlot / f"finSignalProcess_1_{str(self.ticker).upper()}.png", dpi=134
-        # )
         st.pyplot(fig)
         plt.close(fig)
+
 
         # 2 - LOG RETURNS:
         rs = prices.apply(np.log).diff(1)
@@ -82,9 +67,9 @@ class The_Financial_Signal_Processing(object):
         # rs.plot.hist(title=f"{str(self.ticker).upper()} Returns Distribution", ax=ax[1], grid=True, bins=30)
         # plt.tight_layout()
         # plt.title(f"{str(self.ticker).upper()} Log Returns Distribution")
-        # plt.savefig(savePlot / f"finSignalProcess_2_{str(self.ticker).upper()}.png", dpi=134)
         # st.pyplot(fig)
         # plt.close(fig)
+
 
         # 3 - ROLLING STATISTICS:
         w = 22
@@ -99,9 +84,9 @@ class The_Financial_Signal_Processing(object):
         # signals.plot(subplots=True)
         # plt.legend(signals.columns)
         # plt.tight_layout()
-        # plt.savefig(savePlot / f"finSignalProcess_3_{str(self.ticker).upper()}.png", dpi=134)
         # st.pyplot(fig)
         # plt.close(fig)
+
 
         # 4 - Volatility Regimes (Gaussian Mixture)
         prices = yf_prices["Adj Close"]
@@ -118,15 +103,14 @@ class The_Financial_Signal_Processing(object):
         plt.title(f"{str(self.ticker).upper()} Volatility Regimes (Gaussian Mixture)")
         plt.tight_layout()
         plt.legend()
-        # plt.savefig(savePlot / f"finSignalProcess_4_{str(self.ticker).upper()}.png", dpi=134)
         st.pyplot(fig)
         plt.close(fig)
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # indices_main = ["^OEX", "^MID", "^GSPC", "^DJI", "^NYA", "^RUT", "^W5000"]
     # for ind in indices_main:
     #     The_Financial_Signal_Processing(ind)
 
-    for i in si.tickers_dow():
-        The_Financial_Signal_Processing(i)
+    # for i in si.tickers_dow():
+    #     The_Financial_Signal_Processing(i)

@@ -4,8 +4,8 @@ from datetime import date
 import matplotlib
 import matplotlib.pyplot as plt
 import plotly.express as px
-from datetime import datetime
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
+import statsmodels.tsa.arima.model as smt
 import yfinance as yf
 import streamlit as st
 from yahooquery import Ticker
@@ -29,16 +29,19 @@ plt.rcParams["figure.dpi"] = 150
 color_discrete_sequence = px.colors.qualitative.G10
 
 
+def company_longName(symbol):
+    d = Ticker(symbol).quote_type
+    return list(d.values())[0]["longName"]
+
+
 class Arima2(object):
+
+
     def __init__(self, ticker):
         self.stock = ticker
         self.df = yf.download(self.stock, period="10y", parse_dates=True)
-
-        def company_longName(symbol):
-            d = Ticker(symbol).quote_type
-            return list(d.values())[0]["longName"]
-
         self.companyLongName = company_longName(self.stock)
+
 
     def runArima(self):
         st.header(f"{self.companyLongName} [{self.stock}] A.R.I.M.A. Model")
@@ -51,15 +54,15 @@ class Arima2(object):
         history = [x for x in training_data]
         model_predictions = []
         N_test_observations = len(test_data)
+
         for time_point in range(N_test_observations):
-            model = ARIMA(history, order=(4, 1, 0))
-            model_fit = model.fit(disp=0)
+            model = smt.ARIMA(history, order=(4, 1, 0))
+            model_fit = model.fit()
             output = model_fit.forecast()
             yhat = output[0]
             model_predictions.append(yhat)
             true_test_value = test_data[time_point]
             history.append(true_test_value)
-
         test_set_range = self.df[int(len(self.df) * 0.7) :].index
 
         plt.rcParams["figure.figsize"] = (15, 5)
@@ -95,17 +98,16 @@ if __name__ == "__main__":
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
+
 class The_Arima_Model(object):
+
+
     def __init__(self, ticker, period="1y", interval="1d"):
         self.ticker = ticker
         self.period = period
         self.interval = interval
-
-        def company_longName(symbol):
-            d = Ticker(symbol).quote_type
-            return list(d.values())[0]["longName"]
-
         self.company = company_longName(self.ticker)
+
 
     def arima_model(self):
         data = yf.download(self.ticker, period=self.period, interval=self.interval)
@@ -114,20 +116,17 @@ class The_Arima_Model(object):
         train_data, test_data = df[0 : int(len(df) * 0.7)], df[int(len(df) * 0.7) :]
         training_data = train_data["Close"].values
         test_data = test_data["Close"].values
-
         history = [x for x in training_data]
         model_predictions = []
         N_test_observations = len(test_data)
 
         for time_point in range(N_test_observations):
-            model = ARIMA(history, order=(4, 1, 0))
-            model_fit = model.fit(disp=0)
+            model_fit = smt.ARIMA(history, order=(4, 1, 0)).fit()
             output = model_fit.forecast()[0]
             yhat = output[0]
             model_predictions.append(yhat)
             true_test_value = test_data[time_point]
             history.append(true_test_value)
-
         df.set_index("Date", inplace=True)
         test_set_range = df[int(len(df) * 0.7) :].index
 

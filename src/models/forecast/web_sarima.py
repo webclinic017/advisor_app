@@ -14,8 +14,7 @@ from yahooquery import Ticker
 
 warnings.filterwarnings("ignore")
 pd.plotting.register_matplotlib_converters()
-# matplotlib.use('Agg')
-plt.style.use("ggplot")
+plt.style.use("seaborn-poster")
 sm, med, lg = "20", "25", "30"
 plt.rcParams["font.size"] = sm  # controls default text sizes
 plt.rc("axes", titlesize=med)  # fontsize of the axes title
@@ -25,29 +24,34 @@ plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
 plt.rc("legend", fontsize=sm)  # legend fontsize
 plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
-plt.rcParams["figure.figsize"] = [17, 12]
-plt.rcParams["figure.dpi"] = 134
+plt.rcParams["figure.figsize"] = [20, 10]
+plt.rcParams["figure.dpi"] = 100
 plt.rcParams["axes.facecolor"] = "silver"
 
 
+def company_longName(symbol):
+    d = Ticker(symbol).quote_type
+    return list(d.values())[0]["longName"]
+
+
+
 class The_SARIMA_Model(object):
+
+
     def __init__(self, stock):
         self.sss = stock
-
-        def company_longName(symbol):
-            d = Ticker(symbol).quote_type
-            return list(d.values())[0]["longName"]
-
         self.company = company_longName(self.sss)
 
-    def dataHull(self):
-        self.start = "2011-08-01"
-        self.end = str(datetime.now())[:10]
 
-        self.x_data = yf.download(self.sss, start="2021-01-01")["Adj Close"]
+    def dataHull(self):
+        self.start = "2011-10-01"
+        self.end = "2021-10-19"
+
+        self.x_data = yf.download(self.sss, start=self.end)["Adj Close"]
         self.x_data.columns = [self.company]
 
-        self.spData = yf.download(self.sss, start=self.start, end=self.end)
+        self.spData = yf.download(self.sss, period='max')
+        self.spData = pd.DataFrame(self.spData.loc[:self.end])
         self.dataSP = pd.DataFrame(self.spData["Close"])
         self.dataSP.columns = [self.sss]
         self.dataSP.index = pd.to_datetime(self.dataSP.index)
@@ -56,6 +60,7 @@ class The_SARIMA_Model(object):
         self.df_rolling = self.df_settle.rolling(12)
         self.df_mean = self.df_rolling.mean()
         self.df_std = self.df_rolling.std()
+
 
     def adf(self):
         self.dataHull()
@@ -79,6 +84,7 @@ class The_SARIMA_Model(object):
         self.df_diff_rolling = self.df_log_diff.rolling(12)
         self.df_diff_ma = self.df_diff_rolling.mean()
         self.df_diff_std = self.df_diff_rolling.std()
+
 
     def seasonal_decomp(self):
         self.adf()
@@ -142,14 +148,12 @@ class The_SARIMA_Model(object):
     def predict(self):
         self.fitModel_to_SARIMAX()
         self.n = len(self.df_settle.index)
-        self.prediction = self.model_results.get_prediction(
-            start=self.n - 12 * 3, end=self.n + 6
-        )
+        self.prediction = self.model_results.get_prediction(start=self.n - 12 * 5, end=self.n + 12)
         self.prediction_ci = self.prediction.conf_int()
 
         fig, ax = plt.subplots()
-        ax = self.df_settle["2018":].plot(label="actual")
-        self.prediction_ci.plot(ax=ax, style=["--", "--"], label="Predict")
+        ax = self.df_settle["2017":].plot(label="actual")
+        self.prediction_ci.plot(ax=ax, style=["--", "--"], lw=1, label="Predict")
         self.ci_index = self.prediction_ci.index
         self.lower_ci = self.prediction_ci.iloc[:, 0]
         self.upper_ci = self.prediction_ci.iloc[:, 1]
@@ -158,37 +162,40 @@ class The_SARIMA_Model(object):
             self.lower_ci,
             self.upper_ci,
             color="r",
-            alpha=0.09,
+            alpha=0.13,
             label="Confidence_Interval_(95%)",
         )
         ax.vlines(
-            ["2018-05-01", "2020-01"],
+            ["2018-05-01", "2019-12-25"],
             0,
             1,
             transform=ax.get_xaxis_transform(),
             colors="k",
             ls="--",
-            label="Train",
+            lw=1.0,
+            label="Train Period",
         )
         ax.vlines(
-            ["2020-01-01", "2021-01"],
+            ["2020-01-01", "2021-09-27"],
             0,
             1,
             transform=ax.get_xaxis_transform(),
             colors="r",
             ls="--",
-            label="Test",
+            lw=1.0,
+            label="Test Period",
         )
         ax.vlines(
-            ["2021-01-01", "2022-06-30"],
+            ["2021-10-19", "2022-10-19"],
             0,
             1,
             transform=ax.get_xaxis_transform(),
             colors="g",
             ls="--",
-            label="Prediction",
+            lw=1.0,
+            label="Forecast Period",
         )
-        self.x_data.plot(lw=1, label="Price Since Prediction", color="k", ls="--")
+        self.x_data.plot(lw=2, label="Price Since Prediction", marker='.', ms=10, color="b", ls="-")
         ax.set_xlabel("Time (years)", fontsize=20, fontweight="bold")
         ax.set_ylabel("Prices", fontsize=20, fontweight="bold")
         ax.set_title(
@@ -200,12 +207,11 @@ class The_SARIMA_Model(object):
             label.set_fontsize(15)
         fontP = FontProperties()
         fontP.set_size("large")
-        ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", prop=fontP)
+        ax.legend(bbox_to_anchor=(1.05, 1), loc="best", prop=fontP)
         ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
         plt.xlim(date(2018, 1, 1))
         plt.tight_layout()
         st.pyplot(fig)
-        plt.close()
 
 
 if __name__ == "__main__":

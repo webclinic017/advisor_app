@@ -139,7 +139,7 @@ def backtrader_sma_strategy_run(tick):
 
     # set up the backtest
     cerebro.adddata(data)
-    cerebro.broker.setcash(1000.0)
+    cerebro.broker.setcash(2500.0)
     cerebro.addstrategy(SmaStrategy)
     cerebro.addobserver(MyBuySell)
     cerebro.addobserver(bt.observers.Value)

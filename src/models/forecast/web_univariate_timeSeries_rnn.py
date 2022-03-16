@@ -13,6 +13,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from tensorflow import keras
+import tensorflow as tf
 import streamlit as st
 from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error
@@ -24,27 +25,28 @@ mpl.use("Agg")
 plt.style.use(["seaborn-darkgrid", "seaborn-poster"])
 plt.rcParams["figure.figsize"] = [15, 8]
 plt.rcParams["figure.dpi"] = 150
-# keras = tf.compat.v1.keras
+keras = tf.compat.v1.keras
 Sequence = keras.utils.Sequence
 today_stamp = str(datetime.now())[:10]
 
-# savePlot = Path(f"data/variates/univariate/{today_stamp}/")
-# if not savePlot.exists():
-#     savePlot.mkdir(parents=True)
+
 results_path = Path(f"data/variates/univariate/{today_stamp}/")
 if not results_path.exists():
     results_path.mkdir(parents=True)
 
 
+def company_longName(symbol):
+    d = Ticker(symbol).quote_type
+    return list(d.values())[0]["longName"]
+
+
 class The_Univariate_TS_Reg(object):
+
+
     def __init__(self, stock_symbol):
         self.ticker = stock_symbol
-
-        def company_longName(symbol):
-            d = Ticker(symbol).quote_type
-            return list(d.values())[0]["longName"]
-
         self.saver = company_longName(self.ticker)
+
 
     def runs(self):
         sp500 = yf.download(self.ticker, period="5y", interval="1d")
@@ -52,10 +54,9 @@ class The_Univariate_TS_Reg(object):
         sp500.columns = [self.saver]
         sp500.fillna(0.0, inplace=True)
         scaler = MinMaxScaler()
-        sp500_scaled = pd.Series(
-            scaler.fit_transform(sp500).squeeze(), index=sp500.index
-        )
+        sp500_scaled = pd.Series(scaler.fit_transform(sp500).squeeze(), index=sp500.index)
         sp500_scaled.describe()
+
 
         def create_univariate_rnn_data(data, window_size):
             n = len(data)
@@ -96,12 +97,10 @@ class The_Univariate_TS_Reg(object):
             amsgrad=False,
             name="Adam",
         )
-        # rnn.compile(loss='mae', optimizer=optimizer)
-        # rnn.compile(loss='mae', optimizer='RMSProp')
-        # rnn.compile(loss="mae", optimizer="Adam")
-        rnn.compile(loss="mae", optimizer=optimizer)
 
+        rnn.compile(loss="mae", optimizer=optimizer)
         rnn_path = (results_path / f"univariate_rnn_{self.ticker}.h5").as_posix()
+
         checkpointer = ModelCheckpoint(
             filepath=rnn_path,
             verbose=1,
@@ -115,8 +114,8 @@ class The_Univariate_TS_Reg(object):
         lstm_training = rnn.fit(
             X_train,
             y_train,
-            epochs=100,
-            batch_size=40,
+            epochs=50,
+            batch_size=32,
             shuffle=True,
             validation_data=(X_test, y_test),
             callbacks=[early_stopping, checkpointer],
@@ -180,17 +179,11 @@ class The_Univariate_TS_Reg(object):
         ax1.set_ylabel("Stock Price")
         with sns.axes_style("white"):
             ax3 = plt.subplot(223)
-            sns.scatterplot(
-                x=self.saver, y="predictions", data=sp500, hue="data", ax=ax3
-            )
-            ax3.text(
-                x=0.02, y=0.95, s=f"Test IC ={test_ic:.2%}", transform=ax3.transAxes
-            )
-            ax3.text(
-                x=0.02, y=0.90, s=f"Train IC={train_ic:.2%}", transform=ax3.transAxes
-            )
+            sns.scatterplot(x=self.saver, y="predictions", data=sp500, hue="data", ax=ax3)
+            ax3.text(x=0.02, y=0.95, s=f"Test IC ={test_ic:.2%}", transform=ax3.transAxes)
+            ax3.text(x=0.02, y=0.90, s=f"Train IC={train_ic:.2%}", transform=ax3.transAxes)
             ax3.set_title("Correlation Plot ~ ")
-            ax3.legend(loc="lower right")
+            ax3.legend(loc="best")
             ax2 = plt.subplot(222)
             ax4 = plt.subplot(224, sharex=ax2, sharey=ax2)
             sns.distplot(train_predict.squeeze() - y_train_rescaled, ax=ax2)
@@ -213,61 +206,23 @@ class The_Univariate_TS_Reg(object):
         sns.despine()
         plt.title(f"Univariate Model of {self.saver}")
         plt.tight_layout()
-        # plt.savefig(savePlot / f'univariate_timeSeries_rnn_1-multiplot-{self.ticker}.png', dpi=134)
         plt.show()
         st.pyplot(fig)
         plt.close(fig)
 
+
         fig, ax = plt.subplots()
-        ax = sp500.loc["2019":, self.saver].plot(
-            lw=3, c="k", alpha=0.6, label=f"{self.saver} Stock Price"
-        )
-        sp500.loc["2020":, ["Test Range", "Train Range"]].plot(
-            ax=ax, lw=2.5, style=["--", "--"]
-        )
-        # ax.vlines(
-        #     ['2017-07-01', '2018-12-13'],
-        #     0,
-        #     1, transform=ax.get_xaxis_transform(),
-        #     colors='r',
-        #     lw=2,
-        #     ls='--',
-        #     label='Model-Train'
-        #     )
-        # ax.vlines(
-        #     ['2019-01-01', '2019-12-13'],
-        #     0,
-        #     1,
-        #     transform=ax.get_xaxis_transform(),
-        #     colors='y',
-        #     lw=2,
-        #     ls='--',
-        #     label='Model-Validation'
-        # )
+        ax = sp500.loc["2019":, self.saver].plot(lw=3, c="k", alpha=0.6, label=f"{self.saver} Stock Price")
+        sp500.loc["2020":, ["Test Range", "Train Range"]].plot(ax=ax, lw=2.5, style=["--", "--"])
+
         ax.vlines(
-            ["2020-01-01", "2020-12-13"],
-            0,
-            1,
-            transform=ax.get_xaxis_transform(),
-            colors="g",
-            lw=2,
-            ls="--",
-            label="Model-Prediction [In Sample]",
+            ["2020-01-01", "2020-12-13"], 0, 1, transform=ax.get_xaxis_transform(), colors="g", lw=2, ls="--", label="Model-Prediction [In Sample]",
         )
         ax.vlines(
-            ["2021-01-01", "2021-06-30"],
-            0,
-            1,
-            transform=ax.get_xaxis_transform(),
-            colors="b",
-            lw=2,
-            ls="--",
-            label="Model-Prediction [Out-Of Sample]",
+            ["2021-01-01", "2021-06-30"],0,1,transform=ax.get_xaxis_transform(),colors="b",lw=2,ls="--",label="Model-Prediction [Out-Of Sample]",
         )
         ax.set_title(
-            f"Univariate TimeSeries RNN - Prediction - {self.saver} [{self.ticker}]",
-            fontsize=25,
-            fontweight="bold",
+            f"Univariate TimeSeries RNN - Prediction - {self.saver} [{self.ticker}]", fontsize=25, fontweight="bold",
         )
         ax.set_ylabel("Stock Price ($)", fontsize=20)
         ax.set_xlabel("Date", fontsize=20)
@@ -278,7 +233,6 @@ class The_Univariate_TS_Reg(object):
         plt.legend()
         plt.xlim(date(2019, 12, 1))
         plt.tight_layout()
-        # plt.savefig(# savePlot / f"univariate_timeSeries_rnn_1-final-{self.ticker}.png", dpi=134)
         st.pyplot(fig)
         plt.close(fig)
         return

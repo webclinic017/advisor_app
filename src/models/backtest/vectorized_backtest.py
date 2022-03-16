@@ -3,8 +3,8 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-plt.style.use("seaborn-talk")
-plt.rcParams["figure.dpi"] = 134
+plt.style.use("seaborn-poster")
+plt.rcParams["figure.dpi"] = 100
 plt.rcParams["figure.figsize"] = (15, 6.5)
 plt.rcParams["axes.grid"] = True
 from pathlib import Path
@@ -15,23 +15,6 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
-from tensorflow import keras
-
-gpu_devices = tf.config.experimental.list_physical_devices("GPU")
-if gpu_devices:
-    print("Using GPU")
-    tf.config.experimental.set_memory_growth(gpu_devices[0], True)
-    tf.config.experimental.set_synchronous_execution(enable=True)
-    tf.config.experimental.enable_mlir_bridge()
-    tf.config.experimental.enable_tensor_float_32_execution(enabled=True)
-    tf.config.threading.get_inter_op_parallelism_threads()
-    tf.config.threading.set_inter_op_parallelism_threads(0)
-else:
-    print("Using CPU")
 
 
 class The_Vectorized_Backtest(object):
@@ -77,7 +60,6 @@ class The_Vectorized_Backtest(object):
         plt.ylabel("S&P500 Index Price")
         plt.tight_layout()
         plt.legend()
-        # plt.savefig(savePlot / f'vb1_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
 
         fig, ax = plt.subplots(2, 1)
@@ -100,7 +82,6 @@ class The_Vectorized_Backtest(object):
         )
         plt.tight_layout()
         plt.legend()
-        # plt.savefig(savePlot / f'vb2_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
 
         my_rs = pos.shift(1) * rs1
@@ -120,8 +101,8 @@ class The_Vectorized_Backtest(object):
         )
         plt.legend(["my performance", "benchmark performance"])
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb3_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
+
 
     def two(self):
         self.one()
@@ -159,7 +140,6 @@ class The_Vectorized_Backtest(object):
             alpha=0.2,
         )
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb4_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
 
         fig, ax = plt.subplots()
@@ -178,7 +158,6 @@ class The_Vectorized_Backtest(object):
         )
         plt.legend()
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb5_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
 
         fig, ax = plt.subplots()
@@ -199,7 +178,6 @@ class The_Vectorized_Backtest(object):
             alpha=0.2,
         )
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb6_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
 
         fig, ax = plt.subplots()
@@ -222,8 +200,8 @@ class The_Vectorized_Backtest(object):
             alpha=0.2,
         )
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb7_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
+
 
     def three(self):
         self.two()
@@ -248,8 +226,8 @@ class The_Vectorized_Backtest(object):
             alpha=0.2,
         )
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb8_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
+
 
     def four(self):
         self.three()
@@ -275,7 +253,6 @@ class The_Vectorized_Backtest(object):
         )
         plt.title("Strategy comparision  ~ With & Without Transaction Costs: (4.1)")
         plt.tight_layout()
-        # plt.savefig(savePlot / f'vb9_{self.saver}_{today}.png', dpi=134)
         st.pyplot(fig)
         return
 

@@ -112,6 +112,7 @@ def ma_backtest(data, window, strategy="single", sellShort=False, slippage=0.003
     data["Return"] = data.Side * data.PctChange - data.Slippage
     data["Return"][0] = -data.Slippage[0]
     data["Cumulative"] = data.Return.cumsum()
+    st.dataframe(data)
     return data
 
 

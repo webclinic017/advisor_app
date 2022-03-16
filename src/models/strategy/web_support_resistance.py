@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 import streamlit as st
 from yahooquery import Ticker
 
-# from datetime import timedelta, date
+from src.tools import functions as f0
 
 warnings.filterwarnings("ignore")
 matplotlib.use("Agg")
@@ -28,15 +28,12 @@ plt.rcParams["figure.dpi"] = 150
 
 
 class The_Support_Resistance(object):
+
     def __init__(self, ticker):
         self.ticker = ticker
-        self.period = "6mo"
+        self.period = "9mo"
+        self.company = f0.company_longName(self.ticker)
 
-        def get_company_longName(symbol):
-            d = Ticker(symbol).quote_type
-            return list(d.values())[0]["longName"]
-
-        self.company = get_company_longName(self.ticker)
 
     def setup(self):
         self.df = yf.download(self.ticker, period=self.period, parse_dates=True)
@@ -44,6 +41,7 @@ class The_Support_Resistance(object):
         self.df["Date"] = self.df["Date"].apply(mpl_dates.date2num)
         self.df = self.df.loc[:, ["Date", "Open", "High", "Low", "Close"]]
         return self.df
+
 
     def isSupport(self, df, i):
         support = (
@@ -54,6 +52,7 @@ class The_Support_Resistance(object):
         )
         return support
 
+
     def isResistance(self, df, i):
         resistance = (
             self.df["High"][i] > self.df["High"][i - 1]
@@ -63,11 +62,10 @@ class The_Support_Resistance(object):
         )
         return resistance
 
+
     def plot_all(self):
         fig, ax = plt.subplots()
-        candlestick_ohlc(
-            ax, self.df.values, width=0.6, colorup="green", colordown="red", alpha=0.8
-        )
+        candlestick_ohlc(ax, self.df.values, width=0.6, colorup="green", colordown="red", alpha=0.8)
         date_format = mpl_dates.DateFormatter("%d %b %Y")
         ax.xaxis.set_major_formatter(date_format)
         fig.autofmt_xdate()
@@ -91,12 +89,13 @@ class The_Support_Resistance(object):
         ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
         ax.legend(loc="best", prop={"size": 16})
         plt.tight_layout()
-
         fig.show()
         st.pyplot(fig)
 
+
     def isFarFromLevel(self, lot1):
         return np.sum([abs(lot1 - x) < self.s for x in self.levels]) == 0
+
 
     def level(self):
         self.setup()
@@ -128,10 +127,10 @@ class The_Support_Resistance(object):
         fd["date"] = new_lst
         fd.set_index("date", inplace=True)
         st.text("\n")
-        st.text(fd)
         self.plot_all()
         plt.show()
+        st.dataframe(fd.round(2))
 
 
-if __name__ == "__main__":
-    The_Support_Resistance(ticker="AAPL", period="6mo").level()
+# if __name__ == "__main__":
+#     The_Support_Resistance(ticker="AAPL", period="6mo").level()

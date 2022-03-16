@@ -1,5 +1,5 @@
 import warnings
-import pandas_datareader as web
+import yfinance as yf
 import numpy as np
 import pandas as pd
 from sklearn import metrics  # for the check the error and accuracy of the model
@@ -45,8 +45,8 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 pd.set_option("display.max_rows", 500)
 pd.set_option("display.max_columns", 500)
 pd.set_option("display.width", 150)
-matplotlib.use("Agg")
-plt.style.use("ggplot")
+# matplotlib.use("Agg")
+plt.style.use("seaborn-poster")
 sm, med, lg = 10, 15, 20
 plt.rc("font", size=sm)  # controls default text sizes
 plt.rc("axes", titlesize=med)  # fontsize of the axes title
@@ -56,8 +56,8 @@ plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
 plt.rc("legend", fontsize=sm)  # legend fontsize
 plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
-plt.rcParams["figure.figsize"] = [18, 10]
-plt.rcParams["figure.dpi"] = 150
+plt.rcParams["figure.figsize"] = [20, 10]
+plt.rcParams["figure.dpi"] = 100
 sns.set()
 st.set_option("deprecation.showPyplotGlobalUse", False)
 
@@ -84,7 +84,7 @@ class Web_One(object):
 
         self.company = get_symbol(self.ticker)
 
-        dataset = web.DataReader(self.ticker, data_source="yahoo", start="2000-01-01")
+        dataset = yf.download(self.ticker, start='2010-01-01')
         dataset = dataset.sort_index(ascending=True)
         # display /
         st.text(dataset.head())
@@ -96,7 +96,7 @@ class Web_One(object):
         plt.ylabel("price ($)")
         st.pyplot(fig)
 
-        """### ***Predictors***
+        """### *Predictors*
         """
 
         lags = 5
@@ -111,7 +111,7 @@ class Web_One(object):
         st.text(dataset.head())
         st.text(dataset.shape)
 
-        """### ***Target Variable***
+        """### *Target Variable*
         This will be a classification variable, if the average price will go either up or down the next day.  The target will be forecasting the difference between today’s price and tomorrow’s price (which is unkonwn).
         """
 
@@ -369,7 +369,7 @@ class Web_One(object):
         cerebro = bt.Cerebro(stdstats=False, cheat_on_open=True)
         cerebro.addstrategy(MLStrategy)
         cerebro.adddata(data)
-        cerebro.broker.setcash(10000.0)
+        cerebro.broker.setcash(25000.0)
         cerebro.broker.setcommission(commission=0.001)
         cerebro.addanalyzer(bt.analyzers.PyFolio, _name="pyfolio")
 

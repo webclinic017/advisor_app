@@ -12,12 +12,10 @@ def home_widget_instructions(header, key):
     st.write(key)
 
 
-def home_widget_tools(subhead, category_1, key_1, category_2, key_2):
-    st.subheader(f"** > {subhead} **")
-    st.write(f"** {category_1} ** ")
+def home_widget_tools(subhead, category_1, key_1):
+    st.subheader(f" > {subhead} ")
+    st.write(f" {category_1}  ")
     st.write(key_1)
-    st.write(f"** {category_2} **")
-    st.write(key_2)
 
 
 # - - - - - SNAPSHOT PAGE - - - - -
@@ -37,9 +35,9 @@ def snapshot_widget_index(keya, keyb):
 
 
 def widget_header(web1, subhead, key):
-    st.subheader(f"**>Online Resources:**")
+    st.subheader(f">Online Resources:")
     st.write(f"{web1}")
-    st.subheader(f"**{subhead}:**")
+    st.subheader(f"{subhead}:")
     st.write(f"{key}")
 
 
@@ -49,13 +47,13 @@ def my_widget_overview(header, key):
 
 
 def widget_online_resource(key):
-    st.subheader("**Online Resources:**")
+    st.subheader("Online Resources:")
     st.write(f" - {key}")
 
 
 def widget_basic(head, subhead, key):
-    st.header(f"**{head}**")
-    st.subheader(f"**{subhead}:**")
+    st.header(f"{head}")
+    st.subheader(f"{subhead}:")
     st.write(f" - {key}")
 
 
@@ -65,22 +63,22 @@ def my_widget_financial_disclosure(header, key):
 
 
 def widget_prophet(key_1, key_2, web_address):
-    st.subheader("**Details:**")
+    st.subheader("Details:")
     st.write(f"{key_1}")
     st.write(f"{key_2}")
-    st.subheader("**Online Resources:**")
+    st.subheader("Online Resources:")
     st.write(f" - {web_address}")
     if st.button("Open Prophet Model Web Page"):
         webbrowser.open_new_tab(web_address)
 
 
 def widget_analysis(subhead, key):
-    st.subheader(f"**{subhead}:**")
+    st.subheader(f"{subhead}:")
     st.write(f"{key}")
 
 
 def widget_univariate(title, key):
-    st.header(f"**{title}**")
+    st.header(f"{title}")
     st.write(f"{key}")
 
 

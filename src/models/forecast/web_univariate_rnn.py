@@ -36,21 +36,7 @@ plt.rc("axes", linewidth=2)  # linewidth of plot lines
 plt.rcParams["figure.figsize"] = [18, 10]
 plt.rcParams["figure.dpi"] = 150
 
-gpu_devices = tf.config.experimental.list_physical_devices("GPU")
-if gpu_devices:
-    print("Using GPU")
-    tf.config.experimental.set_memory_growth(gpu_devices[0], True)
-    tf.config.experimental.set_synchronous_execution(enable=True)
-    tf.config.experimental.enable_mlir_bridge
-    tf.config.experimental.enable_tensor_float_32_execution(enabled=True)
-    tf.config.threading.get_inter_op_parallelism_threads()
-    tf.config.threading.set_inter_op_parallelism_threads(0)
-else:
-    print("Using CPU")
-
-
 today_stamp = str(datetime.now())[:10]
-
 savePlot = Path(f"data/variates/univariate/{today_stamp}/")
 if not savePlot.exists():
     savePlot.mkdir(parents=True)
@@ -171,10 +157,7 @@ class The_Univariate_TS_Reg(object):
             ax.axvline(best_epoch, ls="--", lw=1, c="k")
             sns.despine()
             fig.tight_layout()
-            fig.savefig(
-                # savePlot / f"univariate_timeSeries_rnn_1-error-{self.ticker}.png",
-                dpi=250,
-            )
+            # fig.savefig( savePlot / f"univariate_timeSeries_rnn_1-error-{self.ticker}.png",dpi=250,)
             st.pyplot(fig)
             plt.close(fig)
 
@@ -238,7 +221,7 @@ class The_Univariate_TS_Reg(object):
                     transform=ax3.transAxes,
                 )
                 ax3.set_title("Correlation Plot ~ ")
-                ax3.legend(loc="lower right")
+                ax3.legend(loc="best")
                 ax2 = plt.subplot(222)
                 ax4 = plt.subplot(224, sharex=ax2, sharey=ax2)
                 sns.distplot(train_predict.squeeze() - y_train_rescaled, ax=ax2)
@@ -265,10 +248,6 @@ class The_Univariate_TS_Reg(object):
             plt.title(f"Univariate Model of {self.company} ({self.saver})")
             plt.grid(True)
             plt.tight_layout()
-            plt.savefig(
-                # savePlot / f"univariate_timeSeries_rnn_2-multiplot-{self.ticker}.png",
-                dpi=134,
-            )
             st.pyplot(fig)
             plt.close(fig)
 
@@ -333,10 +312,6 @@ class The_Univariate_TS_Reg(object):
             ax.legend(loc="best", prop={"size": 16})
             plt.xlim(date(2020, 12, 1))
             plt.tight_layout()
-            plt.savefig(
-                # savePlot / f"univariate_timeSeries_rnn_2-final-{self.ticker}.png",
-                dpi=134,
-            )
             st.pyplot(fig)
             plt.close(fig)
             return

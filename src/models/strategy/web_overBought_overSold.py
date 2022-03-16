@@ -32,30 +32,34 @@ def get_company_longName(symbol):
     return list(d.values())[0]["longName"]
 
 
+
+
 class The_OverBought_OverSold(object):
+    
+    
     def __init__(self, ticker):
         self.ticker = ticker
         self.start_date = "2021-01-05"
         self.end_dte = datetime.now()
         self.company = get_company_longName(self.ticker)
 
-    def generate(self):
-        df = yf.download(
-            self.ticker, start=self.start_date, end=self.end_dte, parse_dates=True
-        )
+
+    def generate(self, df):
+        # df = yf.download(self.ticker, start=self.start_date, end=self.end_dte, parse_dates=True)
         df.reset_index(inplace=True)
-        df.Date = df.Date.astype("str")
-        date = [datetime.strptime(d, "%Y-%m-%d") for d in df["Date"]]
+        df.date = df.date.astype("str")
+        date = [datetime.strptime(d, "%Y-%m-%d") for d in df["date"]]
         candlesticks = list(
             zip(
                 mdates.date2num(date),
-                df["Open"],
-                df["High"],
-                df["Low"],
-                df["Close"],
-                df["Volume"],
+                df["open"],
+                df["high"],
+                df["low"],
+                df["close"],
+                df["volume"],
             )
         )
+
 
         def removal(signal, repeat):
             copy_signal = np.copy(signal)
@@ -64,31 +68,39 @@ class The_OverBought_OverSold(object):
                     copy_signal[i - 1] = (copy_signal[i - 2] + copy_signal[i]) / 2
             return copy_signal
 
+
         def get(original_signal, removed_signal):
             buffer = []
             for i in range(len(removed_signal)):
                 buffer.append(original_signal[i] - removed_signal[i])
             return np.array(buffer)
 
-        signal = np.copy(df.Open.values)
+
+        signal = np.copy(df.open.values)
         removed_signal = removal(signal, 30)
         noise_open = get(signal, removed_signal)
 
-        signal = np.copy(df.High.values)
+        signal = np.copy(df.high.values)
         removed_signal = removal(signal, 30)
         noise_high = get(signal, removed_signal)
 
-        signal = np.copy(df.Low.values)
+        signal = np.copy(df.low.values)
         removed_signal = removal(signal, 30)
         noise_low = get(signal, removed_signal)
 
-        signal = np.copy(df.Close.values)
+        signal = np.copy(df.close.values)
         removed_signal = removal(signal, 30)
         noise_close = get(signal, removed_signal)
 
         noise_candlesticks = list(
-            zip(mdates.date2num(date), noise_open, noise_high, noise_low, noise_close)
+            zip(mdates.date2num(date), 
+            noise_open, 
+            noise_high, 
+            noise_low, 
+            noise_close
+            )
         )
+
 
         fig = plt.figure()
         ax1 = plt.subplot2grid((3, 1), (0, 0), rowspan=2)
@@ -102,8 +114,8 @@ class The_OverBought_OverSold(object):
         dates = np.asarray(dates)
         volume = [x[5] for x in candlesticks]
         volume = np.asarray(volume)
-        candlestick_ohlc(ax1, candlesticks, width=1, colorup="g", colordown="r")
-        # ax1.plot(df['Close'], df.index, color='k')
+        candlestick_ohlc(ax1, candlesticks, width=1, colorup="g", colordown="r")      
+          
         pad = 0.25
         yl = ax1.get_ylim()
         ax1.set_ylim(yl[0] - (yl[1] - yl[0]) * pad, yl[1])
@@ -111,28 +123,25 @@ class The_OverBought_OverSold(object):
             label.set_fontsize(15)
         ax1.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
         ax1.legend(loc="best", prop={"size": 13})
-        # ax1.set_xticklabels(ax1.get_xticklabels(), rotation= 60)
         plt.tight_layout()
 
         ax2 = ax1.twinx()
-        pos = df["Open"] - df["Close"] < 0
-        neg = df["Open"] - df["Close"] > 0
-        ax2.bar(
-            dates[pos], volume[pos], color="green", width=1, align="center", alpha=0.25
-        )
-        ax2.bar(
-            dates[neg], volume[neg], color="red", width=1, align="center", alpha=0.25
-        )
+        pos = df["open"] - df["close"] < 0
+        neg = df["open"] - df["close"] > 0
+        ax2.bar(dates[pos], volume[pos], color="green", width=1, align="center", alpha=0.34)
+        ax2.bar(dates[neg], volume[neg], color="red", width=1, align="center", alpha=0.34)
+        
         ax2.set_xlim(min(dates), max(dates))
         yticks = ax2.get_yticks()
         ax2.set_yticks(yticks[::3])
         ax2.yaxis.set_label_position("right")
-        ax2.set_ylabel("Volume", fontsize=15, fontweight="bold")
+        ax2.set_ylabel("volume", fontsize=15, fontweight="bold")
         ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
         ax2 = plt.subplot2grid((3, 1), (2, 0))
         ax2.set_ylabel("Quote ($)", fontsize=15, fontweight="bold")
-        candlestick_ohlc(ax2, noise_candlesticks, width=1, colorup="g", colordown="r")
+        candlestick_ohlc(ax2, noise_candlesticks, width=1, colorup="g", colordown="r", alpha=.75)
+        
         ax2.plot(
             dates,
             [np.percentile(noise_close, 95)] * len(noise_candlesticks),
@@ -155,7 +164,6 @@ class The_OverBought_OverSold(object):
             label.set_fontsize(15)
         ax2.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
         ax2.legend(loc="best", prop={"size": 13})
-        # ax2.set_xticklabels(ax2.get_xticklabels(), rotation= 60)
         plt.tight_layout()
         st.pyplot(fig)
 
