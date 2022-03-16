@@ -107,6 +107,3 @@ if __name__ == '__main__':
 st.write(f"{'_'*25}")
 # st.write(f"{'_'*25} \n {'_'*25}")
 st.markdown("<a href='#linkto_top'>Link to top</a>", unsafe_allow_html=True)
-
-
-from featurewiz import FeatureWiz, featurewiz
