@@ -89,7 +89,7 @@ j_r = "AAPL AMD ARKK ARKW BE COF DIS ETCG MSFT NVDA QS RIOT TSLA WMT"
 general_pages = [
     "Home",
     # "Screener",
-    "Advisor",
+    # "Advisor",
     "Strategy",
     "Backtesting",
     "Forecasting",
