@@ -72,7 +72,7 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
     stock_df["Position"] = stock_df["Signal"].diff()
     df_pos = stock_df[(stock_df["Position"] == 1) | (stock_df["Position"] == -1)]
     df_pos["Position"] = df_pos["Position"].apply(lambda x: "Buy" if x == 1 else "Sell")
-    st.text(tabulate(df_pos.loc["2020":], headers="keys", tablefmt="psql"))
+
 
 
     fig, ax = plt.subplots()
@@ -105,6 +105,8 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
     plt.tight_layout()
     plt.show()
     st.pyplot(fig)
+    
+    st.text(tabulate(df_pos.loc["2020":], headers="keys", tablefmt="psql"))
 
 
     if df_pos['Position'][-1] == 'Buy':
