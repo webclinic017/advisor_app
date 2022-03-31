@@ -39,8 +39,8 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
             >> display_table - (bool)whether to display the date and price table at buy/sell positions(True/False)
             >> import the closing price data of the stock for the aforementioned period of time in Pandas dataframe
     """
-    # data = yf.download(symbol, start='2020-01-03', end=str(end_date)[:10], interval=inter)
-    data = pd.DataFrame(data)
+    data = yf.download(symbol, start='2020-01-03', end=str(end_date)[:10], interval=inter)
+    # data = pd.DataFrame(data)
     data.index = pd.to_datetime(data.index)
     stock_df = pd.DataFrame(data['adjclose'])        
     stock_df.columns = {"Close Price"}  # assign new colun name
