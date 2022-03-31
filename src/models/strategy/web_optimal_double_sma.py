@@ -16,9 +16,9 @@ class Optimal_Double_SMA(object):
         self.tic = tic
 
 
-    def grab_data(self, ender, data, inter='1d'):
-        # self.raw = pd.DataFrame(yf.download(self.tic, start='2020-01-03', end=str(ender)[:10], interval=inter))
-        self.raw = pd.DataFrame(data.copy())
+    def grab_data(self, ender, inter='1d'):
+        self.raw = pd.DataFrame(yf.download(self.tic, start='2020-01-03', end=str(ender)[:10], interval=inter))
+        # self.raw = pd.DataFrame(data.copy())
                         
         sma1 = range(2, 51, 2)
         sma2 = range(5, 126, 5)

@@ -168,25 +168,25 @@ class Strategy(object):
                     )
                     st.sidebar.write("__" * 25)
                     if st.sidebar.button("Run Strategies", key='b'):
-                        hammerTime = Ticker(
-                            stock_ticker,
-                            asynchronous=True,
-                            formatted=False,
-                            backoff_factor=0.34,
-                            progress=True,
-                            validate=True,
-                            verify=True,
-                        )
-                        hammer_hist = hammerTime.history(period='5y').reset_index().set_index('date')
-                        hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        data = hammer_hist.rename(columns={'symbol': 'ticker'})
+                        # hammerTime = Ticker(
+                        #     stock_ticker,
+                        #     asynchronous=True,
+                        #     formatted=False,
+                        #     backoff_factor=0.34,
+                        #     progress=True,
+                        #     validate=True,
+                        #     verify=True,
+                        # )
+                        # hammer_hist = hammerTime.history(period='5y').reset_index().set_index('date')
+                        # hammer_hist.index = pd.to_datetime(hammer_hist.index)
+                        # data = hammer_hist.rename(columns={'symbol': 'ticker'})
                                 
-                        del data['ticker']
-                        del data['dividends']
-                        st.dataframe(data)                     
+                        # del data['ticker']
+                        # del data['dividends']
+                        # st.dataframe(data)                     
                                                 
                         for s in stock_ticker:
-                            self.run_movAvg_sma_ema(s, data, sma_ema_choice, True, inter)
+                            self.run_movAvg_sma_ema(s, sma_ema_choice, True, inter)
 
                 else:
                     if st.sidebar.button("Run Strategies", key='c'):
@@ -258,9 +258,9 @@ class Strategy(object):
             st.write("* backtrader backtesting")
 
 
-    def run_movAvg_sma_ema(self, stock_ticker, data, sma_ema_opt, p_out=True, cc=0.0, ccc=0.0, inter='1d'):
-        res, S, L = s1.optimal_2sma(stock_ticker).grab_data(self.today_stamp, data, inter)
-        stock_symbol = s1.movAvg_sma_ema(stock_ticker, S, L, self.today_stamp, sma_ema_opt, data, p_out, cc, ccc, inter)        
+    def run_movAvg_sma_ema(self, stock_ticker, sma_ema_opt, p_out=True, cc=0.0, ccc=0.0, inter='1d'):
+        res, S, L = s1.optimal_2sma(stock_ticker).grab_data(self.today_stamp, inter)
+        stock_symbol = s1.movAvg_sma_ema(stock_ticker, S, L, self.today_stamp, sma_ema_opt, p_out, cc, ccc, inter)        
         st.write('_'*25)
         if stock_symbol == stock_ticker:
             return True
@@ -270,8 +270,8 @@ class Strategy(object):
             return False
         
 
-    def run_optimal_sma(self, stock_ticker, data, graphit=True, cc=0.0, ccc=0.0):
-        stock_symbol = s1.optimal_sma(stock_ticker, self.today_stamp).build_optimal_sma(data, graphit, cc, ccc)
+    def run_optimal_sma(self, stock_ticker, graphit=True, cc=0.0, ccc=0.0):
+        stock_symbol = s1.optimal_sma(stock_ticker, self.today_stamp).build_optimal_sma(graphit, cc, ccc)
         st.write('_'*25)
         if stock_symbol == stock_ticker:
             return True

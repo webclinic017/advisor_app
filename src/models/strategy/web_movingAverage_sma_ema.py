@@ -42,7 +42,7 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
     data = yf.download(symbol, start='2020-01-03', end=str(end_date)[:10], interval=inter)
     # data = pd.DataFrame(data)
     data.index = pd.to_datetime(data.index)
-    stock_df = pd.DataFrame(data['adjclose'])        
+    stock_df = pd.DataFrame(data['Adj Close'])        
     stock_df.columns = {"Close Price"}  # assign new colun name
     stock_df = stock_df.fillna(0.0)
 

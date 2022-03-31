@@ -32,13 +32,13 @@ class Optimal_SMA(object):
         self.company_longName = company_longName(self.name)
 
 
-    def build_optimal_sma(self, data, graphit=True, cc=0.0, ccc=0.0):
-        # data = Ticker(self.name).history(period='2y').reset_index()
-        # del data['symbol']
-        # data = pd.DataFrame(data.set_index('date').copy())
-        # self.data = pd.DataFrame(data[pd.to_datetime(data.index) < pd.to_datetime(self.end_date)])
+    def build_optimal_sma(self, graphit=True, cc=0.0, ccc=0.0):
+        data = Ticker(self.name).history(period='2y').reset_index()
+        del data['symbol']
+        data = pd.DataFrame(data.set_index('date').copy())
+        self.data = pd.DataFrame(data[pd.to_datetime(data.index) < pd.to_datetime(self.end_date)])
 
-        self.data = pd.DataFrame(data)
+        # self.data = pd.DataFrame(data)
         self.data["Forward Close"] = self.data["adjclose"].shift(-self.n_forward)
         self.data["Forward Return"] = (self.data["Forward Close"] - self.data["adjclose"]) / self.data["adjclose"]
         result = []
