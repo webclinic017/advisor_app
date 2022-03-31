@@ -75,40 +75,36 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
     # st.text(tabulate(df_pos.loc["2021":], headers="keys", tablefmt="psql"))
 
 
-    if print_out == True:
-        try:
-            fig, ax = plt.subplots()
+    fig, ax = plt.subplots()
 
-            # plot close price, short-term and long-term moving averages
-            plt.tick_params(axis="both", labelsize=15)
-            stock_df.loc["2021":, "Close Price"].plot(color="k", lw=2, label="Close Price")
-            stock_df.loc["2021":][short_window_col].plot(color="b", lw=2, label=short_window_col)
-            stock_df.loc["2021":][long_window_col].plot(color="g", lw=2, label=long_window_col)
-            
-            # plot 'buy' signals
-            plt.plot(
-                stock_df.loc["2021":][stock_df["Position"] == 1].index,
-                stock_df.loc["2021":][short_window_col][stock_df["Position"] == 1],
-                "^", markersize=15, color="g", alpha=0.7, label="buy",
-            )
+    # plot close price, short-term and long-term moving averages
+    plt.tick_params(axis="both", labelsize=15)
+    stock_df.loc["2021":, "Close Price"].plot(color="k", lw=2, label="Close Price")
+    stock_df.loc["2021":][short_window_col].plot(color="b", lw=2, label=short_window_col)
+    stock_df.loc["2021":][long_window_col].plot(color="g", lw=2, label=long_window_col)
+    
+    # plot 'buy' signals
+    plt.plot(
+        stock_df.loc["2021":][stock_df["Position"] == 1].index,
+        stock_df.loc["2021":][short_window_col][stock_df["Position"] == 1],
+        "^", markersize=15, color="g", alpha=0.7, label="buy",
+    )
 
-            # plot 'sell' signals
-            plt.plot(
-                stock_df.loc["2021":][stock_df["Position"] == -1].index,
-                stock_df.loc["2021":][short_window_col][stock_df["Position"] == -1],
-                "v", markersize=15, color="r", alpha=0.7, label="sell",
-            )
+    # plot 'sell' signals
+    plt.plot(
+        stock_df.loc["2021":][stock_df["Position"] == -1].index,
+        stock_df.loc["2021":][short_window_col][stock_df["Position"] == -1],
+        "v", markersize=15, color="r", alpha=0.7, label="sell",
+    )
 
-            plt.ylabel("Price in $", fontsize=20, fontweight="bold")
-            plt.xlabel("Date", fontsize=20, fontweight="bold")
-            plt.title(f"{symbol} - {str(moving_avg)} Crossover", fontsize=30, fontweight="bold")
-            plt.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
-            ax.legend(loc="best", prop={"size": 16})
-            plt.tight_layout()
-            plt.show()
-            st.pyplot(fig)
-        except:
-            pass
+    plt.ylabel("Price in $", fontsize=20, fontweight="bold")
+    plt.xlabel("Date", fontsize=20, fontweight="bold")
+    plt.title(f"{symbol} - {str(moving_avg)} Crossover", fontsize=30, fontweight="bold")
+    plt.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
+    ax.legend(loc="best", prop={"size": 16})
+    plt.tight_layout()
+    plt.show()
+    st.pyplot(fig)
 
 
     if df_pos['Position'][-1] == 'Buy':

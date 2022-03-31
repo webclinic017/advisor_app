@@ -163,8 +163,8 @@ class Strategy(object):
                 if model == "Moving-Average - SMA & EMA":
                     sma_ema_choice = st.sidebar.radio("Choose Moving Average Method", ("SMA", "EMA"))
                     inter = st.sidebar.radio('Interval',
-                        ('1m','2m','5m','15m','30m','60m','90m','1h','1d','5d','1wk','1mo','3mo'),
-                        index=8
+                        ('1m','5m','15m','30m','1h','1d','1wk'),
+                        index=5
                     )
                     st.sidebar.write("__" * 25)
                     if st.sidebar.button("Run Strategies", key='b'):
