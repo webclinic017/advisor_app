@@ -177,7 +177,7 @@ class Strategy(object):
                             validate=True,
                             verify=True,
                         )
-                        hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
+                        hammer_hist = hammerTime.history(period='5y').reset_index().set_index('date')
                         hammer_hist.index = pd.to_datetime(hammer_hist.index)
                         data = hammer_hist.rename(columns={'symbol': 'ticker'})
                                 
