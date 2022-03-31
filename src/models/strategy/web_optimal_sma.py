@@ -80,15 +80,15 @@ class Optimal_SMA(object):
         self.data["Position"] = self.data["Signal"].diff()
 
         if graphit is True:
-            # self.data = self.data[pd.to_datetime(self.data.index) < pd.to_datetime('2020-09')]
+            # self.data = self.data[pd.to_datetime(self.data.index) < pd.to_datetime('2020')]
             fig, ax = plt.subplots()
             
             plt.plot(self.data["adjclose"], label=self.company_longName)
             plt.plot(self.data[SMA_window_col], label="SMA-{}".format(best_sma))
             # plot 'buy' signals
             plt.plot(
-                self.data.loc["2020-09":][self.data["Position"] == 1].index,
-                self.data.loc["2020-09":][SMA_window_col][self.data["Position"] == 1],
+                self.data.loc["2020":][self.data["Position"] == 1].index,
+                self.data.loc["2020":][SMA_window_col][self.data["Position"] == 1],
                 "^",
                 markersize=15,
                 color="g",
@@ -97,8 +97,8 @@ class Optimal_SMA(object):
             )
             # plot 'sell' signals
             plt.plot(
-                self.data.loc["2020-09":][self.data["Position"] == -1].index,
-                self.data.loc["2020-09":][SMA_window_col][self.data["Position"] == -1],
+                self.data.loc["2020":][self.data["Position"] == -1].index,
+                self.data.loc["2020":][SMA_window_col][self.data["Position"] == -1],
                 "v",
                 markersize=15,
                 color="r",
