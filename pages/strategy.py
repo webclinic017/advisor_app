@@ -152,17 +152,9 @@ class Strategy(object):
             )
             stock_ticker = stock_ticker.split()
             st.sidebar.write(" *" * 25)
+            
 
-            if method_strat == "Run All Strategies":
-                if st.sidebar.button("Run Strategies", key='a'):
-                    for s in stock_ticker:
-                        self.run_movAvg_sma_ema(s, "SMA")
-                        self.run_optimal_sma(s)
-                        self.run_overBought_overSold(s)
-                        self.run_supportResistance(s)
-                        self.run_strategyII(s)
-
-
+            method_strat = "Individual Strategy"
             if method_strat == "Individual Strategy":
                 st.sidebar.header("[5] Select Model")
                 model = st.sidebar.radio("Choose A Model", l0.feature_strategy)
