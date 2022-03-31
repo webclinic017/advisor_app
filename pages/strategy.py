@@ -32,7 +32,6 @@ class Strategy(object):
         self.today_stamp = str(today_stamp)[:10]
         self.saveMonth = str(datetime.now())[:7]
         self.saveDay = str(datetime.now())[8:10]
-        self.saveRec = Path(f"data/recommenders/{str(today_stamp)[:4]}/{self.saveMonth}/{self.today_stamp}/")
 
 
     def run_the_strats(self):
@@ -41,8 +40,7 @@ class Strategy(object):
             "Pick Stocks", 
             (
                 "Single Stock", 
-                "Recommended Stocks", 
-                "Personal Portfolio"
+                "Multiple Stocks"
             )
         )
         
@@ -146,112 +144,7 @@ class Strategy(object):
 
 
 
-        if select_stocks == "Recommended Stocks":
-
-            report_date = st.sidebar.date_input(
-            label="> recommender date:",
-                value=date(2021, 7, 14),
-                min_value=date(2021, 7, 14),
-                max_value=date.today(),
-                key="date to run proof",
-                help="Select a date in the range between 2021.07.15 - 2021.08.26. \
-                    This date will be the date the recommender model was run and we \
-                        will use the resulting tickers for our proof",
-            )
-            name_lst = st.sidebar.radio(
-                label="", 
-                options=(
-                    'minimum_volatility_portfolio',    
-                    'maximum_sharpe_ratio',
-                    'maximum_sharpe_equalWT',
-                    'monte_carlo_cholesky',
-                ),
-                index=1
-            )
-            stock_ticker = f0.recommended_stocks_2(name_lst, report_date)            
-
-
-            if method_strat == "Run All Strategies":
-                if st.sidebar.button("Run Strategies"):
-                    for i in stock_ticker:
-                        self.run_movAvg_sma_ema(i, "SMA")
-                        self.run_optimal_sma(i)
-                        self.run_overBought_overSold(i)
-                        self.run_supportResistance(i)
-                        # self.run_strategyII(i)
-           
-
-            if method_strat == "Individual Strategy":
-                st.sidebar.header("[5] Select Model")
-                model = st.sidebar.radio("Choose A Model", l0.feature_strategy)
-                st.sidebar.write(" *" * 25)
-
-                if model == "-Select-Model-":
-                    self.run_homePage()
-
-                if model == "Moving-Average - SMA & EMA":
-                    sma_ema_choice = st.sidebar.radio("Choose Moving Average Method", ("SMA", "EMA"))
-                    inter = st.sidebar.radio('Interval',
-                        ('1m','2m','5m','15m','30m','60m','90m','1h','1d','5d','1wk','1mo','3mo'),
-                        index=8
-                    )                    
-                    st.sidebar.write("__" * 25)
-                    if st.sidebar.button("Run Strategy"):
-                        hammerTime = Ticker(
-                            stock_ticker,
-                            asynchronous=True,
-                            formatted=False,
-                            backoff_factor=0.34,
-                            progress=True,
-                            validate=True,
-                            verify=True,
-                        )
-                        hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                        hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        hammer_hist = hammer_hist.rename(columns={'symbol': 'ticker'})                    
-                        for i in stock_ticker:
-                            data = pd.DataFrame(hammer_hist[hammer_hist['ticker'] == i])
-                            self.run_movAvg_sma_ema(i, data, sma_ema_choice, True, inter)
-
-
-                if model == "Optimal SMA":
-                    if st.sidebar.button("Run Strategy"):
-                        hammerTime = Ticker(
-                            stock_ticker,
-                            asynchronous=True,
-                            formatted=False,
-                            backoff_factor=0.34,
-                            progress=True,
-                            validate=True,
-                            verify=True,
-                        )
-                        hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                        hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        hammer_hist = hammer_hist.rename(columns={'symbol': 'ticker'})                            
-                        for i in stock_ticker:
-                            data = pd.DataFrame(hammer_hist[hammer_hist['ticker'] == i])
-                            self.run_optimal_sma(i, data)
-
-
-                if model == "OverBought & OverSold":
-                    if st.sidebar.button("Run Strategy"):
-                        for i in stock_ticker:
-                            self.run_overBought_overSold(i)
-
-
-                if model == "Support & Resistance Lines":
-                    if st.sidebar.button("Run Strategy"):
-                        for i in stock_ticker:
-                            self.run_supportResistance(i)
-
-
-                if model == "Strategy II":
-                    if st.sidebar.button("Run Strategy"):
-                        for i in stock_ticker:
-                            self.run_strategyII(i)
-
-
-        if select_stocks == "Personal Portfolio":
+        if select_stocks == "Multiple Stocks":
             st.sidebar.write(" *" * 25)
             stock_ticker = st.sidebar.text_input(
                 label="Enter Your Own Stock List To Model The various Machine Learning & Algo Trading Strategies",
