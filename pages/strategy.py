@@ -167,23 +167,7 @@ class Strategy(object):
                         index=5
                     )
                     st.sidebar.write("__" * 25)
-                    if st.sidebar.button("Run Strategies", key='b'):
-                        # hammerTime = Ticker(
-                        #     stock_ticker,
-                        #     asynchronous=True,
-                        #     formatted=False,
-                        #     backoff_factor=0.34,
-                        #     progress=True,
-                        #     validate=True,
-                        #     verify=True,
-                        # )
-                        # hammer_hist = hammerTime.history(period='5y').reset_index().set_index('date')
-                        # hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        # data = hammer_hist.rename(columns={'symbol': 'ticker'})
-                                
-                        # del data['ticker']
-                        # del data['dividends']
-                        # st.dataframe(data)                     
+                    if st.sidebar.button("Run Strategies", key='b'):         
                                                 
                         for s in stock_ticker:
                             self.run_movAvg_sma_ema(s, sma_ema_choice, True, inter)
@@ -291,10 +275,10 @@ class Strategy(object):
 
 
 
-    def run_overBought_overSold(self, stock_ticker, data):
+    def run_overBought_overSold(self, stock_ticker):
         st.write('_'*25)
         st.subheader(" > Over Bought & Over Sold Analysis ")
-        s1.overBought_overSold(stock_ticker).generate(data)
+        s1.overBought_overSold(stock_ticker).generate()
 
 
     def run_supportResistance(self, stock_ticker):

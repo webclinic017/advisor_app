@@ -44,8 +44,8 @@ class The_OverBought_OverSold(object):
         self.company = get_company_longName(self.ticker)
 
 
-    def generate(self, df):
-        # df = yf.download(self.ticker, start=self.start_date, end=self.end_dte, parse_dates=True)
+    def generate(self):
+        df = yf.download(self.ticker, start=self.start_date, end=self.end_dte, parse_dates=True)
         df.reset_index(inplace=True)
         df.date = df.date.astype("str")
         date = [datetime.strptime(d, "%Y-%m-%d") for d in df["date"]]
