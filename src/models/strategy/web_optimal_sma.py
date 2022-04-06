@@ -88,8 +88,8 @@ class Optimal_SMA(object):
             plt.plot(self.data[SMA_window_col], label="SMA-{}".format(best_sma))
             # plot 'buy' signals
             plt.plot(
-                self.data.loc["2021":][self.data["Position"] == 1].index,
-                self.data.loc["2021":][SMA_window_col][self.data["Position"] == 1],
+                self.data[self.data["Position"] == 1].index,
+                self.data[SMA_window_col][self.data["Position"] == 1],
                 "^",
                 markersize=15,
                 color="g",
@@ -98,8 +98,8 @@ class Optimal_SMA(object):
             )
             # plot 'sell' signals
             plt.plot(
-                self.data.loc["2021":][self.data["Position"] == -1].index,
-                self.data.loc["2021":][SMA_window_col][self.data["Position"] == -1],
+                self.data[self.data["Position"] == -1].index,
+                self.data[SMA_window_col][self.data["Position"] == -1],
                 "v",
                 markersize=15,
                 color="r",
