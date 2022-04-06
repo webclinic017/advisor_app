@@ -65,28 +65,28 @@ class Strategy(object):
             if method_strat == "Run All Strategies":
                 st.sidebar.write(" *" * 25)            
                 if st.sidebar.button("Run Strategies"):
-                    hammerTime = Ticker(
-                        self.stock_ticker,
-                        asynchronous=False,
-                        formatted=False,
-                        backoff_factor=0.34,
-                        progress=True,
-                        validate=True,
-                        verify=True,
-                    )
-                    hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                    hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                    data = hammer_hist.rename(columns={'symbol': 'ticker'})
-                    try:
-                        del data['ticker']
-                        del data['splits']
-                        del data['dividends']
-                    except Exception:
-                        pass            
+                    # hammerTime = Ticker(
+                    #     self.stock_ticker,
+                    #     asynchronous=False,
+                    #     formatted=False,
+                    #     backoff_factor=0.34,
+                    #     progress=True,
+                    #     validate=True,
+                    #     verify=True,
+                    # )
+                    # hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
+                    # hammer_hist.index = pd.to_datetime(hammer_hist.index)
+                    # data = hammer_hist.rename(columns={'symbol': 'ticker'})
+                    # try:
+                    #     del data['ticker']
+                    #     del data['splits']
+                    #     del data['dividends']
+                    # except Exception:
+                    #     pass            
 
-                    self.run_movAvg_sma_ema(self.stock_ticker, data, "SMA")
-                    self.run_optimal_sma(self.stock_ticker, data)
-                    self.run_overBought_overSold(self.stock_ticker, data)
+                    self.run_movAvg_sma_ema(self.stock_ticker, "SMA")
+                    self.run_optimal_sma(self.stock_ticker)
+                    self.run_overBought_overSold(self.stock_ticker)
                     self.run_supportResistance(self.stock_ticker)
                     self.run_strategyII(self.stock_ticker)
 
@@ -103,34 +103,34 @@ class Strategy(object):
                     
                 else:
                     if st.sidebar.button("Run Strategy"):
-                        hammerTime = Ticker(
-                            self.stock_ticker,
-                            asynchronous=False,
-                            formatted=False,
-                            backoff_factor=0.34,
-                            progress=True,
-                            validate=True,
-                            verify=True,
-                        )
-                        hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                        hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        data = hammer_hist.rename(columns={'symbol': 'ticker'})
-                        try:
-                            del data['ticker']
-                            del data['splits']
-                            del data['dividends']
-                        except Exception:
-                            pass                        
+                        # hammerTime = Ticker(
+                        #     self.stock_ticker,
+                        #     asynchronous=False,
+                        #     formatted=False,
+                        #     backoff_factor=0.34,
+                        #     progress=True,
+                        #     validate=True,
+                        #     verify=True,
+                        # )
+                        # hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
+                        # hammer_hist.index = pd.to_datetime(hammer_hist.index)
+                        # data = hammer_hist.rename(columns={'symbol': 'ticker'})
+                        # try:
+                        #     del data['ticker']
+                        #     del data['splits']
+                        #     del data['dividends']
+                        # except Exception:
+                        #     pass                        
 
                         if model == "Moving-Average - SMA & EMA":
                             st.sidebar.write("__" * 25)
-                            self.run_movAvg_sma_ema(self.stock_ticker, data, sma_ema_opt='SMA', p_out=True, inter='1d')
+                            self.run_movAvg_sma_ema(self.stock_ticker, sma_ema_opt='SMA', p_out=True, inter='1d')
 
                         if model == "Optimal SMA":
-                            self.run_optimal_sma(self.stock_ticker, data)
+                            self.run_optimal_sma(self.stock_ticker)
 
                         if model == "OverBought & OverSold":
-                            self.run_overBought_overSold(self.stock_ticker, data)
+                            self.run_overBought_overSold(self.stock_ticker)
 
                         if model == "Support & Resistance Lines":
                             self.run_supportResistance(self.stock_ticker)
