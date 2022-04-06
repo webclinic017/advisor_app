@@ -80,15 +80,16 @@ class Optimal_SMA(object):
         self.data["Position"] = self.data["Signal"].diff()
 
         if graphit is True:
-            # self.data = self.data[pd.to_datetime(self.data.index) < pd.to_datetime('2020')]
+            # self.data = self.data[pd.to_datetime(self.data.index) < pd.to_datetime('2021')]
+            
             fig, ax = plt.subplots()
             
             plt.plot(self.data["adjclose"], label=self.company_longName)
             plt.plot(self.data[SMA_window_col], label="SMA-{}".format(best_sma))
             # plot 'buy' signals
             plt.plot(
-                self.data.loc["2020":][self.data["Position"] == 1].index,
-                self.data.loc["2020":][SMA_window_col][self.data["Position"] == 1],
+                self.data.loc["2021":][self.data["Position"] == 1].index,
+                self.data.loc["2021":][SMA_window_col][self.data["Position"] == 1],
                 "^",
                 markersize=15,
                 color="g",
@@ -97,8 +98,8 @@ class Optimal_SMA(object):
             )
             # plot 'sell' signals
             plt.plot(
-                self.data.loc["2020":][self.data["Position"] == -1].index,
-                self.data.loc["2020":][SMA_window_col][self.data["Position"] == -1],
+                self.data.loc["2021":][self.data["Position"] == -1].index,
+                self.data.loc["2021":][SMA_window_col][self.data["Position"] == -1],
                 "v",
                 markersize=15,
                 color="r",
@@ -111,7 +112,7 @@ class Optimal_SMA(object):
             plt.xlabel("Date", fontsize=20, fontweight="bold")
             plt.ylabel("Price", fontsize=20, fontweight="bold")
             plt.title(f"{self.company_longName} ({self.name}) - SMA", fontsize=30, fontweight="bold", )
-            # plt.xlim((date(2020, 1, 1)), (date(2020, 12, 30)))
+            # plt.xlim((date(2021, 1, 1)), (date(2021, 12, 30)))
             for label in ax.get_xticklabels() + ax.get_yticklabels():
                 label.set_fontsize(15)
             ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
@@ -142,7 +143,7 @@ class Optimal_SMA(object):
         #     del df_pos['SMA']
         #     del df_pos['Signal']
         #     del df_pos['Position']            
-        #     # st.text(tabulate(df_pos.loc["2020":], headers="keys", tablefmt="psql"))
+        #     # st.text(tabulate(df_pos.loc["2021":], headers="keys", tablefmt="psql"))
         #     st.text(tabulate(df_pos.iloc[-5:], headers="keys", tablefmt="psql"))
         # except:
         #     pass
