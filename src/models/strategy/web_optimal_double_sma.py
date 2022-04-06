@@ -24,7 +24,7 @@ class Optimal_Double_SMA(object):
         sma2 = range(5, 126, 5)
         results = pd.DataFrame()
         for SMA1, SMA2 in product(sma1, sma2):
-            data1 = pd.DataFrame(self.raw["adjclose"].copy())
+            data1 = pd.DataFrame(self.raw["Adj Close"].copy())
             data1.columns = [self.tic]
             data1.dropna(inplace=True)
             data1["Returns"] = np.log(data1[self.tic] / data1[self.tic].shift(1))
