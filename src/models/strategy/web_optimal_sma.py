@@ -33,7 +33,7 @@ class Optimal_SMA(object):
 
 
     def build_optimal_sma(self, graphit=True, cc=0.0, ccc=0.0):
-        data = Ticker(self.name).history(period='2y').reset_index()
+        data = Ticker(self.name).history(period='1y').reset_index()
         del data['symbol']
         data = pd.DataFrame(data.set_index('date').copy())
         self.data = pd.DataFrame(data[pd.to_datetime(data.index) < pd.to_datetime(self.end_date)])
