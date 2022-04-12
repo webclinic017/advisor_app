@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Machine Learning Advisor App",
+    page_title="Advisor App",
     page_icon="chart_with_upwards_trend",
     layout="wide",
     initial_sidebar_state="expanded",    
