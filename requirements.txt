@@ -1,7 +1,5 @@
 backtrader==1.9.76.123
 cufflinks==0.17.3
-fastquant==0.1.8.0
-fbprophet==0.7.1
 finviz==1.4.2
 finvizfinance==0.9.10
 ipython==8.2.0
@@ -33,3 +31,4 @@ xgboost==1.5.2
 yahoo_fin==0.8.9.1
 yahooquery==2.2.15
 yfinance==0.1.70
+fbprophet==0.7.1
