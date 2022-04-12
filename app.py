@@ -76,7 +76,7 @@ if __name__ == '__main__':
         st.sidebar.header("__[1] Select Investment Focus__")
         
         
-        systemStage = st.sidebar.radio("", l0.general_pages, key="nunya")
+        systemStage = st.sidebar.selectbox("", l0.general_pages, key="nunya")
         st.sidebar.markdown(f"{'__'*25}")
 
         if systemStage == "Home":

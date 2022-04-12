@@ -17,18 +17,18 @@ pd.plotting.register_matplotlib_converters()
 
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
-# sm, med, lg = "20", "25", "30"
-# plt.rcParams["font.size"] = sm  # controls default text sizes
-# plt.rc("axes", titlesize=med)  # fontsize of the axes title
-# plt.rc("axes", labelsize=med)  # fontsize of the x & y labels
-# plt.rc("xtick", labelsize=sm)  # fontsize of the tick labels
-# plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
-# plt.rc("legend", fontsize=sm)  # legend fontsize
-# plt.rc("figure", titlesize=lg)  # fontsize of the figure title
-# plt.rc("axes", linewidth=2)  # linewidth of plot lines
-# plt.rcParams["figure.figsize"] = [15, 13]
-# plt.rcParams["figure.dpi"] = 113
-# plt.rcParams["axes.facecolor"] = "silver"
+sm, med, lg = "20", "25", "30"
+plt.rcParams["font.size"] = sm  # controls default text sizes
+plt.rc("axes", titlesize=med)  # fontsize of the axes title
+plt.rc("axes", labelsize=med)  # fontsize of the x & y labels
+plt.rc("xtick", labelsize=sm)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
+plt.rc("legend", fontsize=sm)  # legend fontsize
+plt.rc("figure", titlesize=lg)  # fontsize of the figure title
+plt.rc("axes", linewidth=2)  # linewidth of plot lines
+plt.rcParams["figure.figsize"] = [15, 13]
+plt.rcParams["figure.dpi"] = 113
+plt.rcParams["axes.facecolor"] = "silver"
 
 import pyfolio as pf
 from pyfolio.tears import create_full_tear_sheet
@@ -77,40 +77,15 @@ class Backtest(object):
                 """
 
                 self.ticker = st.sidebar.text_input("> SELECT TICKER:", "NVDA")
-                self.strategy = st.sidebar.radio(
-                    "> SELECT STRATEGY:",
-                    [
-                        "Single Moving Average", 
-                        "Double Moving Average Crossover"
-                    ],
-                    index=1,
-                )
-
-                self.hist_per = st.sidebar.radio(
-                    "> SELECT TIME HORIZON:",
-                    (
-                        "3mo", "6mo", "ytd", "1y", "2y", "5y", "10y", "max"
-                    ),
-                    index=3,
-                )
-
+                self.strategy = st.sidebar.radio("> SELECT STRATEGY:",["Single Moving Average", "Double Moving Average Crossover"],index=1,)
+                self.hist_per = "1y" # "3mo", "6mo", "ytd", "1y", "2y", "5y", "10y", "max"
                 self.sellShort = False
 
-                mod_01 = st.sidebar.radio(
-                    label='Configure',
-                    options=(
-                        'Auto Optimize',
-                        'Set Inputs'
-                    )
-                )                
-
+                mod_01 = 'Auto Optimize' # 'Set Inputs'
+                # mod_01 = st.sidebar.radio(label='Configure',options=('Auto Optimize','Set Inputs'))                
 
                 if self.strategy == "Single Moving Average":
-                    if mod_01 == 'Set Inputs':
-                        single_ma = st.sidebar.number_input(
-                            label='set single sma',
-                            value=20
-                        )
+                    if mod_01 == 'Set Inputs':single_ma = st.sidebar.number_input(label='set single sma',value=20)
 
                     if st.sidebar.button("Run Single Moving Average"):
                         if mod_01 == 'Auto Optimize':
