@@ -62,7 +62,6 @@ ipykernel==6.9.1
 ipython-genutils==0.2.0
 ipython==7.31.1
 ipywidgets==7.6.3
-jinja2
 jedi
 joblib==1.0.1
 jsonschema==3.2.0
@@ -165,7 +164,7 @@ trading_calendars==2.1.1
 traitlets==5.1.1
 transformers==4.11.2
 tscv==0.1.1
-typing-extensions==4.1.1
+typing-extensions==3.10.0.2
 tzlocal==2.1
 ujson==4.0.2
 urllib3==1.26.6

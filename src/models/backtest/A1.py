@@ -128,11 +128,11 @@ def plot(data, ticker, windows, strategy):
     company = company_longName(ticker)
 
     fig, ax = plt.subplots()
-    plt.plot(data["close"], label=ticker)
+    plt.plot(data["close"], label=ticker, lw=3, color='k')
 
     if len(windows) > 1:
-        plt.plot(data[f"{windows[0]} day MA"], label=f"{windows[0]} day MA", lw=2)
-        plt.plot(data[f"{windows[1]} day MA"], label=f"{windows[1]} day MA", lw=2)
+        plt.plot(data[f"{windows[0]} day MA"], label=f"{windows[0]} day MA", lw=2, color='blue')
+        plt.plot(data[f"{windows[1]} day MA"], label=f"{windows[1]} day MA", lw=2, color='red')
     else:
         plt.plot(data[f"{windows[0]} day MA"], label=f"{windows[0]} day MA")
 
@@ -140,16 +140,16 @@ def plot(data, ticker, windows, strategy):
         data.index,
         data.buyPrice,
         marker="^",
-        s=200,
-        color="darkblue",
+        s=300,
+        color="darkgreen",
         label="BUY SIGNAL",
     )
     plt.scatter(
         data.index,
         data.sellPrice,
         marker="v",
-        s=200,
-        # color="crimson",
+        s=300,
+        color="crimson",
         label="SELL SIGNAL",
     )
 
