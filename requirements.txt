@@ -28,4 +28,3 @@ yahooquery==2.2.15
 yfinance==0.1.70
 pystan==2.19.1.1
 fbprophet==0.7.1
-TA-Lib

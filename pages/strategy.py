@@ -152,8 +152,8 @@ class Strategy(object):
     def run_indicators(self, stock_ticker):
         st.header("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Indicator Analysis 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
         st.header(f"{' '*25}")
-        s1.Indicator_Ike(stock_ticker).kingpin()
-        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
+        # s1.Indicator_Ike(stock_ticker).kingpin()
+        # st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
 
 
     def run_overBought_overSold(self, stock_ticker):
