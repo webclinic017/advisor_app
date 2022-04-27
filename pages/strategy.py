@@ -32,59 +32,23 @@ class Strategy(object):
         self.today_stamp = str(today_stamp)[:10]
         self.saveMonth = str(datetime.now())[:7]
         self.saveDay = str(datetime.now())[8:10]
+        
+        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 · Strategy · 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄗'*32}")        
 
 
     def run_the_strats(self):
-        st.sidebar.header("[3] Select Stock")
-        select_stocks = st.sidebar.radio(
-            "Pick Stocks", 
-            (
-                "Single Stock", 
-                "Multiple Stocks"
-            )
-        )
-        
+        select_stocks = st.sidebar.selectbox("[ 2 ] Select Stock", ("Single Stock", "Multiple Stocks"))
         
         if select_stocks == "Single Stock":
-            self.stock_ticker = st.sidebar.text_input(
-                label="Enter Stock In ALL CAPS [example: TSLA]", 
-                value="TSLA"
-            )        
-
-            st.sidebar.write(" *" * 25)
-            st.sidebar.header("[4] Select Method [All or 1]")
-            method_strat = st.sidebar.radio(
-                "Pick Method", 
-                (
-                    "Individual Strategy", 
-                    "Run All Strategies"
-                )
-            )
-            
+            method_strat = st.sidebar.selectbox("[ 3 ] Select Method", ("Individual Strategy", "Run All Strategies"))
+            model = st.sidebar.selectbox("[ 4 ] Select Model", l0.feature_strategy, index=0)
             
             if method_strat == "Run All Strategies":
                 st.sidebar.write(" *" * 25)            
                 if st.sidebar.button("Run Strategies"):
-                    # hammerTime = Ticker(
-                    #     self.stock_ticker,
-                    #     asynchronous=False,
-                    #     formatted=False,
-                    #     backoff_factor=0.34,
-                    #     progress=True,
-                    #     validate=True,
-                    #     verify=True,
-                    # )
-                    # hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                    # hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                    # data = hammer_hist.rename(columns={'symbol': 'ticker'})
-                    # try:
-                    #     del data['ticker']
-                    #     del data['splits']
-                    #     del data['dividends']
-                    # except Exception:
-                    #     pass            
-
-                    self.run_movAvg_sma_ema(self.stock_ticker, "SMA")
+                    self.run_movAvg_sma_ema(self.stock_ticker)
                     self.run_optimal_sma(self.stock_ticker)
                     self.run_overBought_overSold(self.stock_ticker)
                     self.run_supportResistance(self.stock_ticker)
@@ -92,39 +56,17 @@ class Strategy(object):
 
 
             if method_strat == "Individual Strategy":
-                st.sidebar.write(" *" * 25)
-                
-                st.sidebar.header("[5] Select Model")
-                model = st.sidebar.radio("Choose A Model", l0.feature_strategy, index=0)
-                st.sidebar.write(" *" * 25)
+                self.stock_ticker = st.sidebar.text_input(label="[ 5 ] Enter Stock In ALL CAPS [example: TSLA]", value="TSLA")
 
                 if model == "-Select-Model-":
                     self.run_homePage()
                     
                 else:
-                    if st.sidebar.button("Run Strategy"):
-                        # hammerTime = Ticker(
-                        #     self.stock_ticker,
-                        #     asynchronous=False,
-                        #     formatted=False,
-                        #     backoff_factor=0.34,
-                        #     progress=True,
-                        #     validate=True,
-                        #     verify=True,
-                        # )
-                        # hammer_hist = hammerTime.history(period='2y').reset_index().set_index('date')
-                        # hammer_hist.index = pd.to_datetime(hammer_hist.index)
-                        # data = hammer_hist.rename(columns={'symbol': 'ticker'})
-                        # try:
-                        #     del data['ticker']
-                        #     del data['splits']
-                        #     del data['dividends']
-                        # except Exception:
-                        #     pass                        
+                    if st.sidebar.button("[ 6 ] Implement Strategy"):
 
-                        if model == "Moving-Average - SMA & EMA":
+                        if model == "Moving-Average":
                             st.sidebar.write("__" * 25)
-                            self.run_movAvg_sma_ema(self.stock_ticker, sma_ema_opt='SMA', p_out=True, inter='1d')
+                            self.run_movAvg_sma_ema(self.stock_ticker)
 
                         if model == "Optimal SMA":
                             self.run_optimal_sma(self.stock_ticker)
@@ -139,8 +81,7 @@ class Strategy(object):
                             self.run_strategyII(self.stock_ticker)
                             
                         if model == "Indicators":
-                            # s1.ii().kingpin(self.stock_ticker)
-                            pass
+                            self.run_indicators(self.stock_ticker)
 
 
 
@@ -156,21 +97,15 @@ class Strategy(object):
 
             method_strat = "Individual Strategy"
             if method_strat == "Individual Strategy":
-                st.sidebar.header("[5] Select Model")
-                model = st.sidebar.radio("Choose A Model", l0.feature_strategy)
+                model = st.sidebar.radio("[ 5 ] Select Model", l0.feature_strategy)
                 st.sidebar.write(" *" * 25)               
 
                 if model == "Moving-Average - SMA & EMA":
-                    sma_ema_choice = st.sidebar.radio("Choose Moving Average Method", ("SMA", "EMA"))
-                    inter = st.sidebar.radio('Interval',
-                        ('1m','5m','15m','30m','1h','1d','1wk'),
-                        index=5
-                    )
                     st.sidebar.write("__" * 25)
                     if st.sidebar.button("Run Strategies", key='b'):         
                                                 
                         for s in stock_ticker:
-                            self.run_movAvg_sma_ema(s, sma_ema_choice, True, inter)
+                            self.run_movAvg_sma_ema(s)
 
                 else:
                     if st.sidebar.button("Run Strategies", key='c'):
@@ -196,9 +131,6 @@ class Strategy(object):
 
 
     def run_homePage(self):
-        st.header("[Strategy Home Page]")
-        st.write(" *" * 25)
-
         st.subheader(" > General Analysis Components ")
         with st.expander("Expand For Details", expanded=False):
             st.subheader("Moving Averages")
@@ -242,52 +174,52 @@ class Strategy(object):
             st.write("* backtrader backtesting")
 
 
-    def run_movAvg_sma_ema(self, stock_ticker, sma_ema_opt, p_out=True, cc=0.0, ccc=0.0, inter='1d'):
-        res, S, L = s1.optimal_2sma(stock_ticker).grab_data(self.today_stamp, inter)
-        stock_symbol = s1.movAvg_sma_ema(stock_ticker, S, L, self.today_stamp, sma_ema_opt, p_out, cc, ccc, inter)        
-        st.write('_'*25)
-        if stock_symbol == stock_ticker:
-            return True
-        if stock_symbol != stock_ticker:
-            return False
-        else:
-            return False
+    def run_movAvg_sma_ema(self, stock_ticker, cc=0.0, ccc=0.0, inter='1d'):
+        st.header("𝄖𝄗𝄘𝄙𝄙𝄚𝄚 Optimal Double Moving Average 𝄚𝄚𝄙𝄙𝄘𝄗𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}") 
+        S, L = s1.optimal_2sma(stock_ticker).grab_data(self.today_stamp, inter)
+        s1.movAvg_sma_ema(stock_ticker, S, L, self.today_stamp, 'SMA', cc, ccc, inter)
+        st.write('*'*34)
+        s1.movAvg_sma_ema(stock_ticker, S, L, self.today_stamp, 'EWMA', cc, ccc, inter)
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
         
 
     def run_optimal_sma(self, stock_ticker, graphit=True, cc=0.0, ccc=0.0):
-        stock_symbol = s1.optimal_sma(stock_ticker, self.today_stamp).build_optimal_sma(graphit, cc, ccc)
-        st.write('_'*25)
-        if stock_symbol == stock_ticker:
-            return True
-        if stock_symbol != stock_ticker:
-            return False
-        else:
-            return False
-        
-    def run_indicators(self, stock_ticker, cc=0.0, ccc=0.0, graphit=True):
-        stock_symbol = s1.ii(stock_ticker, cc, ccc, graphit).kingpsin()
-        if stock_symbol == stock_ticker:
-            return True
-        if stock_symbol != stock_ticker:
-            return False
-        else:
-            return False        
+        st.header("𝄖𝄗𝄘𝄙𝄙𝄚𝄚 Optimal Single Moving Averages 𝄚𝄚𝄙𝄙𝄘𝄗𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}")         
+        s1.optimal_sma(stock_ticker, self.today_stamp).build_optimal_sma(graphit, cc, ccc)
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
 
+        
+    def run_indicators(self, stock_ticker):
+        st.header("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Indicator Analysis 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}")        
+        s1.Indicator_Ike(stock_ticker).kingpin()
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
 
 
     def run_overBought_overSold(self, stock_ticker):
-        st.write('_'*25)
-        st.subheader(" > Over Bought & Over Sold Analysis ")
+        st.header("𝄖𝄗𝄘𝄙𝄙𝄚𝄚 Over Bought & Over Sold Analysis 𝄚𝄚𝄙𝄙𝄘𝄗𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}")              
         s1.overBought_overSold(stock_ticker).generate()
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
 
 
     def run_supportResistance(self, stock_ticker):
-        st.write('_'*25)
-        st.subheader(" > Support & Resistance Lines ")
+        st.header("𝄖𝄗𝄘𝄙𝄙𝄚𝄚 Support & Resistance Analysis 𝄚𝄚𝄙𝄙𝄘𝄗𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}")
         s1.support_resistance(stock_ticker).level()
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")
 
 
     def run_strategyII(self, stock_ticker):
-        st.write('_'*25)
-        st.subheader(" > Strategy II ")
+        st.header("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Strategy II Analysis 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄖'*32}")
         s1.Trading_Technicals(stock_ticker).trading_technicals()
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Strategy Complete")

@@ -640,45 +640,45 @@ class Stocker(object):
         # if not nshares:
 
         # Date range of predictions
-        st.markdown("\nPrediction Range: {} to {}.".format(start_date, end_date))
+        st.caption("\n▸ Prediction Range: {} to {}.".format(start_date, end_date))
 
         # Final prediction vs actual value
-        st.markdown(
-            "\nPredicted price on {} = ${:.2f}.".format(
+        st.caption(
+            "\n▸ Predicted price on {} = ${:.2f}.".format(
                 max(future["ds"]), future.loc[future.index[-1], "yhat"]
             )
         )
-        st.markdown(
-            "Actual price on    {} = ${:.2f}.\n".format(
+        st.caption(
+            "▸ Actual price on    {} = ${:.2f}.\n".format(
                 max(test["ds"]), test.loc[test.index[-1], "y"]
             )
         )
 
-        st.markdown(
-            "Average Absolute Error on Training Data = ${:.2f}.".format(
+        st.caption(
+            "▸ Average Absolute Error on Training Data = ${:.2f}.".format(
                 train_mean_error
             )
         )
-        st.markdown(
-            "Average Absolute Error on Testing  Data = ${:.2f}.\n".format(
+        st.caption(
+            "▸ Average Absolute Error on Testing  Data = ${:.2f}.\n".format(
                 test_mean_error
             )
         )
 
         # Direction accuracy
-        st.markdown(
-            "When the model predicted an increase, the price increased {:.2f}% of the time.".format(
+        st.caption(
+            "▸ When the model predicted an increase, the price increased {:.2f}% of the time.".format(
                 increase_accuracy
             )
         )
-        st.markdown(
-            "When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
+        st.caption(
+            "▸ When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
                 decrease_accuracy
             )
         )
 
-        st.markdown(
-            "The actual value was within the {:d}% confidence interval {:.2f}% of the time.".format(
+        st.caption(
+            "▸ The actual value was within the {:d}% confidence interval {:.2f}% of the time.".format(
                 int(100 * model.interval_width), in_range_accuracy
             )
         )
@@ -786,35 +786,35 @@ class Stocker(object):
             test["hold_profit"] = nshares * (test["y"] - float(test.loc[0, "y"]))
 
             # Display information
-            st.markdown(
-                "You played the stock market in {} from {} to {} with {} shares.\n".format(
+            st.caption(
+                "▸ You played the stock market in {} from {} to {} with {} shares.\n".format(
                     self.symbol, start_date, end_date, nshares
                 )
             )
 
-            st.markdown(
-                "When the model predicted an increase, the price increased {:.2f}% of the time.".format(
+            st.caption(
+                "▸ When the model predicted an increase, the price increased {:.2f}% of the time.".format(
                     increase_accuracy
                 )
             )
-            st.markdown(
-                "When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
+            st.caption(
+                "▸ When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n".format(
                     decrease_accuracy
                 )
             )
 
             # Display some friendly information about the perils of playing the stock market
-            st.markdown(
-                "The total profit using the Prophet model = ${:.2f}.".format(
+            st.caption(
+                "▸ The total profit using the Prophet model = ${:.2f}.".format(
                     np.sum(prediction_profit)
                 )
             )
-            st.markdown(
-                "The Buy and Hold strategy profit =         ${:.2f}.".format(
+            st.caption(
+                "▸ The Buy and Hold strategy profit =         ${:.2f}.".format(
                     float(test.loc[test.index[-1], "hold_profit"])
                 )
             )
-            st.markdown("\nThanks for playing the stock market!\n")
+            st.caption("\n▸ Thanks for playing the stock market!\n")
 
             # Plot the predicted and actual profits over time
             self.reset_plot()

@@ -17,9 +17,8 @@ import seaborn as sns
 
 plt.style.use("seaborn")
 sns.set_palette("cubehelix")
-plt.rcParams["figure.figsize"] = [18, 10]
-plt.rcParams["figure.dpi"] = 150
-
+plt.rcParams["figure.figsize"] = [15, 6]
+plt.rcParams["figure.dpi"] = 100
 sm, med, lg = 10, 15, 20
 plt.rc("font", size=sm)  # controls default text sizes
 plt.rc("axes", titlesize=med)  # fontsize of the axes title
@@ -31,12 +30,9 @@ plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
 
 import streamlit as st
-
 from pathlib import Path
-
 path = str(Path.cwd()) + "/"
 from datetime import datetime
-
 today = str(datetime.now())[:10]
 
 
@@ -46,6 +42,8 @@ today = str(datetime.now())[:10]
 
 
 class The_Efficient_Frontier(object):
+    
+    
     def __init__(self, RISKY_ASSETS):
         self.RISKY_ASSETS = RISKY_ASSETS
         self.prices_df = yf.download(self.RISKY_ASSETS, start="2020-01-01")["Adj Close"]
@@ -56,6 +54,7 @@ class The_Efficient_Frontier(object):
         self.string = ""
         for r in self.RISKY_ASSETS:
             self.string += r + "_"
+
 
     def ef_setup(self):
         self.returns_df = self.prices_df.pct_change().dropna()
@@ -105,34 +104,33 @@ class The_Efficient_Frontier(object):
             self.portf_vol_ef.append(np.min(self.portf_vol[self.matched_ind]))
         self.portf_rtns_ef = np.delete(self.portf_rtns_ef, self.indices_to_skip)
 
+
     def results_maxSharpeRatio(self):
         self.ef_setup()
         self.max_sharpe_ind = np.argmax(self.portf_results_df.sharpe_ratio)
         self.max_sharpe_portf = self.portf_results_df.loc[self.max_sharpe_ind]
         self.min_vol_ind = np.argmin(self.portf_results_df.volatility)
         self.min_vol_portf = self.portf_results_df.loc[self.min_vol_ind]
-        st.header("- - - Maximum Sharpe Ratio portfolio - - -")
-        st.subheader("Performance:")
+        
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Maximum Sharpe Ratio portfolio ")
+        st.write("__▷ Performance__")
         for index, value in self.max_sharpe_portf.items():
-            st.write(f"{index}: {100 * value:.2f}% ", end="", flush=True)
-        st.subheader("\nWeights")
-        for x, y in zip(
-            self.RISKY_ASSETS,
-            self.weights[np.argmax(self.portf_results_df.sharpe_ratio)],
-        ):
-            st.write(f"{x}: {100*y:.2f}% ", end="", flush=True)
+            st.write(f"* {index}: {100 * value:.2f}% ", end="", flush=True)
+        st.write("__▷ Weights__")
+        for x, y in zip(self.RISKY_ASSETS, self.weights[np.argmax(self.portf_results_df.sharpe_ratio)]):
+            st.write(f"* {x}: {100*y:.2f}% ", end="", flush=True)
+
 
     def results_minVolatility(self):
         self.results_maxSharpeRatio()
-        st.header("- - - Minimum Volatility portfolio - - -")
-        st.subheader("Performance:")
+        st.header("𝄖𝄗𝄘𝄙𝄚 Minimum Volatility portfolio")
+        st.write("__▷ Performance__")
         for index, value in self.min_vol_portf.items():
-            st.write(f"{index}: {100 * value:.2f}% ", end="", flush=True)
-        st.subheader("\nWeights")
-        for x, y in zip(
-            self.RISKY_ASSETS, self.weights[np.argmin(self.portf_results_df.volatility)]
-        ):
-            st.write(f"{x}: {100*y:.2f}% ", end="", flush=True)
+            st.write(f"* {index}: {100 * value:.2f}% ", end="", flush=True)
+        st.write("__▷ Weights__")
+        for x, y in zip(self.RISKY_ASSETS, self.weights[np.argmin(self.portf_results_df.volatility)]):
+            st.write(f"* {x}: {100*y:.2f}% ", end="", flush=True)
+
 
     def final_plot(self):
         self.results_minVolatility()
@@ -179,7 +177,6 @@ class The_Efficient_Frontier(object):
             ax.scatter(
                 x=np.sqrt(self.cov_mat.iloc[asset_index, asset_index]),
                 y=self.avg_returns[asset_index],
-                # marker=self.MARKS[asset_index],
                 s=100,
                 color="black",
                 label=self.RISKY_ASSETS[asset_index],
@@ -187,40 +184,10 @@ class The_Efficient_Frontier(object):
         ax.set(
             xlabel="Volatility",
             ylabel="Expected Returns",
-            title=f"Efficient Frontier",  # {self.string}",
-        )
+            title=f"Efficient Frontier",          )
         for label in ax.get_xticklabels() + ax.get_yticklabels():
             label.set_fontsize(15)
         ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
         ax.legend(loc="best", prop={"size": 16})
         plt.tight_layout()
         st.pyplot(fig)
-
-
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-# *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-
-if __name__ == "__main__":
-
-    RISKY_ASSETS = []
-    manys = [2, 4, 6, 8, 10, 12, 14]
-    how_many = int(
-        st.sidebar.selectbox("Select Number Of Securities For Portfolio:", manys)
-    )
-    # how_many = int(input('How Many Stocks In Your Portfolio? (up to 14): '))
-    for i in range(1, how_many + 1):
-        tic = input(f"Enter Stock {i}: ")
-        RISKY_ASSETS.append(tic)
-    RISKY_ASSETS.sort()
-
-    marks0 = ["o", "^", "s", "p", "h", "8", "*", "d", ">", "v", "<", "1", "2", "3", "4"]
-    mark = marks0[: len(RISKY_ASSETS) + 1]
-
-    The_Efficient_Frontier(RISKY_ASSETS).final_plot()
-
-
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-# *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *     *
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

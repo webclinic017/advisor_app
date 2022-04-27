@@ -53,7 +53,7 @@ def web_stocker_run(stock_ticker, forcast_period, e_date):
 
     microsoft.weekly_seasonality = True
     model, model_data = microsoft.create_prophet_model(days=forcast_period)
-    st.subheader(f"Forecast With Seasonality - {forcast_period} Days")
+    st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Forecast With Seasonality - {forcast_period} Days")
     st.pyplot(model.plot(model_data))
     microsoft.weekly_seasonality = False
 
@@ -74,7 +74,7 @@ def web_stocker_run(stock_ticker, forcast_period, e_date):
 
     microsoft.create_model()
     model, model_data = microsoft.create_prophet_model(days=forcast_period)
-    st.subheader(f"{company_long_name} [{stock_ticker}] {forcast_period}-Day Forecast")
+    st.subheader(f"𝄖𝄗𝄘𝄙𝄚 {company_long_name} [{stock_ticker}] {forcast_period}-Day Forecast")
     plt.grid(True)
     st.pyplot(model.plot(model_data))
 

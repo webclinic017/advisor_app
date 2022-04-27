@@ -22,27 +22,30 @@ class Screeners(object):
         self.stage_lst = l0.general_pages
         self.major_indicies = l0.major_indicies
         self.major_index_names = l0.major_index_names
+        
+        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 · Screener · 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
+        st.header(f"{'𝄗'*33}") # 𝄗 𝄖
 
 
     def run_screen(self):
-        st.header("[Screener]")
-        st.write("- Select Top Screeners For Live Market Updates")
-        screener = st.selectbox("", l0.names_of_screeners)
-        if st.button("Source Screeners"):
-            Snapshot(self.today_stamp).get_screener_display(screener)
+        
+        cols = st.columns(2)
+        with cols[0]:
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Live Stock Screener Lists")
+            screener = st.selectbox("", l0.names_of_screeners)
+            if screener != "-":
+                Snapshot(self.today_stamp).get_screener_display(screener)              
+        st.write(f"{'_'*10}")        
+
+        cols = st.columns(1)
+        with cols[0]:
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Google Trending Topics, Stocks, Assets, & More")
+            if st.button("Source Trending"):
+                Snapshot(self.today_stamp).run_trending()    
         st.write(f"{'_'*25}")
-
-
-        st.subheader("Multivariate")
-        st.write("- Recurrent Neural Network [RNN] Analysis")
-        st.write("- Consumer Sentiment vs Industrial Production")
-        if st.button("Source Multivariate"):
-            Snapshot(self.today_stamp).run_multivariate()  
-        st.write(f"{'_'*25}")
-
-
-        st.subheader("Trending")
-        st.write(" - Google Trending Topics, Stocks, Assets, & More")
-        if st.button("Source Trending"):
-            Snapshot(self.today_stamp).run_trending()
-        st.write(f"{'_'*25}")
+                
+        cols = st.columns(1)
+        with cols[0]:
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Multivariate Market Analysis")       
+            if st.button("Source Multivariate"):
+                Snapshot(self.today_stamp).run_multivariate()  

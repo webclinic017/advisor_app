@@ -21,15 +21,15 @@ plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
 plt.rc("legend", fontsize=sm)  # legend fontsize
 plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
-plt.rcParams["figure.figsize"] = [18, 10]
-plt.rcParams["figure.dpi"] = 150
+plt.rcParams["figure.figsize"] = [15, 5]
+plt.rcParams["figure.dpi"] = 100
 
 
 
 class The_PCA_Analysis(object):
     
     
-    def __init__(self, tickers, report_date, save_final=True, x_factor=0.13):
+    def __init__(self, tickers, report_date, save_final=True, x_factor=0.41):
         self.tickers = tickers
         self.report_date = report_date
         self.save_final = save_final
@@ -44,22 +44,22 @@ class The_PCA_Analysis(object):
             self.savePCApic.mkdir(parents=True)
 
 
-    def build_pca(self, data, graph_it=True):
-        self.graph_it = graph_it
+    def build_pca(self, data):
+        self.graph_it = True
         self.prices = pd.DataFrame(data)
         self.rs = self.prices.apply(np.log).diff(1)     
 
 
         # if self.graph_it:
         #     fig, ax = plt.subplots()
-        #     ax = self.rs.plot(legend=0,figsize=(10, 6),grid=True,title=f"Daily Returns",)
+        #     ax = self.rs.plot(legend=0,grid=True,title=f"Daily Returns",)
         #     plt.tight_layout()
         #     st.pyplot()
 
 
         if self.graph_it:
             fig, ax = plt.subplots()
-            (self.rs.cumsum().apply(np.exp)).plot(legend=0,figsize=(10, 6),grid=True,title=f"Cumulative Returns",)
+            (self.rs.cumsum().apply(np.exp)).plot(legend=0,grid=True,title=f"Cumulative Returns",)
             plt.tight_layout()
             plt.legend()
             st.pyplot()
@@ -71,7 +71,7 @@ class The_PCA_Analysis(object):
 
         # fig, ax = plt.subplots()
         # pc1.plot(
-        #     figsize=(10, 6),
+        #     
         #     xticks=[],
         #     grid=True,
         #     title=f"First Principal Component",
@@ -87,18 +87,18 @@ class The_PCA_Analysis(object):
 
         if self.graph_it:
             fig, ax = plt.subplots()
-            myrs_cumsum.plot(figsize=(10, 6),grid=True,title=f"Cumulative Daily Returns of 1st Principal Component Stock",)
+            myrs_cumsum.plot(grid=True,title=f"Cumulative Daily Returns of 1st Principal Component Stock",)
             st.pyplot()
 
 
-        prices = yf.download(["^GSPC"], period='1y')["Adj Close"]
+        prices = yf.download(["^GSPC"], period='2y')["Adj Close"]
         rs_df = pd.concat([myrs, prices.apply(np.log).diff(1)], 1)
         rs_df.columns = ["PCA Portfolio", "SP500_Index"]
 
 
         if self.graph_it:
             fig, ax = plt.subplots()
-            rs_df.dropna().cumsum().apply(np.exp).plot(subplots=True, figsize=(10, 6), grid=True, linewidth=3)
+            rs_df.dropna().cumsum().apply(np.exp).plot(subplots=True, grid=True, linewidth=3)
             plt.tight_layout()
             st.pyplot()
 
@@ -110,15 +110,13 @@ class The_PCA_Analysis(object):
         st.pyplot()
 
 
+        fig, ax = plt.subplots()
         ws = [-1,] * 10 + [1,] * 10
         myrs = self.rs[pc1.nlargest(self.x_factor).index].mean(1)
-
-
-        fig, ax = plt.subplots()
         myrs1 = myrs.cumsum().apply(np.exp)
-        p101 = prices[:self.report_date].apply(np.log).diff(1).cumsum().apply(np.exp)
-        myrs1.plot(figsize=(15, 5),grid=True,linewidth=3,title=f"PCA Selection ({self.x_factor} Most Impactful) vs S&P500 Index",)
-        p101.plot(figsize=(10, 6), grid=True, linewidth=3)
+        p101 = prices.apply(np.log).diff(1).cumsum().apply(np.exp)
+        myrs1.plot(grid=True,linewidth=3,title=f"PCA Selection ({self.x_factor} Most Impactful) vs S&P500 Index",)
+        p101.plot(grid=True, linewidth=3)
         plt.legend(["PCA Selection", "SP500_Index"])
         plt.tight_layout()
         st.pyplot()
@@ -128,9 +126,9 @@ class The_PCA_Analysis(object):
         ws = [-1,] * 10 + [1,] * 10
         myrs = self.rs[pc1.nsmallest(self.x_factor).index].mean(1)
         myrs2 = myrs.cumsum().apply(np.exp)
-        p102 = prices[:self.report_date].apply(np.log).diff(1).cumsum().apply(np.exp)
-        myrs2.plot(figsize=(15, 5),grid=True,linewidth=3,title=f"PCA Selection ({self.x_factor} Least Impactful) vs S&P500 Index",)
-        p102.plot(figsize=(10, 6), grid=True, linewidth=3)
+        p102 = prices.apply(np.log).diff(1).cumsum().apply(np.exp)
+        myrs2.plot(grid=True,linewidth=3,title=f"PCA Selection ({self.x_factor} Least Impactful) vs S&P500 Index",)
+        p102.plot(grid=True, linewidth=3)
         plt.legend(["PCA Selection", "SP500_Index"])
         plt.tight_layout()
         st.pyplot()
@@ -146,33 +144,26 @@ class The_PCA_Analysis(object):
 
             # fig, ax = plt.subplots()
             # myrs.cumsum().apply(np.exp).plot(
-            #     figsize=(15, 5),
+            #     
             #     grid=True,
             #     linewidth=3,
             #     title=f"PCA Portfolio (5 Most & 5 Least Impactful) vs The Round 5 Stocks",
             # )
             # prices["2020":].apply(np.log).diff(1).cumsum().apply(np.exp).plot(
-            #     figsize=(10, 6), grid=True, linewidth=3
+            #     grid=True, linewidth=3
             # )
             # plt.legend(["PCA Selection", "SP500_Index"])
             # plt.tight_layout()
             # st.pyplot()
 
 
-            st.subheader(f"Below Are The Principal Components From The Ticker List:")
-            st.write(f"- LARGEST PCA VALUES == [{round(largest_ret,2)}]")
-            st.write(f"- SMALLEST PCA VALUES == [{round(smallest_ret,2)}]")
-            st.write(f"- SPY500 VALUES == [{round(spy500_ret,2)}]")
-            if largest_ret > smallest_ret:
-                return self.rs[pc1.nlargest(self.x_factor).index]
-            else:
-                return self.rs[pc1.nsmallest(self.x_factor).index]
+            st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Below Are The Principal Components From The Ticker List:")
+            st.write(f"- LARGEST PCA VALUES' Returns (top {len(pc1.nlargest(self.x_factor))}) == [{round(largest_ret,2)}]")
+            st.write(f"- SMALLEST PCA VALUES' Returns (bottom {len(pc1.nsmallest(self.x_factor))}) == [{round(smallest_ret,2)}]")
+            st.write(f"- S&P500 Return == [{round(spy500_ret,2)}]")
             
         else:
             st.subheader(f"Below Are The Principal Components From The Ticker List:")
-            st.write(f"- LARGEST PCA VALUES == [{round(largest_ret,2)}]")
-            st.write(f"- SMALLEST PCA VALUES == [{round(smallest_ret,2)}]")
-            if largest_ret > smallest_ret:
-                return self.rs[pc1.nlargest(self.x_factor).index]
-            else:
-                return self.rs[pc1.nsmallest(self.x_factor).index]
+            st.write(f"- LARGEST PCA VALUES' Returns (top {len(pc1.nlargest(self.x_factor))})  == [{round(largest_ret,2)}]")
+            st.write(f"- SMALLEST PCA VALUES' Returns (bottom {len(pc1.nsmallest(self.x_factor))}) == [{round(smallest_ret,2)}]")
+            st.write(f"- S&P500 Return == [{round(spy500_ret,2)}]")

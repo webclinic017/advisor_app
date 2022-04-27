@@ -7,7 +7,8 @@ from matplotlib import pyplot as plt
 from tabulate import tabulate
 import warnings
 import streamlit as st
-from datetime import datetime
+
+import src.tools.functions as f0
 
 warnings.filterwarnings("ignore")
 mpl.use("Agg")
@@ -21,11 +22,11 @@ plt.rc("ytick", labelsize=sm)  # fontsize of the tick labels
 plt.rc("legend", fontsize=sm)  # legend fontsize
 plt.rc("figure", titlesize=lg)  # fontsize of the figure title
 plt.rc("axes", linewidth=2)  # linewidth of plot lines
-plt.rcParams["figure.figsize"] = [18, 10]
-plt.rcParams["figure.dpi"] = 150
+plt.rcParams["figure.figsize"] = [10, 7]
+plt.rcParams["figure.dpi"] = 100
 
 
-def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, moving_avg, data, print_out=True, cc=0.0, ccc=0.0, inter='1d'):
+def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, moving_avg, data, cc=0.0, ccc=0.0, inter='1d'):
     """
         The function takes the stock symbol, time-duration of analysis,
         look-back periods and the moving-average type(SMA or EMA) as input
@@ -39,11 +40,11 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
             >> display_table - (bool)whether to display the date and price table at buy/sell positions(True/False)
             >> import the closing price data of the stock for the aforementioned period of time in Pandas dataframe
     """
+    
     data = yf.download(symbol, start='2020-01-03', end=str(end_date)[:10], interval=inter)
-    # data = pd.DataFrame(data)
     data.index = pd.to_datetime(data.index)
     stock_df = pd.DataFrame(data['Adj Close'])        
-    stock_df.columns = {"Close Price"}  # assign new colun name
+    stock_df.columns = {"Close Price"}  
     stock_df = stock_df.fillna(0.0)
 
     # column names for long and short moving average columns
@@ -56,7 +57,7 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
         stock_df[long_window_col] = (stock_df["Close Price"].rolling(window=long_window, min_periods=1).mean())
 
     # Create a short simple exponential average (short_ema) & create a long exponential moving average (long_ema) column
-    elif moving_avg == "EMA":
+    elif moving_avg == "EWMA":
         stock_df[short_window_col] = (stock_df["Close Price"].ewm(span=short_window, adjust=False).mean())
         stock_df[long_window_col] = (stock_df["Close Price"].ewm(span=long_window, adjust=False).mean())
 
@@ -74,32 +75,33 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
     df_pos["Position"] = df_pos["Position"].apply(lambda x: "Buy" if x == 1 else "Sell")
 
 
+    company_name = f0.company_longName(symbol)
+    x = f"{company_name} [{symbol}]"
+    st.subheader(f"𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄙 Moving Average Analysis · {x} 𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
+    # st.write('𝄖'*41) 
+
 
     fig, ax = plt.subplots()
-
     # plot close price, short-term and long-term moving averages
     plt.tick_params(axis="both", labelsize=15)
     stock_df.loc["2020":, "Close Price"].plot(color="k", lw=2, label="Close Price")
     stock_df.loc["2020":][short_window_col].plot(color="b", lw=2, label=short_window_col)
     stock_df.loc["2020":][long_window_col].plot(color="g", lw=2, label=long_window_col)
-    
     # plot 'buy' signals
     plt.plot(
         stock_df.loc["2020":][stock_df["Position"] == 1].index,
         stock_df.loc["2020":][short_window_col][stock_df["Position"] == 1],
         "^", markersize=15, color="g", alpha=0.7, label="buy",
     )
-
     # plot 'sell' signals
     plt.plot(
         stock_df.loc["2020":][stock_df["Position"] == -1].index,
         stock_df.loc["2020":][short_window_col][stock_df["Position"] == -1],
         "v", markersize=15, color="r", alpha=0.7, label="sell",
     )
-
     plt.ylabel("Price in $", fontsize=20, fontweight="bold")
     plt.xlabel("Date", fontsize=20, fontweight="bold")
-    plt.title(f"{symbol} - {str(moving_avg)} Crossover", fontsize=30, fontweight="bold")
+    plt.title(f"{str(moving_avg)} Crossover", fontsize=30, fontweight="bold")
     plt.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
     ax.legend(loc="best", prop={"size": 16})
     plt.tight_layout()
@@ -111,7 +113,7 @@ def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, movi
 
     if df_pos['Position'][-1] == 'Buy':
         st.metric(f"No. {cc} / {ccc} In Portfolio", f"{symbol}", f"{df_pos['Position'][-1]}")
-        return symbol
+        return
 
     elif df_pos['Position'][-1] == 'Sell':
         st.metric(f"No. {cc} / {ccc} In Portfolio", f"{symbol}", f"- {df_pos['Position'][-1]}")

@@ -18,39 +18,40 @@ class Home(object):
 
     def __init__(self, today_stamp):
         self.today_stamp = str(today_stamp)[:10]
-        self.stage_lst = l0.general_pages
-        self.major_indicies = l0.major_indicies
-        self.major_index_names = l0.major_index_names
+        
+        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 · Home · 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄗'*32}")        
 
 
     def run_home(self):
         
-        cols = st.columns(1)
-        with cols[0]:
-            st.subheader("__· Live Stock Screener Lists ·__")
-            screener = st.selectbox("", l0.names_of_screeners)
-            if screener != "-":
-                Snapshot(self.today_stamp).get_screener_display(screener)              
-        st.write(f"{'_'*25}")
+        # cols = st.columns(1)
+        # with cols[0]:
+        #     st.subheader("𝄖𝄗𝄘𝄙𝄚 Live Stock Screener Lists")
+        #     screener = st.selectbox("", l0.names_of_screeners)
+        #     if screener != "-":
+        #         Snapshot(self.today_stamp).get_screener_display(screener)              
+        # st.write(f"{'_'*25}")
         
         
-        cols = st.columns(1)
-        with cols[0]:
-            st.subheader("__· Google Trending Topics, Stocks, Assets, & More ·__")
-            if st.button("Source Trending"):
-                Snapshot(self.today_stamp).run_trending()    
-        st.write(f"{'_'*25}")
+        # cols = st.columns(1)
+        # with cols[0]:
+        #     st.subheader("𝄖𝄗𝄘𝄙𝄚 Google Trending Topics, Stocks, Assets, & More")
+        #     if st.button("Source Trending"):
+        #         Snapshot(self.today_stamp).run_trending()    
+        # st.write(f"{'_'*25}")
               
                 
-        cols = st.columns(1)
-        with cols[0]:
-            st.subheader("__· Multivariate Market Analysis ·__")       
-            if st.button("Source Multivariate"):
-                Snapshot(self.today_stamp).run_multivariate()  
-        st.write(f"{'_'*25}")
+        # cols = st.columns(1)
+        # with cols[0]:
+        #     st.subheader("𝄖𝄗𝄘𝄙𝄚 Multivariate Market Analysis")       
+        #     if st.button("Source Multivariate"):
+        #         Snapshot(self.today_stamp).run_multivariate()  
+        # st.write(f"{'_'*25}")
 
 
-        cols = st.columns(1)
-        with cols[0]:
-            st.subheader("__· Disclosures ·__")
-            st.write(f"{s0.financial_disclosure}")
+
+        my_expander = st.expander("𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄘𝄙𝄙𝄙𝄙𝄙 Disclosures 𝄙𝄙𝄙𝄙𝄙𝄘𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖", expanded=False)
+        with my_expander:
+            clicked = w0.home_disclosure()

@@ -46,7 +46,6 @@ class MonteCarloCholesky(object):
             z = pd.DataFrame(y[y['symbol'] == i]['adjclose'])
             df[i] = z
         return df.round(2)
-        # return pd.DataFrame(yf.download(tickers, start=start, end=self.report_date)["Adj Close"])
 
 
     def log_returns(self, data):
@@ -211,20 +210,14 @@ class MonteCarloCholesky(object):
                 d = si.get_quote_table(ticks[s])
                 y = d.get('1y Target Est')                
 
-                st.subheader(f"__{company_longName(ticks[s])} [{ticks[s]}]__")
-                st.write(f"__Forcast Days:__ {days}")
-                st.write(f"__Current Value:__ $ {x}")
-                st.write(f"__Analyst Average 1y Est:__ ${y}")
-                st.write(
-                    f"__Expected Value:__ ${round(pd.DataFrame(price_list).iloc[-1].mean(),2)}"
-                )
-                st.write(
-                    f"__Return:__ {round(100*(pd.DataFrame(price_list).iloc[-1].mean()-price_list[0,1])/pd.DataFrame(price_list).iloc[-1].mean(),2)}%"
-                )
-                st.write(
-                    f"__Probability of Breakeven:__ {self.probs_find(pd.DataFrame(price_list), 0, on='return')}"
-                )
-                st.write(f"{'__'*25}")
+                st.subheader(f"𝄖𝄗𝄘𝄙𝄚 {company_longName(ticks[s])} [{ticks[s]}]")
+                st.write(f"* Forcast Days: {days}")
+                st.write(f"* Current Value: $ {x}")
+                st.write(f"* Analyst Average 1y Est: ${y}")
+                st.write(f"* Expected Value: ${round(pd.DataFrame(price_list).iloc[-1].mean(),2)}")
+                st.write(f"* Return: {round(100*(pd.DataFrame(price_list).iloc[-1].mean()-price_list[0,1])/pd.DataFrame(price_list).iloc[-1].mean(),2)}%")
+                st.write(f"* Probability of Breakeven: {self.probs_find(pd.DataFrame(price_list), 0, on='return')}")
+                st.write(' '*25)
 
         simulatedDF = pd.concat(simulatedDF)
         return simulatedDF
@@ -317,6 +310,7 @@ class MonteCarloCholesky(object):
         weightSharpe = allWeights[pointsharpe]
         x_sharpe = allVolatility[pointsharpe]
         y_sharpe = allReturns[pointsharpe]
+        
         maxret = allReturns.max()
         pointret = allReturns.argmax()
         weightRet = allWeights[pointret]
@@ -324,15 +318,17 @@ class MonteCarloCholesky(object):
         y_ret = allReturns[pointret]
 
         if plot_eff == True:
-            pass
-            # fig, ax = plt.subplots(figsize=(14, 9))
-            # plt.scatter(allVolatility, allReturns, c=allSharpeValues, cmap="plasma")
-            # plt.colorbar(label="Sharpe Ratio")
-            # plt.xlabel("Volatility")
-            # plt.ylabel("Expected Return")
-            # plt.scatter(x_sharpe, y_sharpe, c="black")
-            # plt.scatter(x_ret, y_ret, c="black")
-            # st.pyplot(fig)
+            st.caption('_'*25)
+            st.subheader(f"__𝄖𝄗𝄘𝄙𝄚 Graphic Simulation Of Portfolios__")
+                     
+            fig, ax = plt.subplots(figsize=(14, 9))
+            plt.scatter(allVolatility, allReturns, c=allSharpeValues, cmap="plasma")
+            plt.colorbar(label="Sharpe Ratio")
+            plt.xlabel("Volatility")
+            plt.ylabel("Expected Return")
+            plt.scatter(x_sharpe, y_sharpe, c="black")
+            plt.scatter(x_ret, y_ret)
+            st.pyplot(fig)
 
         optim_dic = []
         for i in range(len(tickers)):
@@ -340,19 +336,3 @@ class MonteCarloCholesky(object):
 
         fin = pd.DataFrame(optim_dic)
         return fin
-
-
-
-# if __name__ == "__main__":
-#     t_lst = ["GOOG", "FB", "^GSPC"]
-#     MonteCarloCholesky().montecarlo_cholesky(
-#         t_lst, days=252, iterations=25000, start="2015-1-1", show_hist=True
-#     )
-
-#     ticker_lst = ["AAPL", "ASML", "NVDA", "SNOW", "PLTR", "TSLA"]
-#     no_trials = 2500
-#     fin = MonteCarloCholesky().montecarlo_sharpe_optimal_portfolio(
-#         ticker_lst, no_trials
-#     )
-#     st.dataframe(fin)
-

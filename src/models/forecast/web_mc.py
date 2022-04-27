@@ -183,8 +183,6 @@ class MC_Forecast(object):
             plt.xlabel("Stock Price")
             st.pyplot(fig)
 
-        # CAPM and Sharpe Ratio
-
         # Printing information about stock
         try:
             [print(nam) for nam in data.columns]
@@ -193,23 +191,20 @@ class MC_Forecast(object):
 
         df = yf.download(data.name, period="1d")
         x = round(float(df["Adj Close"]), 2)
-
         d = si.get_quote_table(data.name)
         y = d.get('1y Target Est')
 
-
-        st.write(f"__Days:__ {days-1}")
-        st.write(f"__Current Value:__ $ {x}")
-        st.write(f"__Expected Value:__ ${round(pd.DataFrame(price_list).iloc[-1].mean(),2)}")
-        st.write(f"__Analyst Average 1y Est:__ ${y}")
-        st.write(f"__Return:__ {round(100*(pd.DataFrame(price_list).iloc[-1].mean()-price_list[0,1])/pd.DataFrame(price_list).iloc[-1].mean(),2)}%")
-        st.write(f"__Probability of Breakeven:__ {self.probs_find(pd.DataFrame(price_list),0, on='return')}")
+        st.write(f"__▸ Days:__ {days-1}")
+        st.write(f"__▸ Current Value:__ $ {x}")
+        st.write(f"__▸ Expected Value:__ ${round(pd.DataFrame(price_list).iloc[-1].mean(),2)}")
+        st.write(f"__▸ Analyst Average 1y Est:__ ${y}")
+        st.write(f"__▸ Return:__ {round(100*(pd.DataFrame(price_list).iloc[-1].mean()-price_list[0,1])/pd.DataFrame(price_list).iloc[-1].mean(),2)}%")
+        st.write(f"__▸ Probability of Breakeven:__ {self.probs_find(pd.DataFrame(price_list),0, on='return')}")
         return pd.DataFrame(price_list)
 
 
     def monte_carlo(self, tickers, days_forecast, iterations, start_date="2000-1-1", return_type="log", plotten=False):
         tickers.append('SPY')
-
         data = self.import_stock_data(tickers, start=start_date)
         inform = self.beta_sharpe(tickers, data, mark_ticker="^GSPC", start=start_date)
         simulatedDF = []
@@ -221,10 +216,12 @@ class MC_Forecast(object):
                 forplot = y.iloc[:, 0:10]
                 forplot.plot(figsize=(15, 4))
 
-            st.write(f"Beta: {round(inform.iloc[t,inform.columns.get_loc('Beta')],2)}")
-            st.write(f"Sharpe: {round(inform.iloc[t,inform.columns.get_loc('Sharpe')],2)}")
-            st.write(f"CAPM Return: {round(100*inform.iloc[t,inform.columns.get_loc('CAPM')],2)}%")
-            st.write(f"{'__'*25} \n {'__'*25}")
+            st.write(f"__▸ Beta: {round(inform.iloc[t,inform.columns.get_loc('Beta')],2)}__")
+            st.write(f"__▸ Sharpe: {round(inform.iloc[t,inform.columns.get_loc('Sharpe')],2)}__")
+            st.write(f"__▸ CAPM Return: {round(100*inform.iloc[t,inform.columns.get_loc('CAPM')],2)}%__")
+            
+            if tickers[t] != 'SPY':
+                st.write(f"{'__'*25}")
 
             y["ticker"] = tickers[t]
             cols = y.columns.tolist()
@@ -234,15 +231,3 @@ class MC_Forecast(object):
 
         simulatedDF = pd.concat(simulatedDF)
         return simulatedDF
-
-
-if __name__ == "__main__":
-    start = "2015-1-1"
-    ret_sim_df = MC_Forecast().monte_carlo(
-        tickers=["NVDA", "TSLA", "AAPL", "SNOW", "PLTR", "GBTC", "ETHE", "ASML"],
-        days_forecast=252,
-        iterations=1000,
-        start_date=start,
-        return_type="log",
-        plotten=False,
-    )

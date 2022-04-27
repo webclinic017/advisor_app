@@ -46,29 +46,26 @@ today_date = str(datetime.now())[:10]
 
 
 class The_Portfolio_Optimizer(object):
+    
+    
     def __init__(self, port_tics):
         self.port_tics = port_tics
         self.port_count = len(self.port_tics)
 
+
     def optimize(self):
-        # saveName = str(f"{self.min_composite_score}_{self.min_RSI}_{self.min_Analyst_Recom}_{self.min_Sentiment}_{self.max_allocations}")
         hammerTime = Ticker(
             self.port_tics, 
-            # asynchronous=True, 
             formatted=False, 
             backoff_factor=0.34
         )
         hT = hammerTime.history(start="2021-01-04")
         hT.head()
-
         Table = pd.DataFrame()
         for p in self.port_tics:
             hist = hT.copy().T
             hist = hist[p].T["adjclose"]
-            # hist.to_pickle(self.saveAdvisor / f"{saveName}.pkl")
             Table[p] = hist.copy()
-
-        # Table = yf.download(self.port_tics, period="1y", parse_dates=True)["Adj Close"]
         PT = pd.DataFrame(Table.iloc[1:])
         tickers = list(PT.columns)
         returns = PT.pct_change()
@@ -77,12 +74,14 @@ class The_Portfolio_Optimizer(object):
         mean_returns = returns.mean()
         cov_matrix = returns.cov()
         num_portfolios = 5000
-        risk_free_rate = 0.0178
+        risk_free_rate = 0.0285
+        
 
         def portfolio_annualised_performance(weights, mean_returns, cov_matrix):
             Returns = np.sum(mean_returns * weights) * 252
             std = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights))) * np.sqrt(252)
             return std, Returns
+
 
         def random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate):
             results = np.zeros((3, num_portfolios))
@@ -99,29 +98,18 @@ class The_Portfolio_Optimizer(object):
                 results[2, i] = (portfolio_return - risk_free_rate) / portfolio_std_dev
             return results, weights_record
 
-        def display_simulated_ef_with_random(
-            mean_returns, cov_matrix, num_portfolios, risk_free_rate
-        ):
-            results, weights = random_portfolios(
-                num_portfolios, mean_returns, cov_matrix, risk_free_rate
-            )
+
+        def display_simulated_ef_with_random(mean_returns, cov_matrix, num_portfolios, risk_free_rate):
+            results, weights = random_portfolios(num_portfolios, mean_returns, cov_matrix, risk_free_rate)
             max_sharpe_idx = np.argmax(results[2])
             sdp, rp = results[0, max_sharpe_idx], results[1, max_sharpe_idx]
-            max_sharpe_allocation = pd.DataFrame(
-                weights[max_sharpe_idx], index=PT.columns, columns=["allocation"]
-            )
-            max_sharpe_allocation.allocation = [
-                round(i * 100, 2) for i in max_sharpe_allocation.allocation
-            ]
+            max_sharpe_allocation = pd.DataFrame(weights[max_sharpe_idx], index=PT.columns, columns=["allocation"])
+            max_sharpe_allocation.allocation = [round(i * 100, 2) for i in max_sharpe_allocation.allocation]
             max_sharpe_allocation = max_sharpe_allocation.T
             min_vol_idx = np.argmin(results[0])
             sdp_min, rp_min = results[0, min_vol_idx], results[1, min_vol_idx]
-            min_vol_allocation = pd.DataFrame(
-                weights[min_vol_idx], index=PT.columns, columns=["allocation"]
-            )
-            min_vol_allocation.allocation = [
-                round(i * 100, 2) for i in min_vol_allocation.allocation
-            ]
+            min_vol_allocation = pd.DataFrame(weights[min_vol_idx], index=PT.columns, columns=["allocation"])
+            min_vol_allocation.allocation = [round(i * 100, 2) for i in min_vol_allocation.allocation]
             min_vol_allocation = min_vol_allocation.T
 
             max_sharpe_allocation_df = pd.DataFrame(
@@ -155,23 +143,19 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df["allocation"] != 0
             ]
 
+
             def storage_a():
-                st.subheader(" > Maximum Sharpe Ratio Portfolio Allocation")
-                st.write(
-                    f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]"
-                )
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Maximum Sharpe Ratio Portfolio Allocation")
+                st.write(f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]")
                 st.write(f" - Annualised Return: {round(rp,2)}")
                 st.write(f" - Annualised Volatility: {round(sdp,2)}")
                 st.dataframe(max_sharpe_allocation_df)
 
-                st.subheader(" > Minimum Volatility Portfolio Allocation")
-                st.write(
-                    f" - Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]"
-                )
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Minimum Volatility Portfolio Allocation")
+                st.write(f" - Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]")
                 st.write(f" - Annualised Return: {round(rp_min,2)}")
                 st.write(f" - Annualised Volatility: {round(sdp_min,2)}")
                 st.dataframe(min_vol_allocation_df)
-
             storage_a()
 
             fig, ax = plt.subplots()
@@ -209,7 +193,6 @@ class The_Portfolio_Optimizer(object):
             ax.legend(loc="best", prop={"size": 16})
             plt.tight_layout()
             st.pyplot(fig)
-            st.write("-" * 80)
             return (
                 rp,
                 sdp,
@@ -219,11 +202,13 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df,
             )
 
+
         def neg_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
             p_var, p_ret = portfolio_annualised_performance(
                 weights, mean_returns, cov_matrix
             )
             return -(p_ret - risk_free_rate) / p_var
+
 
         def max_sharpe_ratio(mean_returns, cov_matrix, risk_free_rate):
             num_assets = len(mean_returns)
@@ -244,10 +229,12 @@ class The_Portfolio_Optimizer(object):
             )
             return result
 
+
         def portfolio_volatility(weights, mean_returns, cov_matrix):
             return portfolio_annualised_performance(weights, mean_returns, cov_matrix)[
                 0
             ]
+
 
         def min_variance(mean_returns, cov_matrix):
             num_assets = len(mean_returns)
@@ -267,6 +254,7 @@ class The_Portfolio_Optimizer(object):
                 constraints=constraints,
             )
             return result
+
 
         def efficient_return(mean_returns, cov_matrix, target):
             num_assets = len(mean_returns)
@@ -295,15 +283,15 @@ class The_Portfolio_Optimizer(object):
             )
             return result
 
+
         def efficient_frontier(mean_returns, cov_matrix, returns_range):
             efficients = []
             for ret in returns_range:
                 efficients.append(efficient_return(mean_returns, cov_matrix, ret))
             return efficients
 
-        def display_calculated_ef_with_random(
-            mean_returns, cov_matrix, num_portfolios, risk_free_rate
-        ):
+
+        def display_calculated_ef_with_random(mean_returns, cov_matrix, num_portfolios, risk_free_rate):
             results, _ = random_portfolios(
                 num_portfolios, mean_returns, cov_matrix, risk_free_rate
             )
@@ -362,8 +350,9 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df["allocation"] != 0
             ]
 
+
             def storage_b():
-                st.subheader(" > Maximum Sharpe Ratio Portfolio Allocation")
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Maximum Sharpe Ratio Portfolio Allocation")
                 st.write(
                     f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]"
                 )
@@ -371,14 +360,13 @@ class The_Portfolio_Optimizer(object):
                 st.write(f"* Annualised Volatility: {round(sdp,2)}")
                 st.dataframe(max_sharpe_allocation_df)
 
-                st.subheader("Minimum Volatility Portfolio Allocation\n")
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Minimum Volatility Portfolio Allocation\n")
                 st.write(
                     f" - Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]"
                 )
                 st.write(f"* Annualised Return: {round(rp_min,2)}")
                 st.write(f"* Annualised Volatility: {round(sdp_min,2)}")
                 st.dataframe(min_vol_allocation_df)
-
             storage_b()
 
             fig, ax = plt.subplots()
@@ -425,7 +413,6 @@ class The_Portfolio_Optimizer(object):
             ax.legend(loc="best", prop={"size": 16})
             plt.tight_layout()
             st.pyplot(fig)
-            st.write("-" * 80)
             return (
                 rp,
                 sdp,
@@ -434,6 +421,7 @@ class The_Portfolio_Optimizer(object):
                 max_sharpe_allocation_df,
                 min_vol_allocation_df,
             )
+
 
         def display_ef_with_selected(mean_returns, cov_matrix, risk_free_rate):
             max_sharpe = max_sharpe_ratio(mean_returns, cov_matrix, risk_free_rate)
@@ -493,31 +481,24 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df["allocation"] != 0
             ]
 
+
             def storage_c():
-                st.subheader("Maximum Sharpe Ratio Portfolio Allocation\n")
-                st.write(
-                    f" - Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]"
-                )
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Maximum Sharpe Ratio Portfolio Allocation\n")
+                st.write(f"- Total Stocks Allocated: [{len(max_sharpe_allocation_df.symbol)} / {self.port_count}]")
                 st.write(f"* Annualised Return: {round(rp,2)}")
                 st.write(f"* Annualised Volatility: {round(sdp,2)}")
                 st.dataframe(max_sharpe_allocation_df)
 
-                st.subheader("Minimum Volatility Portfolio Allocation\n")
-                st.write(
-                    f" - Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]"
-                )
+                st.subheader("𝄖𝄗𝄘𝄙𝄚 Minimum Volatility Portfolio Allocation\n")
+                st.write(f"* Total Stocks Allocated: [{len(min_vol_allocation_df.symbol)} / {self.port_count}]")
                 st.write(f"* Annualised Return: {round(rp_min,2)}")
                 st.write(f"* Annualised Volatility: {round(sdp_min,2)}")
                 st.dataframe(min_vol_allocation_df)
-
             storage_c()
 
             st.header("Individual Stock Returns and Volatility\n")
             for i, txt in enumerate(PT.columns):
-                st.text(
-                    f"{txt}: annuaised return {round(an_rt[i],2)} - annualised volatility: {round(an_vol[i],2)}"
-                )
-            st.write("-" * 80)
+                st.markdown(f"- {txt}: annuaised return {round(an_rt[i],2)} - annualised volatility: {round(an_vol[i],2)}")
 
             fig, ax = plt.subplots()
             ax.scatter(an_vol, an_rt, marker="o", s=200)
@@ -570,11 +551,9 @@ class The_Portfolio_Optimizer(object):
                 min_vol_allocation_df,
             )
 
-        st.header("[Method · 1]")
+        st.subheader("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Method · 1")
         st.write(f"- Total Stocks In Ticker List: {len(self.port_tics)}")
-        st.write(
-            " - Simulated Optimal Efficient Frontier Using A Random Number Of Portfolios & Random Position Weights"
-        )
+        st.write("- Simulated Optimal Efficient Frontier Using A Random Number Of Portfolios & Random Position Weights")
         (
             rpA,
             sdpA,
@@ -586,10 +565,8 @@ class The_Portfolio_Optimizer(object):
             mean_returns, cov_matrix, num_portfolios, risk_free_rate
         )
 
-        st.header("[Method · 2]")
-        st.write(
-            "Calculated Optimal Efficient Frontier A Random Number Of Portfolios & Position Weights"
-        )
+        st.subheader("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Method · 2")
+        st.write("* Calculated Optimal Efficient Frontier A Random Number Of Portfolios & Position Weights")
         (
             rpB,
             sdpB,
@@ -601,8 +578,8 @@ class The_Portfolio_Optimizer(object):
             mean_returns, cov_matrix, num_portfolios, risk_free_rate
         )
 
-        st.header("[Method · 3]")
-        st.write("Calculated Efficient Frontier With Selected Position Weights")
+        st.subheader("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 Method · 3")
+        st.write("* Calculated Efficient Frontier With Selected Position Weights")
         (
             rp,
             sdp,
@@ -629,14 +606,6 @@ class The_Portfolio_Optimizer(object):
             "min_vol_df_3",
         ]
 
-        save_loc = Path(f"reports/portfolio/{today_date}/")
-        if not save_loc.exists():
-            save_loc.mkdir(parents=True)
-
-        for r in range(len(saver_lst)):
-            fd = pd.DataFrame(saver_lst[r])
-            fd.to_pickle(save_loc / f"{namer_lst[r]}.pkl")
-
         lst_of_returns = [
             [rpA, sdpA, rp_minA, sdp_minA, max_sharpe_df_1, min_vol_df_1],
             [rpB, sdpB, rp_minB, sdp_minB, max_sharpe_df_2, min_vol_df_2],
@@ -644,14 +613,3 @@ class The_Portfolio_Optimizer(object):
         ]
 
         return lst_of_returns
-
-
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-
-if __name__ == "__main__":
-    # my_positions = pd.read_pickle("/home/gordon/gdp/project_active/Forecasting_For_Friends/tickers/jayci_ticker_lst.pkl")
-
-    my_positions = "INSE OPCH GDEN HCCI DAR RWT TSQ LQDT AGO ONTO GLDD III WOW TGLS ORMP UTHR DAC EPRT EVC OLN ASIX AJX INMD SBLK IIPR PMBC RBNC SSTK CLH CROX MT AMRC STLD PACK ATLC CTO OMF ASX PXLW SI CUBI NET AMN CBNK BLFS SKY BW ALLY COF DECK STXB CSV AX SCU ALGN DVAX AXON TGH ELF GENI NVEE ZNTL SHYF GTYH ESEA TPX TX NSA CAMT AVNW JLL RCII EVR LPLA FUNC SNX KE HBIO AMSWA THC DKS ULTA AVNT HLIT UFPT ACLS OMCL DCOM CZWI MODV BOOT TRNS BYD MORF SONO CDXS TLYS JYNT SE NTLA ASML STAA RMNI WCC FCNCA FC MCB CRAI DOMO BEAM BNTX DFS CPRI EBSB ATKR CCS RH KSS CIGI CRL ABCB TRGP AFG SNAP CIDM VRTS TTEC KLIC STLA AMKR CBAN GPI CODI AMP CRNT CLF CSTM CNOB PNFP NAVI CNTY BLDR CBRE SYF ON AMG VRT TTGT MIDD GCO SNV PGC UHAL PACW GIL JCI VMI SEAS EPAM SRRA COOP FCCY JBL PPBI CMTL CNHI SCVL HWC FBIZ RJF ACM MXL FBNC ECC HTGC LPX BWFG LOB BRBR SCHW YETI BXC TECH QCRH CARR KKR EWBC FISI KEYS MHK NXST TEX CIVB AGCO FND ISBC HCA INTU CVCY FBMS PVBC MYFW RDN RPD MAT LKQ UAA MS PAG PW MAN ACHC SIMO BSIG RBB WSC EXP CDW ATEN SPG MITK ARES FFWM HBNC VCRA DIOD FFIC HCKT MSI FFNW TPB LSI JHX TRMB INBX WIRE LH DHR XPO OCSL ZBRA CSTR ZI MCHX SXI AMTB TXT LCUT VCTR FIVE CG GIC WNEB IQV KIM BWB DHX POWI BSY PIPR DGII BAM ATCO BCO MET GFED GMS HEES MTG ACRE HTBK NVDA AVY NDLS NVO DE ORI CSL HBMD R INOV AMX CR HWKN ALTR NVT UMPQ MRVL EXR MTSI GRBK UNTY FCBC BLK KRNY ETN CATC FMBH PFC RMBS EL BY HPE BFIN HBAN MOS GEF ORRF TCPC ARD BFST BANC LLY CC GRMN NFBK SRC SQ ISTR RBCAA NXPI BANR CUBE CHMG STRL TEL BFS USB SAFE LFUS OZK DOV MANH AYI FLOW AUB BRKL KLAC TTD BKU NKSH EVBN RMR GBX PBH IDXX BDC EFX FFIV"
-
-    The_Portfolio_Optimizer(my_positions.split()).optimize()

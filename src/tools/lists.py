@@ -55,6 +55,7 @@ major_index_names = ["S&P 500", "S&P 400", "S&P 100", "Russell 2000"]
 
 general_pages = [
     "Home",
+    "Screener",
     "Strategy",
     "Backtesting",
     "Forecasting",
@@ -74,22 +75,22 @@ feature_recommender_ticker_lst = [
 ]
 feature_analysis = [
     "Analysis Home Page",
-    "Individual Asset Analysis",
-    "CAPM & CAGR",
-    "Financial Signal Processing",
+    "Asset Overview",
+    "Ratio Analysis",
+    "Financial Signal",
     "Fundamental Analysis",
     "Technical Analysis",
 ]
 feature_forecast = [
     "-Select-A-Model-",
     "Prophet Model",
-    "Monte Carlo Sim-Cast",
     "Stocker Analysis",
-    "Regression",
-    "S.A.R.I.M.A",
-    "A.R.I.M.A",
+    "SARIMA",    
+    "Monte Carlo Cholesky",
     "Monte Carlo Simulation",
+    "Regression",    
     "Univariate Analysis",
+    "ARIMA",    
 ]
 feature_portfolio = [
     "-Select-Model-",
@@ -101,7 +102,7 @@ feature_portfolio = [
 ]
 feature_strategy = [
     "-Select-Model-",
-    "Moving-Average - SMA & EMA",
+    "Moving-Average",
     "Optimal SMA",
     "OverBought & OverSold",
     "Support & Resistance Lines",

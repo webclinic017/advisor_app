@@ -66,34 +66,29 @@ class Forecast(object):
         if not self.saveTickers.exists():
             self.saveTickers.mkdir(parents=True)
 
-        st.sidebar.caption("* __BE ADVISED - ALL MODELS IN THIS SECTION WILL TAKE TIME TO RUN__")
-
 
     def prophet(self, ticker_list):
-        st.header("Prophet · Model - [Time Series Analysis & Forecast]")
-        my_expander = st.expander("Expand", expanded=False)
-        with my_expander:
-            clicked = w0.widget_prophet(prophet_script_1, prophet_script_2, prophet_url)
-
-        ender_date = str(st.sidebar.date_input("End Date", datetime(2022, 1, 1)))[:10]
-        prophet_period_1 = st.sidebar.radio("Forcast Period (DAYS)", casting_periods, index=2)
-
-        st.sidebar.write(" *" * 25)
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN PROPHET FORECAST"):
+        st.header("⚫ 𝄖𝄗𝄘𝄙𝄚 ▷ Prophet [Time Series Forecast] ◁ 𝄚𝄙𝄘𝄗𝄖 ⚫")
+        cols = st.columns(2)
+        with cols[0]:       
+            with st.expander("▷ Details:", expanded=False):         
+                clicked = w0.widget_prophet(prophet_script_1, prophet_script_2, prophet_url)
+        st.header(f"{'𝄖'*33}")        
+        ender_date = str(st.sidebar.date_input("[ 4 ] Forecast Start Date", datetime(2022, 1, 1)))[:10]
+        prophet_period_1 = st.sidebar.selectbox("[ 5 ] Forcast Period (DAYS)", casting_periods, index=2)
+        if st.sidebar.button("[ 6 ] RUN PROPHET FORECAST"):
             if type(self.one_er_many) == str:
                 for r in ticker_list:
                     f1.prophet(r, ender_date, prophet_period_1, hist="2y").run_prophet()
-                    st.write(" *" * 25)
             elif type(self.one_er_many) == int:
                 f1.prophet(ticker_list, ender_date, prophet_period_1, hist="2y").run_prophet()
 
 
     def mc_forecast(self, ticker_list):
-        st.header("__Monte Carlo Simulation Forecast__")
-        forecast_days = st.sidebar.number_input(label="Enter Forecast Days", value=252, min_value=30, max_value=750)
-
-        if st.sidebar.button("Run Monte Carlo Sim Forecast"):
+        st.header("⚫ 𝄖𝄗𝄘𝄙𝄚 ▷ Monte Carlo Cholesky ◁ 𝄚𝄙𝄘𝄗𝄖 ⚫")
+        st.header(f"{'𝄖'*33}")
+        forecast_days = st.sidebar.selectbox("[ 4 ] Forcast Period (DAYS)", casting_periods, index=2)
+        if st.sidebar.button("[ 5 ] Run Monte Carlo Sim Forecast"):
             f1.MC_Forecast().monte_carlo(
                 tickers=ticker_list,
                 days_forecast=forecast_days,
@@ -101,18 +96,15 @@ class Forecast(object):
                 start_date="2010-01-01",
                 return_type="log",
                 plotten=False,
-            )
+                )
 
 
     def stocker(self, ticker_list):
-        st.header(" > Stocker · Model ")
-        stocker_forcast_period = st.sidebar.radio("stocker forecast period", casting_periods, index=3)
-        st.sidebar.markdown("Click to run forecasting model")
-
-        e_date = str(st.sidebar.date_input("End Date", datetime(2021, 10, 19)))[:10]
-
-        if st.sidebar.button("RUN STOCKER FORECAST"):
-
+        st.header("⚫ 𝄖𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄙𝄚𝄚𝄚 ▷ Stocker ◁ 𝄚𝄚𝄚𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄗𝄖𝄖 ⚫")
+        st.header(f"{'𝄖'*33}")        
+        stocker_forcast_period = st.sidebar.selectbox("[ 4 ] Forcast Period (DAYS)", casting_periods, index=2)
+        e_date = str(st.sidebar.date_input("[ 5 ] Forecast Start Date", datetime(2022, 1, 1)))[:10]
+        if st.sidebar.button("[ 6 ] RUN STOCKER FORECAST"):
             if type(self.one_er_many) == str:
                 for r in ticker_list:
                     f1.web_stocker_run(r, stocker_forcast_period, e_date)
@@ -121,305 +113,140 @@ class Forecast(object):
 
 
     def regression(self, ticker_list):
-        st.header(" Regression · Analysis ")
-        st.write(" *" * 25)
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN REGRESSION FORECAST"):
+        st.header("⚫ 𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ Regression ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖 ⚫")
+        st.header(f"{'𝄖'*33}")               
+        if st.sidebar.button("[ 4 ] RUN REGRESSION FORECAST"):
+            days = 5
             if type(ticker_list) == list:
                 for stock_ticker in ticker_list:
-                    days = 2
-                    (
-                        dfreg,
-                        X_lately,
-                        clfreg,
-                        clfpoly2,
-                        clfpoly3,
-                        clfknn,
-                        modName,
-                    ) = f1.regression(stock_ticker).preprocessing()
-
+                    (dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, modName) = f1.regression(stock_ticker).preprocessing()
                     if modName == "linear_regression":
-                        f1.regression(stock_ticker).linear_regression(
-                            dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                        )
-                        st.write(" *" * 25)
-
+                        f1.regression(stock_ticker).linear_regression(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                     if modName == "quadratic_regression_2":
-                        f1.regression(stock_ticker).quadratic_regression_2(
-                            dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                        )
-                        st.write(" *" * 25)
-
+                        f1.regression(stock_ticker).quadratic_regression_2(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                     if modName == "quadratic_regression_3":
-                        f1.regression(stock_ticker).quadratic_regression_3(
-                            dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                        )
-                        st.write(" *" * 25)
-
+                        f1.regression(stock_ticker).quadratic_regression_3(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                     if modName == "knn":
-                        f1.regression(stock_ticker).knn(
-                            dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                        )
-                        st.write(" *" * 25)
+                        f1.regression(stock_ticker).knn(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
             else:
-                days = 20
-                (
-                    dfreg,
-                    X_lately,
-                    clfreg,
-                    clfpoly2,
-                    clfpoly3,
-                    clfknn,
-                    modName,
-                ) = f1.regression(ticker_list).preprocessing()
-
+                (dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, modName) = f1.regression(ticker_list).preprocessing()
                 if modName == "linear_regression":
-                    f1.regression(ticker_list).linear_regression(
-                        dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                    )
-                    st.write(" *" * 25)
-
+                    f1.regression(ticker_list).linear_regression(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                 if modName == "quadratic_regression_2":
-                    f1.regression(ticker_list).quadratic_regression_2(
-                        dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                    )
-                    st.write(" *" * 25)
-
+                    f1.regression(ticker_list).quadratic_regression_2(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                 if modName == "quadratic_regression_3":
-                    f1.regression(ticker_list).quadratic_regression_3(
-                        dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                    )
-                    st.write(" *" * 25)
-
+                    f1.regression(ticker_list).quadratic_regression_3(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
                 if modName == "knn":
-                    f1.regression(ticker_list).knn(
-                        dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days
-                    )
-                    st.write(" *" * 25)
-
-
-    def arima(self, ticker_list):
-        st.header("(A.R.I.M.A)")
-        st.subheader("Auto Regression Integrated Moving Average")
-        st.write(" *" * 25)
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN ARIMA FORECAST"):
-            if type(ticker_list) == list:
-                # ticker.split()
-                for stock_ticker in ticker_list:
-                    # f1.arima1(stock_ticker).arima_model()
-                    f1.arima2(stock_ticker).runArima()
-                    st.write(" *" * 25)
-            if type(ticker_list) == str:
-                f1.arima1(ticker_list).arima_model()
-                f1.arima2(stock_ticker).runArima()
+                    f1.regression(ticker_list).knn(dfreg, X_lately, clfreg, clfpoly2, clfpoly3, clfknn, days)
 
 
     def sarima(self, ticker_list):
-        st.header(" > S.A.R.I.M.A")
-        st.subheader("Seasonal AutoRegressive Integrated Moving Average")
-        st.subheader("SARIMA MODELING & FORECAST")
-        st.write(
-            f"\
-            - A Seasonal-AutoRegressive-Integrated-MovingAverage (SARIMA) model is 1 step more than \
-            an ARIMA model based on the concept of seasonal trends \n\
-            {'__'*25}"
-        )
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN SARIMA FORECAST"):
+        st.header("⚫ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ SARIMA ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⚫")
+        st.caption("* Seasonal AutoRegressive Integrated Moving Average")
+        st.header(f"{'𝄖'*33}")                      
+        if st.sidebar.button("[ 4 ] RUN SARIMA FORECAST"):
             if type(ticker_list) == list:
-                # ticker_list.split()
                 for stock_ticker in ticker_list:
                     f1.sarima(stock_ticker).predict()
                     st.write(" *" * 25)
             if type(ticker_list) == str:
                 f1.sarima(ticker_list).predict()
                 st.write(" *" * 25)
+                
+
+    def arima(self, ticker_list):
+        st.header("⚫ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ ARIMA ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⚫")
+        st.caption("* Auto Regression Integrated Moving Average")
+        st.header(f"{'𝄖'*33}")
+        if st.sidebar.button("[ 4 ] RUN ARIMA FORECAST"):
+            if type(ticker_list) == list:
+                for stock_ticker in ticker_list:
+                    f1.arima1(stock_ticker).arima_model()
+                    f1.arima2(stock_ticker).runArima()
+            if type(ticker_list) == str:
+                f1.arima1(ticker_list).arima_model()
+                f1.arima2(stock_ticker).runArima()
 
 
     def monte_carlo(self, ticker_list):
-        st.header(" > Monte Carlo Simulations")
-        st.write(
-            f"\
-            * A Monte Carlo simulation is a useful tool for predicting future results calculating \
-                a formula multiple times with different random inputs. \n\
-            {'__'*25}"
-        )
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN MONTE CARLO FORECAST"):
+        st.header("⚫ 𝄖𝄗𝄘𝄘𝄙𝄙𝄚𝄚 ▷ Monte Carlo Simulations ◁ 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄖 ⚫")
+        cols = st.columns(2)
+        with cols[0]:       
+            with st.expander("▷ Details:"): 
+                st.caption(
+                    f"\
+                    * A Monte Carlo simulation is a useful tool for predicting future results calculating \
+                        a formula multiple times with different random inputs. \n\
+                    ")
+        st.header(f"{'𝄖'*33}")        
+        if st.sidebar.button("[ 4 ] RUN MONTE CARLO FORECAST"):
             for stock_ticker in ticker_list:
-                f1.monteCarlo(stock_ticker)
-                st.write(" *" * 25)
-
-
+                f1.monteCarlo(stock_ticker).creation_B()
+                # st.write(" *" * 25)
+                # f1.monteCarlo(stock_ticker).creation_A()
+                
+                
     def univariate(self, ticker_list):
-        st.header(" > Univariate · TimeSeries · RNN · Forecast ")
-        with st.expander("Expand"):
-            clicked = w0.widget_univariate("> Details:", univariate_script)
-
-        st.sidebar.markdown("Click to run forecasting model")
-        if st.sidebar.button("RUN UNIVARIATE FORECAST"):
-
+        st.header("⚫ 𝄖𝄖𝄗𝄘𝄘𝄙𝄙𝄚𝄚 ▷ Univariate RNN ◁ 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄖𝄖 ⚫")
+        cols = st.columns(2)
+        with cols[0]:
+            with st.expander("▷ Details:"):
+                clicked = w0.widget_univariate(univariate_script)
+        st.header(f"{'𝄖'*33}")
+        if st.sidebar.button("[ 4 ] RUN UNIVARIATE FORECAST"):
             if type(self.one_er_many) == str:
                 for stock_ticker in ticker_list:
                     f1.univariate_1(stock_ticker).runs()
-                    # f1.univariate_2(stock_ticker).runs()
-                    st.write(" *" * 25)
             elif type(self.one_er_many) == int:
                 f1.univariate_1(ticker_list).runs()
 
     # ------------------------------------------------------------------------------------------ > stage: [FORECAST]
 
     def run_forecast(self):
-        st.header(" [Forecasting] ")
-        options_f = ["Personal Portfolio", "Recommended Stocks"]#, "Ticker Lists"]
-        st.sidebar.subheader("[2] Select Stocks To Run")
-        tickers = st.sidebar.radio("Model List:", options_f)
-        st.write("__" * 25)
+        st.header("⬛ 𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ Forecasting ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖 ⬛")
+        st.header(f"{'𝄗'*33}")        
+        
 
-        if tickers == "Personal Portfolio":
-            self.one_er_many = "List"
-            st.sidebar.caption("* __CAREFUL RUNNING THESE MODELS WITH TOO MANY TICKERS - Each Model is time consuming__")
-            personal_stocks = st.sidebar.text_input("Enter Stocks", value="AAPL")
-            st.sidebar.write(" *" * 25)
+        self.one_er_many = "List"
+        st.sidebar.write("\
+            - NOTE: all models take time to run \n\
+            - Careful using with too many tickers \n\
+            "
+        )
+        
+        model = st.sidebar.selectbox("[ 2 ] Select Model:", l0.feature_forecast)
+        
+        personal_stocks = st.sidebar.text_input("[ 3 ] Enter Stock", value="AAPL")
+        personal_stocks = personal_stocks.split()        
 
+        if model == "Prophet Model":
+            self.prophet(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")
 
-            personal_stocks = personal_stocks.split()
-            st.sidebar.subheader("[3 ] Select Model To Run")
-            model = st.sidebar.radio("Model List:", l0.feature_forecast)
-            st.sidebar.write(" *" * 25)
+        if model == "Stocker Analysis":
+            self.stocker(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")
 
-            if model == "Prophet Model":
-                self.prophet(personal_stocks)
+        if model == "SARIMA":
+            self.sarima(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")
+            
+        if model == "Monte Carlo Cholesky":
+            self.mc_forecast(personal_stocks)      
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")      
 
-            if model == "Monte Carlo Sim-Cast":
-                self.mc_forecast(personal_stocks)
+        if model == "Monte Carlo Simulation":
+            self.monte_carlo(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")
 
-            if model == "Stocker Analysis":
-                self.stocker(personal_stocks)
+        if model == "Univariate Analysis":
+            self.univariate(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")
+            
+        if model == "Regression":
+            self.regression(personal_stocks)       
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")     
 
-            if model == "Regression":
-                self.regression(personal_stocks)
-
-            if model == "A.R.I.M.A":
-                self.arima(personal_stocks)
-
-            if model == "S.A.R.I.M.A":
-                self.sarima(personal_stocks)
-
-            if model == "Monte Carlo Simulation":
-                self.monte_carlo(personal_stocks)
-
-            if model == "Univariate Analysis":
-                self.univariate(personal_stocks)
-
-
-        if tickers == "Recommended Stocks":
-            report_date = st.sidebar.date_input(
-            label="> recommender date:",
-                value=date(2021, 7, 14),
-                min_value=date(2021, 7, 14),
-                max_value=date.today(),
-                key="date to run proof",
-                help="Select a date in the range between 2021.07.15 - 2021.08.26. \
-                    This date will be the date the recommender model was run and we \
-                        will use the resulting tickers for our proof",
-            )
-            name_lst = st.sidebar.radio(
-                label="", 
-                options=(
-                    'maximum_sharpe_ratio',
-                    'minimum_volatility_portfolio',    
-                    'maximum_sharpe_equalWT',
-                    'monte_carlo_cholesky',
-                )
-            )
-            recommended_stocks = f0.recommended_stocks_2(name_lst, report_date)
-            self.one_er_many = "List"
-
-            st.sidebar.subheader("[3] Select Model To Run")
-            model = st.sidebar.radio("Model List:", l0.feature_forecast)
-            st.sidebar.write(" *" * 25)
-
-            if model == "Prophet Model":
-                self.prophet(recommended_stocks)
-
-            if model == "Monte Carlo Sim-Cast":
-                self.mc_forecast(recommended_stocks)
-
-            if model == "Stocker Analysis":
-                self.stocker(recommended_stocks)
-
-            if model == "Regression":
-                self.regression(recommended_stocks)
-
-            if model == "A.R.I.M.A":
-                self.arima(recommended_stocks)
-
-            if model == "S.A.R.I.M.A":
-                self.sarima(recommended_stocks)
-
-            if model == "Monte Carlo Simulation":
-                self.monte_carlo(recommended_stocks)
-
-            if model == "Univariate Analysis":
-                self.univariate(recommended_stocks)
-
-        # if tickers == "Ticker Lists":
-        #     self.one_er_many = "List"
-        #     st.sidebar.write(" *" * 25)
-
-        #     st.sidebar.subheader("[3] Select Model To Run")
-        #     stock_lsts = st.sidebar.selectbox("Stock Lists:", l0.stock_name_list)
-        #     st.sidebar.write(" *" * 25)
-
-        #     st.sidebar.subheader("[4] Select Model To Run")
-        #     model = st.sidebar.radio("Model List:", l0.feature_forecast)
-        #     st.sidebar.write(" *" * 25)
-
-        #     if model == "Prophet Model":
-        #         # stock_lsts_0 = list(pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"])
-        #         stock_lsts_0 = list(pd.read_pickle(f"data/tickers/{stock_lsts}.pkl")["Symbol"])
-        #         self.prophet(stock_lsts_0)
-
-        #     if model == "Monte Carlo Simulation Forecast":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.mc_forecast(stock_lsts_0)
-
-        #     if model == "Stocker Analysis":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.stocker(stock_lsts_0)
-
-        #     if model == "Regression":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.regression(stock_lsts_0)
-
-        #     if model == "A.R.I.M.A":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.arima(stock_lsts_0)
-
-        #     if model == "S.A.R.I.M.A":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.sarima(stock_lsts_0)
-
-        #     if model == "Monte Carlo Simulation":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.monte_carlo(stock_lsts_0)
-
-        #     if model == "Univariate Analysis":
-        #         stock_lsts_0 = list(
-        #             pd.read_pickle(self.saveTickers / f"{stock_lsts}.pkl")["Symbol"]
-        #         )
-        #         self.univariate(stock_lsts_0)
+        if model == "ARIMA":
+            self.arima(personal_stocks)
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Forecast Complete")

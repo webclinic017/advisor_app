@@ -16,6 +16,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import GaussianNB
 import yfinance as yf
 from sklearn.tree import export_graphviz
 import streamlit as st
@@ -104,18 +105,19 @@ class The_Random_Forest(object):
         present = pd.DataFrame()
         present["tickers"] = list(self.component_df.columns[feature_importances[-1::-1]])
         n = len(self.component_df.columns)
+        
         # importances = forest_fit.feature_importances_[:n]
         importances = self.rf.feature_importances_[:n]
         std = np.std([tree.feature_importances_ for tree in self.rf.estimators_], axis=0)
         indices = np.argsort(importances)[::-1]
         features = list(self.component_df.columns[indices])
 
-        st.subheader(" Feature ranking:")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Feature ranking:")
         for f in range(n):
             st.write("%d. %s (%f)" % (f + 1, features[f], importances[indices[f]]))
 
         fig, ax = plt.subplots()
-        st.subheader("Feature Importance Plot")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Feature Importance Plot")
         ax.bar(range(n), importances[indices], yerr=std[indices], color="r", align="center")
         ax.set_xticks(range(n))
         ax.set_xticklabels(features, rotation=60)
@@ -147,8 +149,8 @@ class The_Random_Forest(object):
         maxA = max(accuracies)
 
         fig, ax = plt.subplots()
-        st.subheader("Number of Trees [Accuracy] Plot")
-        st.write(f" - Max Trees = {self.maxT}")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Number of Trees [Accuracy] Plot")
+        st.write(f"- Max Trees = {self.maxT}")
         ax.plot(num_trees, accuracies)
         ax.plot(self.maxT, maxA, color="green", marker="X", ms=13)
         ax.set_xlabel("Number of Trees")
@@ -190,8 +192,8 @@ class The_Random_Forest(object):
         maxA2 = max(accuracies)
 
         fig, ax = plt.subplots()
-        st.subheader("Number of Features [Accuracy] Plot")
-        st.write(f" - Max Features = {self.maxF}")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Number of Features [Accuracy] Plot")
+        st.write(f"- Max Features = {self.maxF}")
         ax.plot(num_features, accuracies)
         ax.plot(self.maxF, maxA2, color="green", marker="X", ms=13)
         ax.set_xlabel("Number of Features")
@@ -204,14 +206,14 @@ class The_Random_Forest(object):
         return self.X, self.y
 
 
-    def get_scores(self, classifier, kwargs):
-        model = classifier(kwargs)
+    def get_scores(self, classifier, **kwargs):
+        model = classifier(**kwargs)
         model.fit(self.X_train, self.y_train)
-        self.y_predict = model.predict(self.X_test)
+        y_predict = model.predict(self.X_test)
         return (
             model.score(self.X_test, self.y_test),
-            precision_score(self.y_test, self.y_predict),
-            recall_score(self.y_test, self.y_predict),
+            precision_score(self.y_test, y_predict),
+            recall_score(self.y_test, y_predict),
         )
 
 
@@ -219,31 +221,31 @@ class The_Random_Forest(object):
         self.features()
         lR_score, lR_precision, lR_recall = self.get_scores(LogisticRegression)
         dT_score, dT_precision, dT_recall = self.get_scores(DecisionTreeClassifier)
-        rF_score, rF_precision, rF_recall = self.get_scores(
-            RandomForestClassifier, n_estimators=self.maxT, max_features=self.maxF
-        )
+        rF_score, rF_precision, rF_recall = self.get_scores(RandomForestClassifier, n_estimators=self.maxT, max_features=self.maxF)
+        gaussian_score, gaussian_precision, gaussian_recall = self.get_scores(GaussianNB)
         nB_score, nB_precision, nB_recall = self.get_scores(MultinomialNB)
         model_titles = [
             "Logistic Regression",
             "Decision Tree",
             "Random Forest",
+            "Gaussian NB",
             "Naive Bayes",
         ]
-        model_scores = [lR_score, dT_score, rF_score, nB_score]
-        model_precision = [lR_precision, dT_precision, rF_precision, nB_precision]
-        model_recall = [lR_recall, dT_recall, rF_recall, nB_recall]
+        model_scores = [lR_score, dT_score, rF_score, gaussian_score, nB_score]
+        model_precision = [lR_precision, dT_precision, rF_precision, gaussian_precision, nB_precision]
+        model_recall = [lR_recall, dT_recall, rF_recall, gaussian_recall, nB_recall]
         df = pd.DataFrame(model_titles, columns=["models"]).set_index("models")
         df["score"] = model_scores
         df["precision"] = model_precision
         df["recall"] = model_recall
         df["avg"] = (df["score"] + df["precision"] + df["recall"]) / 3
         df = df.sort_values("avg", ascending=False)
-        st.subheader(" Model, Accuracy, Precision, Recall ")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Model, Accuracy, Precision, Recall ")
         st.table(df)
         return df.index[0]
 
 
-    def plot_roc(self, X, y, clf_class, plot_name, kwargs):
+    def plot_roc(self, X, y, clf_class, plot_name, **kwargs):
         scaler = StandardScaler()
         X = scaler.fit_transform(X)
         n_splits = 5
@@ -255,7 +257,7 @@ class The_Random_Forest(object):
         for i, (train_index, test_index) in enumerate(kf.split(X)):
             X_train, X_test = X[train_index], X[test_index]
             y_train = y[train_index]
-            clf = clf_class(kwargs)
+            clf = clf_class(**kwargs)
             clf.fit(X_train, y_train)
             # Predict probabilities, not classes
             y_prob[test_index] = clf.predict_proba(X_test)
@@ -287,19 +289,20 @@ class The_Random_Forest(object):
         mod_to_run = self.report_scores()
 
         if mod_to_run == "Random Forest":
-            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Visualize The ROC Curve [{mod_to_run}]")
             self.plot_roc(self.X, self.y, RandomForestClassifier, "Random_Forest", n_estimators=45, max_features=5)
 
         if mod_to_run == "Logistic Regression":
-            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Visualize The ROC Curve [{mod_to_run}]")
             self.plot_roc(self.X, self.y, LogisticRegression, "Logistic_Regression")
 
         if mod_to_run == "Decision Tree":
-            st.subheader(f" Visualize The ROC Curve [{mod_to_run}]")
+            st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Visualize The ROC Curve [{mod_to_run}]")
             self.plot_roc(self.X, self.y, DecisionTreeClassifier, "Decision_Tree")
 
         if mod_to_run == "Naive Bayes":
+            st.subheader(f"𝄖𝄗𝄘𝄙𝄚 Visualize The ROC Curve [{mod_to_run}]")
+            self.plot_roc(self.X, self.y, DecisionTreeClassifier, "Decision_Tree")
             self.plot_roc(self.X, self.y, RandomForestClassifier, "Random_Forest", n_estimators=45, max_features=5)
-
             self.plot_roc(self.X, self.y, LogisticRegression, "Logistic_Regression")
             self.plot_roc(self.X, self.y, DecisionTreeClassifier, "Decision_Tree")

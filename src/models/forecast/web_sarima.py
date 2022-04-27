@@ -12,6 +12,8 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from yahooquery import Ticker
 
+import src.tools.functions as f0
+
 warnings.filterwarnings("ignore")
 pd.plotting.register_matplotlib_converters()
 plt.style.use("seaborn-poster")
@@ -29,10 +31,6 @@ plt.rcParams["figure.dpi"] = 100
 plt.rcParams["axes.facecolor"] = "silver"
 
 
-def company_longName(symbol):
-    d = Ticker(symbol).quote_type
-    return list(d.values())[0]["longName"]
-
 
 
 class The_SARIMA_Model(object):
@@ -40,13 +38,12 @@ class The_SARIMA_Model(object):
 
     def __init__(self, stock):
         self.sss = stock
-        self.company = company_longName(self.sss)
+        self.company = f0.company_longName(self.sss)
 
 
     def dataHull(self):
         self.start = "2011-10-01"
         self.end = "2021-10-19"
-
         self.x_data = yf.download(self.sss, start=self.end)["Adj Close"]
         self.x_data.columns = [self.company]
 
@@ -150,71 +147,67 @@ class The_SARIMA_Model(object):
         self.n = len(self.df_settle.index)
         self.prediction = self.model_results.get_prediction(start=self.n - 12 * 5, end=self.n + 12)
         self.prediction_ci = self.prediction.conf_int()
-
+        self.prediction_ci.columns=['Lower_Confidence_Boundary', 'Upper_Confidence_Boundary']
+        
+        
         fig, ax = plt.subplots()
-        ax = self.df_settle["2017":].plot(label="actual")
-        self.prediction_ci.plot(ax=ax, style=["--", "--"], lw=1, label="Predict")
-        self.ci_index = self.prediction_ci.index
-        self.lower_ci = self.prediction_ci.iloc[:, 0]
-        self.upper_ci = self.prediction_ci.iloc[:, 1]
+        ax = self.df_settle['2019':].plot(label='Live_Price', color='k')
+        self.prediction_ci['2019':].plot(
+            ax=ax, 
+            style=['--', '--'],
+            color=['r','g'],
+            label='predicted/forecasted',
+            )
+        ci_index = self.prediction_ci.index
+        lower_ci = self.prediction_ci.iloc[:, 0]
+        upper_ci = self.prediction_ci.iloc[:, 1]
         ax.fill_between(
-            self.ci_index,
-            self.lower_ci,
-            self.upper_ci,
-            color="r",
-            alpha=0.13,
-            label="Confidence_Interval_(95%)",
-        )
-        ax.vlines(
-            ["2018-05-01", "2019-12-25"],
-            0,
-            1,
-            transform=ax.get_xaxis_transform(),
-            colors="k",
-            ls="--",
-            lw=1.0,
-            label="Train Period",
-        )
-        ax.vlines(
-            ["2020-01-01", "2021-09-27"],
-            0,
-            1,
-            transform=ax.get_xaxis_transform(),
-            colors="r",
-            ls="--",
-            lw=1.0,
-            label="Test Period",
-        )
-        ax.vlines(
-            ["2021-10-19", "2022-10-19"],
-            0,
-            1,
-            transform=ax.get_xaxis_transform(),
-            colors="g",
-            ls="--",
-            lw=1.0,
-            label="Forecast Period",
-        )
-        self.x_data.plot(lw=2, label="Price Since Prediction", marker='.', ms=10, color="b", ls="-")
-        ax.set_xlabel("Time (years)", fontsize=20, fontweight="bold")
-        ax.set_ylabel("Prices", fontsize=20, fontweight="bold")
-        ax.set_title(
-            f"{self.company} ({self.sss}) - SARIMA MODEL",
-            fontsize=30,
-            fontweight="bold",
-        )
-        for label in ax.get_xticklabels() + ax.get_yticklabels():
-            label.set_fontsize(15)
-        fontP = FontProperties()
-        fontP.set_size("large")
-        ax.legend(bbox_to_anchor=(1.05, 1), loc="best", prop=fontP)
-        ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
-        plt.xlim(date(2018, 1, 1))
-        plt.tight_layout()
+            ci_index, 
+            lower_ci, 
+            upper_ci,
+            color='c', 
+            alpha=.01,
+            label='95% Confidence Interval'
+            )
+        ax.fill_between(
+            ci_index,
+            (self.prediction_ci.iloc[:, 0]), 
+            (self.prediction_ci.iloc[:, 1]),
+            color='r', 
+            where=ci_index<'2020 11/30',
+            alpha=.2,
+            label='Training'
+            )
+        ax.fill_between(
+            ci_index,
+            (self.prediction_ci.iloc[:, 0]), 
+            (self.prediction_ci.iloc[:, 1]),
+            color='gold', 
+            where=ci_index.isin(ci_index[43:60]),
+            alpha=.2,
+            label='Testing'
+            )
+        ax.fill_between(
+            ci_index,
+            (self.prediction_ci.iloc[:, 0]), 
+            (self.prediction_ci.iloc[:, 1]),
+            color='darkgreen', 
+            where=ci_index.isin(ci_index[59:]),
+            alpha=.2,
+            label='Forecast'
+            )
+        ax.set_xlabel('Time (years)')
+        ax.set_ylabel('Prices')
+        ax.axvline(x='2020 06/25', color = 'k')
+        ax.axvline(x='2021 10/25', color = 'k')
+        ax.set_facecolor('white')
+        plt.grid(True, which='major', axis='both', color='k', alpha=.34)
+        ax.legend()
+        plt.title('SARIMA FORECAST')
+        l = plt.legend(loc='best', shadow=True, fontsize='x-large')
+        for text in l.get_texts():
+            text.set_color("k")
+            text.set_fontweight(13)
+            text.set_fontsize(13)
+        l.get_frame().set_facecolor('white');
         st.pyplot(fig)
-
-
-if __name__ == "__main__":
-    stock_ticker = "BA"
-    if stock_ticker:
-        The_SARIMA_Model(stock_ticker).predict()

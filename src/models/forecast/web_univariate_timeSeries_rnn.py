@@ -9,11 +9,11 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 from datetime import datetime, date
 from yahooquery import Ticker
+import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from tensorflow import keras
-import tensorflow as tf
 import streamlit as st
 from scipy.stats import spearmanr
 from sklearn.metrics import mean_squared_error
@@ -23,8 +23,8 @@ warnings.filterwarnings("ignore")
 np.random.seed(42)
 mpl.use("Agg")
 plt.style.use(["seaborn-darkgrid", "seaborn-poster"])
-plt.rcParams["figure.figsize"] = [15, 8]
-plt.rcParams["figure.dpi"] = 150
+plt.rcParams["figure.figsize"] = [15, 10]
+plt.rcParams["figure.dpi"] = 113
 keras = tf.compat.v1.keras
 Sequence = keras.utils.Sequence
 today_stamp = str(datetime.now())[:10]
@@ -76,6 +76,7 @@ class The_Univariate_TS_Reg(object):
         X, y = create_univariate_rnn_data(sp500_scaled, window_size)
         X_train = X[:"2020"].values.reshape(-1, window_size, 1)
         y_train = y[:"2020"]
+        
         # keep the last year for testing
         X_test = X["2020":].values.reshape(-1, window_size, 1)
         y_test = y["2020":]
@@ -108,9 +109,12 @@ class The_Univariate_TS_Reg(object):
             mode="min",
             save_best_only=True,
         )
+        
         early_stopping = EarlyStopping(
-            monitor="val_loss", patience=10, restore_best_weights=True
-        )
+            monitor="val_loss", 
+            patience=10, 
+            restore_best_weights=True)
+        
         lstm_training = rnn.fit(
             X_train,
             y_train,
@@ -122,20 +126,21 @@ class The_Univariate_TS_Reg(object):
             verbose=1,
         )
 
-        fig, ax = plt.subplots()
+
+        # fig, ax = plt.subplots()
         loss_history = pd.DataFrame(lstm_training.history).pow(0.5)
         loss_history.index += 1
         best_rmse = loss_history.val_loss.min()
         best_epoch = loss_history.val_loss.idxmin()
         title = f"5-Epoch Rolling RMSE (Best Validation RMSE: {best_rmse:.4%})"
         loss_history.columns = ["Training RMSE", "Validation RMSE"]
-        loss_history.rolling(5).mean().plot(logy=True, lw=2, title=title, ax=ax)
-        ax.axvline(best_epoch, ls="--", lw=1, c="k")
-        sns.despine()
-        fig.tight_layout()
-        # fig.savefig(savePlot / f'univariate_timeSeries_rnn_1-error-{self.ticker}.png', dpi=250)
-        st.pyplot(fig)
-        plt.close(fig)
+        # loss_history.rolling(5).mean().plot(logy=True, lw=2, title=title, ax=ax)
+        # ax.axvline(best_epoch, ls="--", lw=1, c="k")
+        # sns.despine()
+        # fig.tight_layout()
+        # st.pyplot(fig)
+        # plt.close(fig)
+        
 
         train_rmse_scaled = np.sqrt(rnn.evaluate(X_train, y_train, verbose=1))
         test_rmse_scaled = np.sqrt(rnn.evaluate(X_test, y_test, verbose=1))
@@ -236,7 +241,3 @@ class The_Univariate_TS_Reg(object):
         st.pyplot(fig)
         plt.close(fig)
         return
-
-
-if __name__ == "__main__":
-    The_Univariate_TS_Reg("TSLA").runs()

@@ -112,7 +112,6 @@ class Optimal_SMA(object):
             plt.xlabel("Date", fontsize=20, fontweight="bold")
             plt.ylabel("Price", fontsize=20, fontweight="bold")
             plt.title(f"{self.company_longName} ({self.name}) - SMA", fontsize=30, fontweight="bold", )
-            # plt.xlim((date(2021, 1, 1)), (date(2021, 12, 30)))
             for label in ax.get_xticklabels() + ax.get_yticklabels():
                 label.set_fontsize(15)
             ax.grid(True, color="k", linestyle="-", linewidth=1, alpha=0.3)
@@ -131,27 +130,11 @@ class Optimal_SMA(object):
             else:
                 action_lst.append('Sell')
         df_pos["Action"] = action_lst
-        
-        # try:
-        #     del df_pos['open']
-        #     del df_pos['high']
-        #     del df_pos['low']
-        #     del df_pos['close']
-        #     del df_pos['splits']
-        #     del df_pos['dividends']
-        #     del df_pos['input']
-        #     del df_pos['SMA']
-        #     del df_pos['Signal']
-        #     del df_pos['Position']            
-        #     # st.text(tabulate(df_pos.loc["2021":], headers="keys", tablefmt="psql"))
-        #     st.text(tabulate(df_pos.iloc[-5:], headers="keys", tablefmt="psql"))
-        # except:
-        #     pass
 
 
         if df_pos['Action'][-1] == 'Buy':
             st.metric(f"[{cc}/{ccc}]", f"{self.name}", f"{df_pos['Position'][-1]}")
-            return self.name
+            return
 
         elif df_pos['Action'][-1] == 'Sell':
             st.metric(f"[{cc}/{ccc}]", f"{self.name}", f"- {df_pos['Position'][-1]}")

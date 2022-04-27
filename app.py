@@ -57,7 +57,6 @@ today_stamp = str(datetime.now())[:10]
 
 
 def page_login(today_stamp):
-    # authUser = p1.Credentials(today_stamp).check_password()
     authUser = True
     return authUser
 
@@ -65,19 +64,11 @@ def page_login(today_stamp):
 
 
 if __name__ == '__main__':
-    st.title(" · Invest · 4m · ")
-    st.write(f"{'_'*25}")
-
+    st.title(f"𝄙𝄙𝄙𝄙𝄙𝄙𝄙𝄙𝄙 ▷ Invest · 4m ◁ 𝄙𝄙𝄙𝄙𝄙𝄙𝄙𝄙𝄙")
+    # st.header(f"{'𝄗'*33}") # 𝄘
 
     if page_login(today_stamp):
-        st.sidebar.title(" · NAVIGATION · ")
-        st.sidebar.caption("- Navigate using this side pannel")
-        st.sidebar.markdown(f"{'__'*25}")
-        st.sidebar.header("__[1] Select Investment Focus__")
-        
-        
-        systemStage = st.sidebar.selectbox("", l0.general_pages, key="nunya")
-        st.sidebar.markdown(f"{'__'*25}")
+        systemStage = st.sidebar.selectbox("[ 1 ] Select Investment Focus", l0.general_pages, key="nunya")
 
         if systemStage == "Home":
             p1.Home(today_stamp).run_home()
@@ -100,9 +91,11 @@ if __name__ == '__main__':
         if systemStage == "Analysis":
             p1.Analysis(today_stamp).run_analysis()
 
-        if systemStage == "Recommender":
-            p1.Recommender(today_stamp).run_recommender()
-
 
 st.write(f"{'_'*25}")
 st.markdown("<a href='#linkto_top'>Link to top</a>", unsafe_allow_html=True)
+
+# ⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚
+# 𝄖𝄗𝄘𝄙𝄚 xxx 𝄚𝄙𝄘𝄗𝄖
+# 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 xxx 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖
+# 𝄖𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄙𝄙𝄚𝄚𝄚𝄚𝄚 xxx · xxx 𝄚𝄚𝄚𝄚𝄚𝄙𝄙𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄖

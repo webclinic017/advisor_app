@@ -104,15 +104,7 @@ def stock_selection(ex_lst):
     - Seperated each ticker with a space"
     )
     st.sidebar.write(" Example: ")
-    # personal_portfolio = st.sidebar.text_input("",value=ex_lst)
-    # personal_portfolio = personal_portfolio.split()
-    # if type(personal_portfolio) == list:
-    #     if personal_portfolio:
-    #         st.sidebar.write(
-    #             f"\n \
-    #             - Personal Portfolio Entry Validated"
-    #         )
-    # return personal_portfolio
+
 
 
 def open_webpage(site):
@@ -131,3 +123,23 @@ def stages(round_df, round_count, total_asset_count):
     )
     st.dataframe(round_df)
     st.write("__" * 25)
+    
+    
+    
+def create_days_lst():
+
+    def daterange(date1, date2):
+        for n in range(int ((date2 - date1).days)+1):
+            yield date1 + timedelta(n)
+
+    start_dt = date(2022,1,1)
+    end_dt = date(2023,1,1)
+    weekdays = [6,7]
+
+    days_lst = []
+    for dt in daterange(start_dt, end_dt):
+        if dt.isoweekday() not in weekdays:
+            days_lst.append(dt)
+            
+    days_lst = days_lst[:252]
+    return pd.to_datetime(days_lst)

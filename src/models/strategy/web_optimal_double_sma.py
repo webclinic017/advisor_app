@@ -18,8 +18,7 @@ class Optimal_Double_SMA(object):
 
     def grab_data(self, ender, inter='1d'):
         self.raw = pd.DataFrame(yf.download(self.tic, start='2020-01-03', end=str(ender)[:10], interval=inter))
-        # self.raw = pd.DataFrame(data.copy())
-                        
+                                
         sma1 = range(2, 51, 2)
         sma2 = range(5, 126, 5)
         results = pd.DataFrame()
@@ -53,8 +52,5 @@ class Optimal_Double_SMA(object):
 
         S = results["SMA1"][0]
         L = results["SMA2"][0]
-        # mkt = results["MARKET(%)"][0]
-        # strat = results["STRATEGY(%)"][0]
-        # out = results["OUT"][0]
         
-        return results, S, L #, mkt, strat, out
+        return S, L

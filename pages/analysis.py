@@ -27,12 +27,6 @@ def widget_1(script):
     st.write(f"{script}")
     st.write(f"{'__'*25}")
 
-
-def get_company_longName(symbol):
-    d = yq_Ticker(symbol).quote_type
-    return list(d.values())[0]["longName"]
-
-
 analysis_script_1 = "\
     - Fundamental analysis is a method of evaluating the intrinsic value of an asset and analyzing \
             the factors that could influence its price in the future. \n\
@@ -93,6 +87,10 @@ class Analysis(object):
 
 
     def __init__(self, today_stamp):
+        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 · Analysis · 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
+        st.header(f"{' '*25}")
+        st.header(f"{'𝄗'*32}")
+        
         self.today_stamp = today_stamp
         self.saveMonth = str(self.today_stamp)[:7]
         self.saveTickers = Path(f"data/tickers/{self.saveMonth}/{self.today_stamp}/")
@@ -101,66 +99,54 @@ class Analysis(object):
 
 
     def analysis_homePage(self):
-        st.header(
-            f" · [Analysis] ·  \n\
-{'__'*25}"
-        )
-
-        st.header(" > Fundamental Analysis")
-        my_expander = st.expander("Expand", expanded=False)
+        my_expander = st.expander("𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄘𝄙𝄙𝄙𝄙𝄙 Fundamental · Analysis 𝄙𝄙𝄙𝄙𝄙𝄘𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖", expanded=False)
         with my_expander:
             clicked = w0.widget_online_resource("https://www.investopedia.com/terms/f/fundamentalanalysis.asp")
-            clicked = w0.widget_analysis(" > Definition", analysis_script_1)
-            clicked = w0.widget_analysis(" > The 6 Segments to perform fundamental analysis on stocks",analysis_script_2,)
-            clicked = w0.widget_analysis(" > KEY TAKEAWAYS", analysis_script_3)
+            clicked = w0.widget_analysis("Definition", analysis_script_1)
+            clicked = w0.widget_analysis("The 6 Segments to perform fundamental analysis on stocks", analysis_script_2,)
+            clicked = w0.widget_analysis2("KEY TAKEAWAYS", analysis_script_3)
 
-        st.header(" > Technical Analysis")
-        my_expander = st.expander("Expand", expanded=False)
+        my_expander = st.expander("𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄘𝄙𝄙𝄙𝄙𝄙 Technical · Analysis 𝄙𝄙𝄙𝄙𝄙𝄘𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖", expanded=False)
         with my_expander:
             clicked = w0.widget_online_resource("https://www.investopedia.com/terms/t/technicalanalysis.asp")
-            clicked = w0.widget_analysis(" > Definition", analysis_script_4)
-            clicked = w0.widget_analysis(" > Examples of technical analysis tools include:", analysis_script_5)
-            clicked = w0.widget_analysis(" > KEY TAKEAWAYS", analysis_script_6)
+            clicked = w0.widget_analysis("Definition", analysis_script_4)
+            clicked = w0.widget_analysis("Examples of technical analysis tools include:", analysis_script_5)
+            clicked = w0.widget_analysis2("KEY TAKEAWAYS", analysis_script_6)
 
-        st.header("> Procedure")
-        my_expander = st.expander("Expand", expanded=False)
+        my_expander = st.expander("𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄘𝄙𝄙𝄙𝄙𝄙 Procedure 𝄙𝄙𝄙𝄙𝄙𝄘𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖", expanded=False)
         with my_expander:
             clicked = w0.widget_analysis("Instructions:", instructions_script)
 
 
     def run_signal_analysis(self, ticker):
         a1.The_Financial_Signal_Processing(ticker)
-        st.header("Analysis Done")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Analysis Done")
 
 
     def capm_cagr(self, tickers):
-        st.header("__CAPM & CAGR__")
-        st.write(f"{'__'*25} \n {'__'*25}")
         a1.CAPM_CAGR().configure_mod(tickers)
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Analysis Done")
 
 
     def run_fundamental_analysis(self, ticker):
-        fundamental_company = get_company_longName(ticker)
+        company_name = f0.company_longName(ticker)
+        x = f"{company_name} [{ticker}]"
+        st.subheader(f"𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄙 Fundamental Analysis · {x} 𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
+        st.subheader('𝄖'*41)
+                    
         stock = yf.Ticker(ticker)
         info = stock.info
-        st.title("Company Profile")
-        st.subheader(info["longName"])
-        st.markdown(" Sector : " + info["sector"])
-        st.markdown(" Industry : " + info["industry"])
-        st.markdown(" Phone : " + info["phone"])
-        st.markdown(
-            " Address : "
-            + info["address1"]
-            + ", "
-            + info["city"]
-            + ", "
-            + info["zip"]
-            + ", "
-            + info["country"]
-        )
-        st.markdown(" Website : " + info["website"])
-        st.markdown(" Business Summary ")
-        st.info(info["longBusinessSummary"])
+        
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Company Profile")
+        st.markdown(f"- {info['longName']}")
+        st.markdown(f"- Sector : " + info["sector"])
+        st.markdown(f"- Industry : " + info["industry"])
+        st.markdown(f"- Phone : " + info["phone"])
+        st.markdown(f"- Address : " + info["address1"] + ", " + info["city"] + ", " + info["zip"] + ", " + info["country"] )
+        st.markdown(f"- Website : " + info["website"])
+        
+        st.subheader("𝄖𝄗𝄘𝄙 Business Summary")
+        st.info(f"- {info['longBusinessSummary']}")
         fundInfo = {
             "Enterprise Value (USD)": info["enterpriseValue"],
             "Enterprise To Revenue Ratio": info["enterpriseToRevenue"],
@@ -177,31 +163,25 @@ class Analysis(object):
             "Dividend Yield (%)": info["dividendYield"],
             "Five year Avg Dividend Yield (%)": info["fiveYearAvgDividendYield"],
             "Payout Ratio": info["payoutRatio"],
-        }
+            }
         fundDF = pd.DataFrame.from_dict(fundInfo, orient="index")
         fundDF = fundDF.rename(columns={0: "Value"})
-        st.subheader("Fundamental Info")
+        
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Fundamental Info")
         st.table(fundDF)
 
-        st.subheader("General Stock Info")
-        st.markdown(" Market : " + info["market"])
-        st.markdown(" Exchange : " + info["exchange"])
-        st.markdown(" Quote Type : " + info["quoteType"])
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 General Stock Info")
+        st.markdown("- Market : " + info["market"])
+        st.markdown("- Exchange : " + info["exchange"])
+        st.markdown("- Quote Type : " + info["quoteType"])  
+        
         start = datetime.today() - timedelta(2 * 365)
         end = datetime.today()
         df = yf.download(ticker, start, end)
         df = df.reset_index()
-
+        
         fig = go.Figure(data=go.Scatter(x=df["Date"], y=df["Adj Close"]))
-        fig.update_layout(
-            title={
-                "text": "Stock Prices Over Past Two Years",
-                "y": 0.9,
-                "x": 0.5,
-                "xanchor": "center",
-                "yanchor": "top",
-            }
-        )
+        fig.update_layout(title={"text": "Stock Prices Over Past Two Years", "y": 0.9, "x": 0.5, "xanchor": "center", "yanchor": "top"})
         st.plotly_chart(fig, use_container_width=True)
 
         marketInfo = {
@@ -218,19 +198,14 @@ class Analysis(object):
         }
         marketDF = pd.DataFrame(data=marketInfo, index=[0])
         st.table(marketDF)
-        st.write(" *" * 25)
-
-        for i in range(1):
-            try:
-                st.write(f"live_price = $ {si.get_live_price(ticker)}")
-                st.write(f"postmarket_price = $ {si.get_postmarket_price(ticker)}")
-                st.write(f"premarket_price = $ {si.get_premarket_price(ticker)}")
-            except Exception:
-                pass
-        st.header("Analysis Done")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Analysis Done")
 
 
     def run_technical_analysis(self, ticker):
+        company_name = f0.company_longName(ticker)
+        x = f"{company_name} [{ticker}]"
+        st.subheader(f"𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄙 Technical Analysis · {x} 𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
+        st.subheader('𝄖'*41)
 
         def calcMovingAverage(data, size):
             df = data.copy()
@@ -257,10 +232,7 @@ class Analysis(object):
             df.dropna(inplace=True)
             return df
 
-        technical_company = get_company_longName(ticker)
-        st.subheader(f" > {technical_company} [{ticker}]")
-
-        st.subheader("Moving Average")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Moving Average")
         coMA1, coMA2 = st.columns(2)
         with coMA1:
             numYearMA = st.number_input(
@@ -320,7 +292,7 @@ class Analysis(object):
         figMA.update_yaxes(tickprefix="$")
         st.plotly_chart(figMA, use_container_width=True)
 
-        st.subheader("Moving Average Convergence Divergence (MACD)")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Moving Average Convergence Divergence (MACD)")
         numYearMACD = st.number_input(
             "Insert period (Year): ",
             min_value=1,
@@ -334,53 +306,17 @@ class Analysis(object):
         df_macd = calc_macd(dataMACD)
         df_macd = df_macd.reset_index()
 
-        figMACD = make_subplots(
-            rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.01
-        )
-        figMACD.add_trace(
-            go.Scatter(
-                x=df_macd["Date"],
-                y=df_macd["Adj Close"],
-                name="Prices Over Last " + str(numYearMACD) + " Year(s)",
-            ),
-            row=1,
-            col=1,
-        )
-        figMACD.add_trace(
-            go.Scatter(
-                x=df_macd["Date"],
-                y=df_macd["ema12"],
-                name="EMA 12 Over Last " + str(numYearMACD) + " Year(s)",
-            ),
-            row=1,
-            col=1,
-        )
-        figMACD.add_trace(
-            go.Scatter(
-                x=df_macd["Date"],
-                y=df_macd["ema26"],
-                name="EMA 26 Over Last " + str(numYearMACD) + " Year(s)",
-            ),
-            row=1,
-            col=1,
-        )
-        figMACD.add_trace(
-            go.Scatter(x=df_macd["Date"], y=df_macd["macd"], name="MACD Line"),
-            row=2,
-            col=1,
-        )
-        figMACD.add_trace(
-            go.Scatter(x=df_macd["Date"], y=df_macd["signal"], name="Signal Line"),
-            row=2,
-            col=1,
-        )
-        figMACD.update_layout(
-            legend=dict(orientation="h", yanchor="bottom", y=1, xanchor="left", x=0)
-        )
+        figMACD = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.01)
+        figMACD.add_trace(go.Scatter(x=df_macd["Date"], y=df_macd["Adj Close"], name="Prices Over Last " + str(numYearMACD) + " Year(s)", ), row=1, col=1)
+        figMACD.add_trace(go.Scatter(x=df_macd["Date"], y=df_macd["ema12"], name="EMA 12 Over Last " + str(numYearMACD) + " Year(s)", ), row=1, col=1)
+        figMACD.add_trace(go.Scatter(x=df_macd["Date"], y=df_macd["ema26"], name="EMA 26 Over Last " + str(numYearMACD) + " Year(s)",), row=1, col=1)
+        figMACD.add_trace(go.Scatter(x=df_macd["Date"], y=df_macd["macd"], name="MACD Line"), row=2, col=1, )
+        figMACD.add_trace(go.Scatter(x=df_macd["Date"], y=df_macd["signal"], name="Signal Line"), row=2, col=1, )
+        figMACD.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1, xanchor="left", x=0))
         figMACD.update_yaxes(tickprefix="$")
         st.plotly_chart(figMACD, use_container_width=True)
 
-        st.subheader("Bollinger Band")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Bollinger Band")
         coBoll1, coBoll2 = st.columns(2)
         with coBoll1:
             numYearBoll = st.number_input(
@@ -406,12 +342,7 @@ class Analysis(object):
         df_boll = df_boll.reset_index()
 
         figBoll = go.Figure()
-        figBoll.add_trace(
-            go.Scatter(x=df_boll["Date"], 
-            y=df_boll["bolu"], 
-            name="Upper Band"
-            )
-        )
+        figBoll.add_trace(go.Scatter(x=df_boll["Date"], y=df_boll["bolu"], name="Upper Band"))
         figBoll.add_trace(
             go.Scatter(
                 x=df_boll["Date"],
@@ -422,305 +353,48 @@ class Analysis(object):
                 + str(numYearBoll)
                 + " Year(s)",
             )
-        )
-        figBoll.add_trace(
-            go.Scatter(x=df_boll["Date"], y=df_boll["bold"], name="Lower Band")
-        )
-        figBoll.update_layout(
-            legend=dict(orientation="h", yanchor="bottom", y=1, xanchor="left", x=0)
-        )
+            )
+        figBoll.add_trace(go.Scatter(x=df_boll["Date"], y=df_boll["bold"], name="Lower Band"))
+        figBoll.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1, xanchor="left", x=0))
         figBoll.update_yaxes(tickprefix="$")
         st.plotly_chart(figBoll, use_container_width=True)
-        st.header("Analysis Done")
+        st.subheader("𝄖𝄗𝄘𝄙𝄚 Analysis Done")
 
     # ------------------------------------------------------------------------------------------ > stage: [ANALYSIS]
 
     def run_analysis(self):
-        st.sidebar.header("[Step # 2]")
-        analysis_method = st.sidebar.radio(
-            "Select Analysis Medthod:", 
-            l0.feature_analysis
-        )
+        analysis_method = st.sidebar.selectbox("[ 2 ] Select Analysis Method", l0.feature_analysis)
         st.sidebar.write(" *" * 25)
 
 
         if analysis_method == "Analysis Home Page":
             self.analysis_homePage()
 
-        
-        if analysis_method == "Individual Asset Analysis":
-            st.title("Single Asset Analysis")
+        if analysis_method == "Asset Overview":
             a1.Single_Asset_Analysis().run()
+            st.subheader("𝄖𝄗𝄘𝄙𝄚 Analysis Done")
 
+        if analysis_method == "Ratio Analysis":
+            personal_stocks = st.sidebar.text_input("[4] Select Stock List To Run (capitalize & seperated by space)", value="AAPL NVDA TSLA ASML SNOW ALB")
+            personal_stocks = personal_stocks.split()
+            st.sidebar.write(" *" * 25)
+            if st.sidebar.button("Run Analysis"):
+                self.capm_cagr(personal_stocks)
 
-
-        if analysis_method == "CAPM & CAGR":
-            st.title("Financial Calculations")
-            st.sidebar.subheader("[3] Select Ticker Category To Run")
-            options_f = ["Personal Portfolio", "Recommended Stocks", "Ticker Lists"]
-            tickers = st.sidebar.radio("Model List:", options_f)
-            st.sidebar.write("__" * 25)
-
-            if tickers == "Personal Portfolio":
-                st.sidebar.subheader("[4] Select Stock List To Run")
-                personal_stocks = st.sidebar.text_input("Enter Stocks", value="AAPL NVDA TSLA ASML SNOW ALB")
-                personal_stocks = personal_stocks.split()
-                st.sidebar.write(" *" * 25)
-                if st.sidebar.button("Run Analysis"):
-                    self.capm_cagr(personal_stocks)
-
-            if tickers == "Recommended Stocks":
-                st.sidebar.subheader("[4] Select Stock List Date To Run")
-
-                report_date = st.sidebar.date_input(
-                label="> recommender date:",
-                    value=date(2021, 7, 14),
-                    min_value=date(2021, 7, 14),
-                    max_value=date.today(),
-                    key="date to run proof",
-                    help="Select a date in the range between 2021.07.15 - 2021.08.26. \
-                        This date will be the date the recommender model was run and we \
-                            will use the resulting tickers for our proof",
-                )
-                name_lst = st.sidebar.radio(
-                    label="", 
-                    options=(
-                        # 'markowitz_random',
-                        'minimum_volatility_portfolio',    
-                        'maximum_sharpe_ratio',
-                        # 'minimum_volatility_random',
-                        'maximum_sharpe_equalWT',
-                        'monte_carlo_cholesky',
-                    )
-                )
-                recommended_stocks = f0.recommended_stocks_2(name_lst, report_date)                
-                st.sidebar.write(" *" * 25)
-                if st.sidebar.button("Run Analysis"):
-                    self.capm_cagr(recommended_stocks)
-
-            if tickers == "Ticker Lists":
-                st.sidebar.subheader("[4] Select Stock List To Run")
-
-                screener = st.sidebar.radio("Choose A Set Of Tickers To Model", l0.stock_name_list)
-                if st.sidebar.button(f"Run Analysis [{screener}]"):                 
-
-                    if screener == "DOW_Symbols":
-                        ticker_list = list(si.tickers_dow())
-                        self.capm_cagr(ticker_list)
-
-                    if screener == "S&P100_Symbols":
-                        ticker_list = list(si.tickers_dow())
-                        self.capm_cagr(ticker_list)    
-
-                    if screener == "S&P500_Symbols":
-                        ticker_list = list(si.tickers_dow())
-                        self.capm_cagr(ticker_list)                                                                        
-
-
-                    if screener == "Day_Gainer_Stocks":
-                        try:
-                            st.write(" Today's Gainers ")
-                            self.dataFile = si.get_day_gainers().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Day_Loser_Stocks":
-                        try:
-                            st.write(" Today's Losers ")
-                            self.dataFile = si.get_day_losers().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Most_Active_Stocks":
-                        try:
-                            st.write(" Today's Most Active ")
-                            self.dataFile = si.get_day_most_active().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Trending_Tickers":
-                        try:
-                            st.write(" Today's Trending Tickers ")
-                            self.dataFile = si.get_trending_tickers().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Most_Shorted_Stocks":
-                        try:
-                            st.write(" Today's Most Shorted Stocks ")
-                            self.dataFile = si.get_most_shorted_stocks().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)                            
-                        except Exception:
-                            pass
-
-                    elif screener == "Undervalued_Large_Cap_Stocks":
-                        try:
-                            st.write(" Undervalued Large Cap Stocks ")
-                            self.dataFile = si.get_undervalued_large_caps().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Undervalued_Growth_Stocks":
-                        try:
-                            st.write(" Undervalued Growth Stocks ")
-                            self.dataFile = si.get_undervalued_growth_stocks().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Growth_Technology_Stocks":
-                        try:
-                            st.write(" Growth Technology Stocks ")
-                            self.dataFile = si.get_growth_technology_stocks().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Aggressive_Small_Cap_Stocks":
-                        try:
-                            st.write(" Aggressive Small Cap Stocks ")
-                            self.dataFile = si.get_aggressive_small_caps().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Small_Cap_Gainer_Stocks":
-                        try:
-                            st.write(" Small Cap Gainer Stocks ")
-                            self.dataFile = si.get_small_cap_gainers().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Top_Crypto_Securities":
-                        try:
-                            st.write(" Top Crypto Assets ")
-                            self.dataFile = SI.get_top_crypto()
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Top_Mutual_Funds":
-                        try:
-                            st.write(" Top Mutual Funds ")
-                            self.dataFile = si.get_top_mutual_funds().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Portfolio_Anchor_Securities":
-                        try:
-                            st.write(" Portfolio Anchors ")
-                            self.dataFile = si.get_portfolio_anchors().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Solid_Large_Cap_Growth_Funds":
-                        try:
-                            st.write(" Solid Large-Cap Growth Funds ")
-                            self.dataFile = si.get_solid_large_growth_funds().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Solid_Mid_Cap_Growth_Funds":
-                        try:
-                            st.write(" Solid Mid-Cap Growth Funds ")
-                            self.dataFile = si.get_solid_midcap_growth_funds().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "Conservative_Foreign_Funds":
-                        try:
-                            st.write(" Conservative Foreign Funds ")
-                            self.dataFile = si.get_conservative_foreign_funds().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)
-                        except Exception:
-                            pass
-
-                    elif screener == "High_Yield_Bond_Funds":
-                        try:
-                            st.write(" High Yield Bond funds ")
-                            self.dataFile = si.get_high_yield_bond().round(2)
-                            st.dataframe(self.dataFile)
-                            ticker_list = list(self.dataFile['Symbol'])
-                            self.capm_cagr(ticker_list)                            
-                        except Exception:
-                            pass
-
-
-
-        if analysis_method == "Financial Signal Processing":
-            st.title("Financial Signal Processing")
-            st.write("__" * 25)
-            st.sidebar.header("[Step # 3]")
-            ticker = st.sidebar.text_input(
-                "Enter Stock Ticker For Analysis", 
-                value="TSLA"
-            )
+        if analysis_method == "Financial Signal":           
+            ticker = st.sidebar.text_input("[3] Enter Stock Ticker For Analysis", value="TSLA")
             st.sidebar.write(" *" * 25)
             if st.sidebar.button("Run Analysis"):
                 self.run_signal_analysis(ticker)
 
         if analysis_method == "Fundamental Analysis":
-            st.title("Fundamental Analysis")
-            st.write("__" * 25)
-            st.sidebar.header("[Step # 3]")
-            ticker = st.sidebar.text_input(
-                "Enter Stock Ticker For Analysis", 
-                value="TSLA"
-            )
+            ticker = st.sidebar.text_input("[ 3 ] Enter Stock Ticker For Analysis", value="TSLA")
             st.sidebar.write(" *" * 25)
             if st.sidebar.button("Run Analysis"):
                 self.run_fundamental_analysis(ticker)
 
         if analysis_method == "Technical Analysis":
-            st.title("Technical Analysis")
-            st.write("__" * 25)
-            st.sidebar.header("[Step # 3]")
-            ticker = st.sidebar.text_input(
-                "Enter Stock Ticker For Analysis", 
-                value="TSLA"
-            )
+            ticker = st.sidebar.text_input("[ 3 ] Enter Stock Ticker For Analysis", value="TSLA")
             st.sidebar.write(" *" * 25)
             if st.sidebar.button("Run Analysis"):
                 self.run_technical_analysis(ticker)
