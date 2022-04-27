@@ -33,7 +33,8 @@ class Strategy(object):
         self.saveMonth = str(datetime.now())[:7]
         self.saveDay = str(datetime.now())[8:10]
         
-        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Strategy · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        
+        st.header("◾ 𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Strategy · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾")
         st.header(f"{' '*25}")
 
 

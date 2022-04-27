@@ -23,7 +23,7 @@ class Screeners(object):
         self.major_indicies = l0.major_indicies
         self.major_index_names = l0.major_index_names
         
-        st.header(" ◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ·  Screener ·  𝄚𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾ ")
+        st.header(" ◾ 𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ·  Screener ·  𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾ ")
         st.header(" ")
 
 

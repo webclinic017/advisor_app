@@ -87,7 +87,7 @@ class Analysis(object):
 
 
     def __init__(self, today_stamp):
-        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Analysis · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header("◾ 𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄙𝄙𝄚 · Analysis · 𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾")
         st.header(f"{' '*25}")        
         
         self.today_stamp = today_stamp

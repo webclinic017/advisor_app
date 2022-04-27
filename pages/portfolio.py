@@ -171,7 +171,7 @@ class Portfolio(object):
     # ----------------------------------------------------------------------------------------- > stage: [PORTFOLIO]
 
     def run_portfolio(self):
-        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Portfolio · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header("◾ 𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄙𝄙𝄚 · Portfolio · 𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾")
         st.header(f"{' '*25}")                   
 
         model = st.sidebar.selectbox("[ 2 ] Choose A Model", l0.feature_portfolio)

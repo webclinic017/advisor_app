@@ -39,7 +39,8 @@ class Backtest(object):
 
     def __init__(self):
         self.today_stamp = str(datetime.now())[:10]
-        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Backtesting · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        
+        st.header("◾ 𝄖𝄖𝄖𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Backtesting · 𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾")
         st.header(f"{' '*25}") 
 
 

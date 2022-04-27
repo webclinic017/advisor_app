@@ -64,7 +64,7 @@ def page_login(today_stamp):
 
 
 if __name__ == '__main__':    
-    st.title(f"✪ 𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚 【 · Invest · 4m · 】 𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚 ✪")
+    st.title(f"✪ 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 【 · Invest · 4m · 】 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 ✪")
     st.title(" ")
 
     if page_login(today_stamp):
@@ -94,6 +94,9 @@ if __name__ == '__main__':
 
 st.header(f"{'𝄖'*40}")
 st.markdown("<a href='#linkto_top'>Link to top</a>", unsafe_allow_html=True)
+
+
+# st.header("◾ 𝄖𝄖𝄖𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Home · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖 ◾")
 
 # 𝄖  𝄗  𝄘  𝄙  𝄚
 # 𝄖𝄗𝄘𝄙𝄚 xxx 𝄚𝄙𝄘𝄗𝄖
