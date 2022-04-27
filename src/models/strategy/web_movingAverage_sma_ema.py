@@ -26,7 +26,7 @@ plt.rcParams["figure.figsize"] = [10, 7]
 plt.rcParams["figure.dpi"] = 100
 
 
-def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, moving_avg, data, cc=0.0, ccc=0.0, inter='1d'):
+def MovingAverageCrossStrategy(symbol, short_window, long_window, end_date, moving_avg, cc=0.0, ccc=0.0, inter='1d'):
     """
         The function takes the stock symbol, time-duration of analysis,
         look-back periods and the moving-average type(SMA or EMA) as input

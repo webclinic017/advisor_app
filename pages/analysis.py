@@ -87,9 +87,8 @@ class Analysis(object):
 
 
     def __init__(self, today_stamp):
-        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 · Analysis · 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
-        st.header(f"{' '*25}")
-        st.header(f"{'𝄗'*32}")
+        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Analysis · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header(f"{' '*25}")        
         
         self.today_stamp = today_stamp
         self.saveMonth = str(self.today_stamp)[:7]

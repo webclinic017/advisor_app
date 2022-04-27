@@ -171,13 +171,11 @@ class Portfolio(object):
     # ----------------------------------------------------------------------------------------- > stage: [PORTFOLIO]
 
     def run_portfolio(self):
-        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ Portfolio ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
-        st.header(f"{'𝄗'*33}")                
-
+        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Portfolio · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header(f"{' '*25}")                   
 
         model = st.sidebar.selectbox("[ 2 ] Choose A Model", l0.feature_portfolio)
-
-
+        
         ex_lst = "AAPL ALB AMD AMZN ASML GOOGL NVDA TSLA SNOW SEDG REGN WMT VZ"
         personal_stocks = st.sidebar.text_input("[ 3 ] Enter Portfolio (capital tickers, seperate with space)", help=f"Example: {ex_lst}", value=ex_lst)
         personal_stocks = personal_stocks.split()        

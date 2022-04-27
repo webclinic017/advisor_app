@@ -68,7 +68,7 @@ class Forecast(object):
 
 
     def prophet(self, ticker_list):
-        st.header("⚫ 𝄖𝄗𝄘𝄙𝄚 ▷ Prophet [Time Series Forecast] ◁ 𝄚𝄙𝄘𝄗𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Prophet ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         cols = st.columns(2)
         with cols[0]:       
             with st.expander("▷ Details:", expanded=False):         
@@ -85,7 +85,7 @@ class Forecast(object):
 
 
     def mc_forecast(self, ticker_list):
-        st.header("⚫ 𝄖𝄗𝄘𝄙𝄚 ▷ Monte Carlo Cholesky ◁ 𝄚𝄙𝄘𝄗𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Monte Carlo Cholesky ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         st.header(f"{'𝄖'*33}")
         forecast_days = st.sidebar.selectbox("[ 4 ] Forcast Period (DAYS)", casting_periods, index=2)
         if st.sidebar.button("[ 5 ] Run Monte Carlo Sim Forecast"):
@@ -100,7 +100,7 @@ class Forecast(object):
 
 
     def stocker(self, ticker_list):
-        st.header("⚫ 𝄖𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄙𝄚𝄚𝄚 ▷ Stocker ◁ 𝄚𝄚𝄚𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄗𝄖𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Stocker ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         st.header(f"{'𝄖'*33}")        
         stocker_forcast_period = st.sidebar.selectbox("[ 4 ] Forcast Period (DAYS)", casting_periods, index=2)
         e_date = str(st.sidebar.date_input("[ 5 ] Forecast Start Date", datetime(2022, 1, 1)))[:10]
@@ -113,7 +113,7 @@ class Forecast(object):
 
 
     def regression(self, ticker_list):
-        st.header("⚫ 𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ Regression ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Regression ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         st.header(f"{'𝄖'*33}")               
         if st.sidebar.button("[ 4 ] RUN REGRESSION FORECAST"):
             days = 5
@@ -141,7 +141,7 @@ class Forecast(object):
 
 
     def sarima(self, ticker_list):
-        st.header("⚫ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ SARIMA ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ SARIMA ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         st.caption("* Seasonal AutoRegressive Integrated Moving Average")
         st.header(f"{'𝄖'*33}")                      
         if st.sidebar.button("[ 4 ] RUN SARIMA FORECAST"):
@@ -155,7 +155,7 @@ class Forecast(object):
                 
 
     def arima(self, ticker_list):
-        st.header("⚫ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ ARIMA ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ ARIMA ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         st.caption("* Auto Regression Integrated Moving Average")
         st.header(f"{'𝄖'*33}")
         if st.sidebar.button("[ 4 ] RUN ARIMA FORECAST"):
@@ -169,7 +169,7 @@ class Forecast(object):
 
 
     def monte_carlo(self, ticker_list):
-        st.header("⚫ 𝄖𝄗𝄘𝄘𝄙𝄙𝄚𝄚 ▷ Monte Carlo Simulations ◁ 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Monte Carlo Simulations ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         cols = st.columns(2)
         with cols[0]:       
             with st.expander("▷ Details:"): 
@@ -187,7 +187,7 @@ class Forecast(object):
                 
                 
     def univariate(self, ticker_list):
-        st.header("⚫ 𝄖𝄖𝄗𝄘𝄘𝄙𝄙𝄚𝄚 ▷ Univariate RNN ◁ 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄖𝄖 ⚫")
+        st.header("𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 ▷ Univariate RNN ◁ 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖")
         cols = st.columns(2)
         with cols[0]:
             with st.expander("▷ Details:"):
@@ -203,8 +203,8 @@ class Forecast(object):
     # ------------------------------------------------------------------------------------------ > stage: [FORECAST]
 
     def run_forecast(self):
-        st.header("⬛ 𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚𝄚 ▷ Forecasting ◁ 𝄚𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖 ⬛")
-        st.header(f"{'𝄗'*33}")        
+        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Forecasting · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header(f"{' '*25}")
         
 
         self.one_er_many = "List"

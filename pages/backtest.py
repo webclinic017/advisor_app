@@ -39,9 +39,8 @@ class Backtest(object):
 
     def __init__(self):
         self.today_stamp = str(datetime.now())[:10]
-        st.header("⬛ 𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄚𝄚 · Backtesting · 𝄚𝄚𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖 ⬛")
-        st.header(f"{' '*25}")
-        st.header(f"{'𝄗'*32}")        
+        st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Backtesting · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
+        st.header(f"{' '*25}") 
 
 
     def backtest_1(self):
@@ -54,7 +53,6 @@ class Backtest(object):
             if mode == "Pyfolio":
                 st.header("𝄖𝄖𝄗𝄗𝄘𝄘𝄙𝄙𝄙𝄚𝄚𝄚 Pyfolio Analysis 𝄚𝄚𝄚𝄙𝄙𝄙𝄘𝄘𝄗𝄗𝄖𝄖")
                 st.header(f"{' '*25}")
-                st.header(f"{'𝄖'*32}")
                                 
                 stock_ticker = st.sidebar.text_input("[ 4 ] SELECT TICKER:", "NVDA")
                 if st.sidebar.button("[ 5 ] Run Pyfolio"):
@@ -76,7 +74,6 @@ class Backtest(object):
                 
                 st.header("𝄖𝄗𝄘𝄙𝄙𝄚𝄚 Strategy Comparrison Analysis 𝄚𝄚𝄙𝄙𝄘𝄗𝄖")
                 st.header(f"{' '*25}")
-                st.header(f"{'𝄖'*32}")
                         
                 company_name = f0.company_longName(self.ticker)
                 x = f"{company_name} [{self.ticker}]"
