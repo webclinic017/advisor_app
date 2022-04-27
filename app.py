@@ -66,10 +66,6 @@ def page_login(today_stamp):
 if __name__ == '__main__':    
     st.title(f"✪ 𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚 【 · Invest · 4m · 】 𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚𝄚 ✪")
     st.title(" ")
-    # ("◾ 𝄖𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚𝄚 · Strategy · 𝄚𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖𝄖 ◾")
-    # st.header("◾ 𝄖𝄖𝄖𝄖𝄗𝄗𝄗𝄗𝄘𝄘𝄘𝄙𝄙𝄚 · Backtesting · 𝄚𝄙𝄙𝄘𝄘𝄘𝄗𝄗𝄗𝄗𝄖𝄖𝄖𝄖 ◾")
-    # st.header(f"{' '*25}")
-    # ⬛
 
     if page_login(today_stamp):
         systemStage = st.sidebar.selectbox("[ 1 ] Select Investment Focus", l0.general_pages, key="nunya")
