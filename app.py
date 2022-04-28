@@ -7,8 +7,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",    
     menu_items={
         "Get Help": "https://www.extremelycoolapp.com/help",
-        "Report a bug": "https://www.extremelycoolapp.com/bug",
-        "About": "# · Invest 4m · Created By: Gordon D. Pisciotta · ",
+        "Report a bug": "https://share.streamlit.io/ramraider011235/4m/main/app.py",
+        "About": "# · Advisor App · Created By: GDP · ",
     },
 )
 st.markdown(
@@ -64,8 +64,8 @@ def page_login(today_stamp):
 
 
 if __name__ == '__main__':    
-    st.title(f"✪ 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 【 · Invest · 4m · 】 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 ✪")
-    st.title(" ")
+    # st.title(f"✪ 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 【 · Invest · 4m · 】 𝄚𝄚𝄚𝄚𝄚𝄚𝄚 ✪")
+    # st.title(" ")
 
     if page_login(today_stamp):
         systemStage = st.sidebar.selectbox("[ 1 ] Select Investment Focus", l0.general_pages, key="nunya")
