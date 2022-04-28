@@ -6,8 +6,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",    
     menu_items={
-        "Get Help": "https://www.extremelycoolapp.com/help",
-        "Report a bug": "https://share.streamlit.io/ramraider011235/4m/main/app.py",
         "About": "# · Advisor App · Created By: GDP · ",
     },
 )
