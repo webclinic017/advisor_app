@@ -41,7 +41,8 @@ class Single_Asset_Analysis(object):
             # st.write('*'*25)
             
             st.subheader('𝄖𝄗𝄘𝄙 Stock Chart')
-            st.image(stock.TickerCharts(out_dir='/home/gdp/Documents/library/portfolio/advisor_app/data/images/charts'))
+            st.image(stock.TickerCharts())
+            # st.image(stock.TickerCharts(out_dir='/home/gdp/Documents/library/portfolio/advisor_app/data/images/charts'))
             st.write(' '*25)
             # st.write('*'*25)
 
